@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Profile from '../C5.png';
 import { Top_bar } from './home.jsx';
 
-export function Notebook(){
+export function Profile(){
     return(
         <>
             <Top_bar/>
