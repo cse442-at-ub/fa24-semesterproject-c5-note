@@ -3,7 +3,7 @@ import '../App.css';
 import './home.css';
 import { Link } from "react-router-dom";
 
-function Top_bar(){
+export function Top_bar(){
   return(
     <div className='Top_bar'>
       <div className='Top_bar_elms'>
@@ -24,7 +24,7 @@ export function Home(){
           </div>
           <div className='Login_Buttons'>
           <input required type="submit" className='login_button'></input>
-          <Link to="/next"><button className="sign_up_button">Sign Up</button></Link> 
+          <Link to="/notebook"><button className="sign_up_button">Sign Up</button></Link> 
           </div>    
         </form>
         </>
