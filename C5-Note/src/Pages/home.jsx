@@ -13,6 +13,7 @@ export function Home(){
           C5 Note
         </p>
         <Link to="/next"><button className="CoolButton">Go To Next Page</button></Link>
+        <Link to="/notebooks"><button className="ButtonTakeNotes">Take Notes</button></Link>
       </header>
     </div>
         </>

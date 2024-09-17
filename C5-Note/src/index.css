@@ -29,6 +29,16 @@
   font-size: 1em;
 }
 
+.ButtonTakeNotes{
+  background-color: cornflowerblue;
+  height: 3em;
+  width: 10em;
+  border-radius: 1em;
+  color: white;
+  font-family: monofonto;
+  font-size: 1em;
+}
+
 
 .App {
   text-align: center;

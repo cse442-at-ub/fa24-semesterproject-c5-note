@@ -1,0 +1,71 @@
+#NoteTitle {
+    color:blue
+}
+
+.Notebooks_ButtonHome{
+    background-color: rgb(100, 237, 109);
+    height: 3em;
+    width: 10em;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1em;
+}
+
+
+.notebooksPageWrapper{
+    display:        flex;
+    flex-flow:      row wrap;
+    font-weight:    bold;
+    text-align:     center;
+}
+
+
+.notebooksPageWrapper > * {
+    padding:    10px;
+    flex:       1 100%;
+}
+
+.nbpHeader{
+    background: rgb(200, 0, 255);
+}
+
+.nbpMain{
+    font-family: monofonto;
+    text-align: left;
+    background: rgb(38, 38, 38);
+}
+
+.nbpSidebarNotebooks{
+    background: grey;
+}
+
+.nbpSidebarPages{
+    background: grey;
+}
+
+.nbpFooter{
+    background: rgb(200, 0, 255);
+}
+
+/* Narrow Layout */
+@media all and (min-width: 600px){
+
+    .aside { flex: 1 0 0; }
+
+}
+
+/* Desktop Layout */
+@media all and (min-width: 800px){
+
+    .nbpMain                    { flex: 3 0px;}
+    .nbpSidebarNotebooks        { order: 1; }
+    .nbpMain                    { order: 2; }
+    .nbpSidebarPages            { order: 3; }
+    .nbpFooter                  { order: 4; }
+
+}
+
+/* body{
+    padding: 2em;
+} */
