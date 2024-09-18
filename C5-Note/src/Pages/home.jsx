@@ -24,7 +24,7 @@ export function Home(){
           </div>
           <div className='Login_Buttons'>
           <input required type="submit" className='login_button'></input>
-          <Link to="/notebook"><button className="sign_up_button">Sign Up</button></Link> 
+          <Link to="/note"><button className="sign_up_button">Sign Up</button></Link> 
           </div>    
         </form>
         </>

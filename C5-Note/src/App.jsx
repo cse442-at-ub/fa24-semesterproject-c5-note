@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter as Router,Routes,Route,Link } from "react-router-dom";
 import { Home } from './Pages/home';
 import { Page1 } from './Pages/page1';
-import { Profile } from './Pages/profile';
+import { Simple_notebook } from './Pages/simple_notebook';
 
 function App() {
 
@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={ <Home/> }/>
         <Route path="/next" element={ <Page1/> }/>
-        <Route path="/notebook" element={ <Profile/> }/>
+        <Route path="/note" element={ <Simple_notebook/> }/>
       </Routes>
     </Router>
   )

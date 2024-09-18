@@ -1,0 +1,23 @@
+.logout_button{
+    background-color: #AE3D3F;
+    height: 3em;
+    width: 10em;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1em;
+}
+
+.profile_image{
+    width: 5rem;
+    height: 5rem;
+    border-radius: 10rem;
+
+}
+
+.profile_div{
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 3rem;
+    padding-top: 2rem;
+}
