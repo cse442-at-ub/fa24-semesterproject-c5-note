@@ -13,12 +13,16 @@ import './notebooks.css';                        // Import CSS tied to this page
 export function PageNotebooks(){
     return(
         <>
-            {/* Flexbox Testing Time */}
+            {/* Formatting the Note-Taking App via Flexbox
+            * This layout below is the order for mobile viewing.
+            * Desktop and midrange layouts are handled via CSS.
+            */}
             <div class ="notebooksPageWrapper">
 
                 <header class="nbpHeader">C5-Note</header>
                 <article class="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
+                    <h1>Example Note Page</h1>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec egestas mauris nec tortor rutrum venenatis. Quisque at commodo ante. Vivamus semper vehicula enim, vel vehicula felis varius ac. Suspendisse accumsan, quam non scelerisque egestas, nunc sem blandit lectus, eget feugiat magna orci vitae nunc. Phasellus eget velit at leo ullamcorper pharetra. Sed sapien sem, imperdiet vel augue eget, iaculis volutpat nunc. Aenean vel ultricies massa. Quisque at tellus convallis, tempor sem vitae, venenatis ligula. Quisque luctus leo ante, eget sodales nulla gravida vitae. Integer at tempor purus. Sed blandit placerat ullamcorper. Etiam sollicitudin sed ante eu tincidunt.</p>
                     <p>Ut imperdiet eros sodales felis pharetra sodales. Pellentesque est arcu, ornare vel sagittis quis, sollicitudin eget purus. Ut tempor nulla nisl, vel tristique dui egestas elementum. Integer vitae nisi risus. Nullam ac massa consectetur, aliquam augue id, venenatis diam. Phasellus accumsan tellus vestibulum, lacinia arcu ac, lobortis odio. Proin porta pharetra odio et consequat. Nam non vestibulum massa. Pellentesque porttitor dolor tortor, sed facilisis urna efficitur ut. Phasellus iaculis interdum nisl, et mattis lacus ullamcorper ac. Aenean quis convallis tortor, a finibus erat. Nunc aliquam lacus at rhoncus malesuada. Nam sagittis vitae tortor at sollicitudin. Duis suscipit nibh sit amet augue ultrices, ut fringilla sem scelerisque.</p>
                     <p>Aliquam pretium mauris orci, sit amet ornare urna fermentum eu. Pellentesque efficitur blandit placerat. Suspendisse a finibus sapien, id convallis sapien. Ut viverra lectus eu dui rhoncus interdum. Integer et leo at lorem porttitor pulvinar a non dolor. Aenean maximus augue risus, in dapibus est vehicula nec. Aliquam erat volutpat. Ut eu convallis mauris. Sed id gravida libero, ac varius neque.</p>

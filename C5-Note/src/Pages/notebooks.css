@@ -1,3 +1,16 @@
+/* Override all padding in #root from App.css */
+#root{
+    margin: 0;
+    padding: 0;
+    max-width: none;
+}
+
+/* Remove all automatic padding */
+body{
+    margin: 0;  padding: 2rem;
+    padding: 0;
+}
+
 #NoteTitle {
     color:blue
 }
@@ -37,11 +50,11 @@
 }
 
 .nbpSidebarNotebooks{
-    background: grey;
+    background: rgb(83, 83, 83);
 }
 
 .nbpSidebarPages{
-    background: grey;
+    background: rgb(83, 83, 83);
 }
 
 .nbpFooter{
@@ -67,5 +80,5 @@
 }
 
 /* body{
-    padding: 2em;
+    padding: 0%;
 } */
