@@ -1,5 +1,12 @@
 <?php
 
+$config = file_get_contents("../config.json");
+$data = json_decode($config);
+
+$username = $data->username;
+$password = $data->password;
+$db_name = $data->db_name;
+
 if(isset($_COOKIE["username"])) {
 
     $connection = new mysqli("localhost:3306", $username, $password, $db_name);
