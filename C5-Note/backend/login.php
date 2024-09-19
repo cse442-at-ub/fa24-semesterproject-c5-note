@@ -39,6 +39,7 @@ try {
         $result = $connection->query("INSERT INTO active_users (user_id, token) VALUES ($user_id, '$hashed_token')");
 
         http_response_code(201);
+        setcookie("username", '$login_username', time() + 60);
         setcookie("token", "$token", time() + 60);
     }
     else {
