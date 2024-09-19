@@ -11,19 +11,20 @@ body{
     padding: 0;
 }
 
-#NoteTitle {
-    color:blue
+
+.nbpLogo{
+    height: 3em;
 }
 
-.Notebooks_ButtonHome{
+.nbpButtonHome{
     background-color: rgb(100, 237, 109);
     height: 3em;
     width: 10em;
     border-radius: 1em;
     color: white;
     font-family: monofonto;
-    font-size: 1em;
 }
+
 
 
 .notebooksPageWrapper{
@@ -33,18 +34,31 @@ body{
     text-align:     center;
 }
 
-
 .notebooksPageWrapper > * {
     padding:    10px;
     flex:       1 100%;
 }
 
+
+/* nbpHeader */
 .nbpHeader{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+
+    padding: 0px;
+    margin:  0px;
     background: rgb(200, 0, 255);
 }
 
+/* Items within the nbpHeader */
+.nbpHeader > * {
+    flex: 1 auto;
+    text-align: left;
+}
+
 .nbpToolbar{
-    background: grey;
+    background: pink;
 }
 
 .nbpMain{
@@ -69,7 +83,7 @@ body{
 
 /* Narrow Layout */
 @media all and (min-width: 600px){
-
+    /* Make the asides share the same row */
     .aside { flex: 1 0 0; }
 
 }

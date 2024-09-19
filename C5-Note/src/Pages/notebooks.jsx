@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import './notebooks.css';                        // Import CSS tied to this page
+import logo from '../C5.png';
 
 /***************************************
  * notebooks.jsx
@@ -19,8 +20,17 @@ export function PageNotebooks(){
             */}
             <div className ="notebooksPageWrapper">
 
-                <header className="nbpHeader">C5-Note</header>
-                <header className="npbToolbar">Toolbar</header>
+                {/* Header */}
+                <header className="nbpHeader">
+                    <Link to="/"><img src={logo} className="nbpLogo" alt="C5-Note Logo" /></Link>
+                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
+                </header>
+
+                {/* Toolbar */}
+                <div className="npbToolbar">
+
+
+                </div>
                 <article className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <h1>Example Note Page</h1>
@@ -30,8 +40,17 @@ export function PageNotebooks(){
                     <p>Praesent vehicula interdum sagittis. Aliquam consequat erat velit, a eleifend mi vehicula pellentesque. Maecenas sodales, ante sed imperdiet lacinia, nibh velit pharetra mi, et lobortis erat neque in diam. Fusce luctus turpis quis ullamcorper semper. Pellentesque pellentesque fermentum vehicula. Proin eget lacus mi. Proin sit amet consequat libero. Aliquam nisl ante, finibus eu varius non, pulvinar in magna. Donec est urna, porta nec feugiat vitae, ultricies nec eros. Nam consequat magna consectetur dui condimentum iaculis. Vestibulum condimentum ipsum vel tincidunt elementum. Integer id euismod justo. Nullam consequat ipsum enim. Curabitur a suscipit neque. Suspendisse consequat pellentesque nisl vitae condimentum.</p>
                     <p>Donec ullamcorper sem turpis, vel fermentum libero rutrum vel. Donec id consectetur libero, id consequat neque. Nullam mi ligula, gravida sed ornare non, aliquet ut ligula. Ut egestas hendrerit ante non tristique. Donec scelerisque libero sit amet enim faucibus, imperdiet dignissim velit commodo. Suspendisse quis dictum odio. Aenean luctus vitae sem vitae malesuada. Duis posuere diam nec tincidunt iaculis. Vestibulum eu felis eget felis ullamcorper luctus et non sapien. Nullam sit amet enim sit amet eros accumsan ullamcorper. Pellentesque vestibulum interdum eros, sagittis fermentum sem pulvinar vitae. Proin vestibulum ante ullamcorper suscipit eleifend. Nam sit amet nulla non ligula bibendum scelerisque sed vel urna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet magna libero, a consequat eros imperdiet eget. Interdum et malesuada fames ac ante ipsum primis in faucibus. </p>
                 </article>
-                <aside className="aside nbpSidebarNotebooks">Notebooks</aside>
-                <aside className="aside nbpSidebarPages">Note Pages</aside>
+                <aside className="aside nbpSidebarNotebooks">
+                    <h1>Notebooks</h1>
+                    <p>My Notebook</p>
+                    <p>CSE 442</p>
+                </aside>
+                <aside className="aside nbpSidebarPages">
+                    <h1>Note Pages</h1>
+                    <p>Lecture 2</p>
+                    <p>Lecture 1</p>
+                    <p>Syllabus</p>
+                </aside>
                 <footer className="nbpFooter">Footer</footer>
 
             </div>
