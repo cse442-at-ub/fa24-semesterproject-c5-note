@@ -20,6 +20,7 @@ export function PageNotebooks(){
             <div class ="notebooksPageWrapper">
 
                 <header class="nbpHeader">C5-Note</header>
+                <header class="npbToolbar">Toolbar</header>
                 <article class="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <h1>Example Note Page</h1>
