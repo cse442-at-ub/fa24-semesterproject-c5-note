@@ -65,6 +65,8 @@ body{
     background: rgb(200, 0, 255);
 }
 
+/* Mobile Layout is Default */
+
 /* Narrow Layout */
 @media all and (min-width: 600px){
 

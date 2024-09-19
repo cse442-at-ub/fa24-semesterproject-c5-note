@@ -17,11 +17,11 @@ export function PageNotebooks(){
             * This layout below is the order for mobile viewing.
             * Desktop and midrange layouts are handled via CSS.
             */}
-            <div class ="notebooksPageWrapper">
+            <div className ="notebooksPageWrapper">
 
-                <header class="nbpHeader">C5-Note</header>
-                <header class="npbToolbar">Toolbar</header>
-                <article class="nbpMain">
+                <header className="nbpHeader">C5-Note</header>
+                <header className="npbToolbar">Toolbar</header>
+                <article className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <h1>Example Note Page</h1>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec egestas mauris nec tortor rutrum venenatis. Quisque at commodo ante. Vivamus semper vehicula enim, vel vehicula felis varius ac. Suspendisse accumsan, quam non scelerisque egestas, nunc sem blandit lectus, eget feugiat magna orci vitae nunc. Phasellus eget velit at leo ullamcorper pharetra. Sed sapien sem, imperdiet vel augue eget, iaculis volutpat nunc. Aenean vel ultricies massa. Quisque at tellus convallis, tempor sem vitae, venenatis ligula. Quisque luctus leo ante, eget sodales nulla gravida vitae. Integer at tempor purus. Sed blandit placerat ullamcorper. Etiam sollicitudin sed ante eu tincidunt.</p>
@@ -30,9 +30,9 @@ export function PageNotebooks(){
                     <p>Praesent vehicula interdum sagittis. Aliquam consequat erat velit, a eleifend mi vehicula pellentesque. Maecenas sodales, ante sed imperdiet lacinia, nibh velit pharetra mi, et lobortis erat neque in diam. Fusce luctus turpis quis ullamcorper semper. Pellentesque pellentesque fermentum vehicula. Proin eget lacus mi. Proin sit amet consequat libero. Aliquam nisl ante, finibus eu varius non, pulvinar in magna. Donec est urna, porta nec feugiat vitae, ultricies nec eros. Nam consequat magna consectetur dui condimentum iaculis. Vestibulum condimentum ipsum vel tincidunt elementum. Integer id euismod justo. Nullam consequat ipsum enim. Curabitur a suscipit neque. Suspendisse consequat pellentesque nisl vitae condimentum.</p>
                     <p>Donec ullamcorper sem turpis, vel fermentum libero rutrum vel. Donec id consectetur libero, id consequat neque. Nullam mi ligula, gravida sed ornare non, aliquet ut ligula. Ut egestas hendrerit ante non tristique. Donec scelerisque libero sit amet enim faucibus, imperdiet dignissim velit commodo. Suspendisse quis dictum odio. Aenean luctus vitae sem vitae malesuada. Duis posuere diam nec tincidunt iaculis. Vestibulum eu felis eget felis ullamcorper luctus et non sapien. Nullam sit amet enim sit amet eros accumsan ullamcorper. Pellentesque vestibulum interdum eros, sagittis fermentum sem pulvinar vitae. Proin vestibulum ante ullamcorper suscipit eleifend. Nam sit amet nulla non ligula bibendum scelerisque sed vel urna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet magna libero, a consequat eros imperdiet eget. Interdum et malesuada fames ac ante ipsum primis in faucibus. </p>
                 </article>
-                <aside class="aside nbpSidebarNotebooks">Notebooks</aside>
-                <aside class="aside nbpSidebarPages">Note Pages</aside>
-                <footer class="nbpFooter">Footer</footer>
+                <aside className="aside nbpSidebarNotebooks">Notebooks</aside>
+                <aside className="aside nbpSidebarPages">Note Pages</aside>
+                <footer className="nbpFooter">Footer</footer>
 
             </div>
 
