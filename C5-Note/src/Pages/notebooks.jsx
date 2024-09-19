@@ -23,7 +23,7 @@ export function PageNotebooks(){
                 {/* Header */}
                 <header className="nbpHeader">
                     <img src={logo} className="nbpLogo" alt="C5-Note Logo" />
-                    C5-Note
+                    <span>C5-Note</span>
                 </header>
 
                 {/* Toolbar */}

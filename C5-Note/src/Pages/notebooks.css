@@ -40,11 +40,12 @@ body{
 }
 
 
-/* nbpHeader */
+/* nbpHeader Flex Container*/
 .nbpHeader{
-    display: flex;
-    flex-flow: row;
-    align-items: center;
+    display: flex;              /* Flex container */
+    flex-flow: row;             /* Flex container is only a single row */
+    align-items: center;        /* Items in Flex row are aligned vertically in the middle */
+    justify-content: flex-start;
 
     padding: 0px;
     margin:  0px;
@@ -53,18 +54,19 @@ body{
 
 /* Items within the nbpHeader */
 .nbpHeader > * {
-    flex: 1 auto;
-    text-align: left;
+    flex: 0 1 auto;
 }
 
+/* nbpToolbar Flex Container*/
 .nbpToolbar{
     display:flex;
     flex-flow: row;
     align-items: center;
 }
 
+/* Items within nbpToolbar */
 .nbpToolbar > * {
-    
+    flex: 1 100%;
 }
 
 .nbpMain{
