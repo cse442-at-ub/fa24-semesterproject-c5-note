@@ -21,16 +21,22 @@ export function PageNotebooks(){
             <div className ="notebooksPageWrapper">
 
                 {/* Header */}
-                <header className="nbpHeader">
-                    <img src={logo} className="nbpLogo" alt="C5-Note Logo" />
-                    <span>C5-Note</span>
-                </header>
+                <div className="nbpHeader">
+                    <div className="nbpHeaderLeft">
+                        <img src={logo} className="nbpLogo"/>
+                        <span>C5-Note</span>
+                    </div>
+                    <div className="nbpHeaderRight">
+                        <Link to="/"><button className="nbpButtonHome nbpAlignRight">Profile</button></Link>
+                    </div>
+                </div>
 
                 {/* Toolbar */}
                 <div className="nbpToolbar">
-                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
-                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
-                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
+                    <Link to="/"><button className="nbpButtonHome">Download</button></Link>
+                    <Link to="/"><button className="nbpButtonHome">Access</button></Link>
+                    <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
                 </div>
                 <article className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}

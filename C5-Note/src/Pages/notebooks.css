@@ -39,22 +39,41 @@ body{
     flex:       1 100%;
 }
 
-
-/* nbpHeader Flex Container*/
 .nbpHeader{
-    display: flex;              /* Flex container */
-    flex-flow: row;             /* Flex container is only a single row */
-    align-items: center;        /* Items in Flex row are aligned vertically in the middle */
-    justify-content: flex-start;
-
-    padding: 0px;
-    margin:  0px;
+    display: flex;
+    justify-content: space-between;
+    padding:0;
+    margin:0;
     background: rgb(200, 0, 255);
 }
 
+/* nbpHeader Flex Container*/
+.nbpHeaderLeft{
+    display: flex;              /* Flex container */
+    flex-flow: row;             /* Flex container is only a single row */
+    align-items: center;        /* Items in Flex row are aligned vertically in the middle */
+    justify-content: flex-start;/* Items in Flex row are left-justified*/
+
+    padding: 0px;
+    margin:  0px;
+    
+}
+
+.nbpHeaderRight{
+    display: flex;              /* Flex container */
+    flex-flow: row;             /* Flex container is only a single row */
+    align-items: center;        /* Items in Flex row are aligned vertically in the middle */
+    justify-content: flex-end;/* Items in Flex row are left-justified*/
+
+    padding: 0px;
+    margin:  0px;
+    
+}
+
+
 /* Items within the nbpHeader */
-.nbpHeader > * {
-    flex: 0 1 auto;
+.nbpHeaderLeft > * {
+    flex: 0 1 auto;             /* Items do not grow, shrink, basis is automatic */
 }
 
 /* nbpToolbar Flex Container*/
@@ -62,11 +81,12 @@ body{
     display:flex;
     flex-flow: row;
     align-items: center;
+    justify-content: flex-start;
 }
 
 /* Items within nbpToolbar */
 .nbpToolbar > * {
-    flex: 1 100%;
+    flex: 0 1 auto;
 }
 
 .nbpMain{
