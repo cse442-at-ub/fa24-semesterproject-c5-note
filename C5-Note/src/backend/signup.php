@@ -1,10 +1,11 @@
 <?php
 
-/*
+$config = file_get_contents("../config.json");
+$data = json_decode($config);
 
-We need to set $username, $password, $db_name, but I don't know what those are yet.
-
-*/
+$username = $data->username;
+$password = $data->password;
+$db_name = $data->db_name;
 
 $json = json_decode(file_get_contents("php://input"));
 
