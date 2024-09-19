@@ -10,6 +10,7 @@ $json = json_decode(file_get_contents("php://input"));
 
 $signup_name = $json->username;
 $signup_pass = password_hash($json->password, PASSWORD_DEFAULT);
+$signup_email = $json->email;
 
 $connection = new mysqli("localhost:3306", $username, $password, $db_name);
 
@@ -21,7 +22,7 @@ if($connection->connect_error) {
 
 try {
     
-    $result = $connection->query("INSERT INTO users (username, password) VALUES ('$signup_name', '$signup_pass')");
+    $result = $connection->query("INSERT INTO users (username, password, email) VALUES ('$signup_name', '$signup_pass', '$signup_email')");
 
     http_response_code(201);
 }
