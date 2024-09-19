@@ -58,7 +58,13 @@ body{
 }
 
 .nbpToolbar{
-    background: pink;
+    display:flex;
+    flex-flow: row;
+    align-items: center;
+}
+
+.nbpToolbar > * {
+    
 }
 
 .nbpMain{

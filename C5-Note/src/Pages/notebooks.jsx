@@ -22,14 +22,15 @@ export function PageNotebooks(){
 
                 {/* Header */}
                 <header className="nbpHeader">
-                    <Link to="/"><img src={logo} className="nbpLogo" alt="C5-Note Logo" /></Link>
-                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
+                    <img src={logo} className="nbpLogo" alt="C5-Note Logo" />
+                    C5-Note
                 </header>
 
                 {/* Toolbar */}
-                <div className="npbToolbar">
-
-
+                <div className="nbpToolbar">
+                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
+                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
+                    <Link to="/"><button className="nbpButtonHome">C5-Note</button></Link>
                 </div>
                 <article className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
