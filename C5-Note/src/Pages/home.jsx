@@ -2,6 +2,9 @@ import logo from '../C5.png';
 import '../App.css';
 import './home.css';
 import { Link,useNavigate  } from "react-router-dom";
+import { GhostaContainer, ghosta } from 'react-ghosta';
+import 'react-ghosta/dist/ghosta.css';
+
 
 export function Top_bar(){
   return(
@@ -18,13 +21,17 @@ export function Top_bar(){
 export function Home(){
     const navigate = useNavigate();
 
+    const handleShowUsername = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a username', showCloseButton:true,color:'Red' });
+
+    const handleShowPassword = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a password', showCloseButton:true});
+
+    const handleShowIncor = () => ghosta.fire({ headerTitle: 'ERROR',description:'Username or password incorrect', showCloseButton:true });
+
     const login = ()=>{
       if(document.getElementById("username").value == ''){
-        console.log('here')
-        alert('Please enter a username')
+        handleShowUsername();
       }else if(document.getElementById("password").value == ''){
-        console.log('here')
-        alert('Please enter a password')
+        handleShowPassword();
       }else{
       fetch("backend/login.php", {
         method: "POST",
@@ -39,7 +46,7 @@ export function Home(){
         .then((response) => response.json())
         .then((json) => {
           if(json.status =='failed'){
-            alert('Username or Password is incorrect')
+            handleShowIncor();
           }else{
             navigate('/note')
           }
@@ -51,6 +58,7 @@ export function Home(){
     return(
         <>
         <Top_bar/>
+        <GhostaContainer />
           <div id="Login_Text_Inputs" className='container_text'>
           <input required type="text" className='form_text' name='username' placeholder='username' id='username'></input>
           <input required type="password" className='form_text' name='password' placeholder='password' id='password'></input>
