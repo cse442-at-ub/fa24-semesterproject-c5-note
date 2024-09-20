@@ -32,12 +32,12 @@ body{
     display: flex;
     width: 100px;
     height: 100px;
-    background-color: green;
+    background-color: black;
     border-radius: 50%;
   }
   
 .profile_info_button{
-    margin-top: 6vmin;
+    margin-top: 4vmin;
     background-color: #3DAE56;
     height: 5rem;
     width: 10rem;
@@ -50,7 +50,7 @@ body{
 }
 
 .take_notes_button{
-    margin-top: 6vmin;
+    margin-top: 4vmin;
     background-color: #3DAE56;
     height: 5rem;
     width: 10rem;
@@ -97,4 +97,13 @@ body{
     /* Make the asides share the same row */
     .aside { flex: 1 0 0; }
 
+}
+
+.Colour{
+    background-color: white;
+    color: black;
+    border-radius: 8%;
+    padding: 2rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
 }

@@ -14,28 +14,44 @@ export function Top_bar(){
   )
 }
 
+
+
+
+
 export function Profile(){
     return(
         <>
         <Top_bar/>
-        <form action='/route' method='post'>
+        <br></br>
           <div id="Profile_Info" className='container_text'>
-          
+          <div className='Colour'>
+          <div className='container_text'>
           <article className="profile_info">
           <div class="circle">
           <p class="text"></p>
-          </div>
-          <Link to="/"><button className="take_notes_button">Take Notes</button></Link>
-              <h1>Jane Doe</h1>
           
+          </div>
           </article>
+          </div> 
+                <h1>Jane Doe</h1>
+                </div>
+              <form action='backend/image-upload.php' method='POST' encType='multipart/form-data'>
+              <p>Select image to upload:</p>
+              <input type="file" name="fileToUpload" id="fileToUpload"></input>
+              <input type="submit" value="Upload Image" name="submit"></input>
+              </form>
+              
+              
+              
+          
+          
 
           </div>
-          <div className='Profile_Buttons'>
-          <Link to="/"><button className="take_notes_button">Take Notes</button></Link> 
+          
+          <div className='container_text Profile_Buttons'>
+          <Link to="/note"><button className="take_notes_button">Take Notes</button></Link> 
           <Link to="/"><button className="log_out_button">Log Out</button></Link> 
           </div>    
-        </form>
         </>
     )
 }
