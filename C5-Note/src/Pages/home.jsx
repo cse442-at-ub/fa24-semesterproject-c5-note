@@ -21,7 +21,7 @@ export function Top_bar(){
 export function Home(){
     const navigate = useNavigate();
 
-    const handleShowUsername = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a username', showCloseButton:true,color:'Red' });
+    const handleShowUsername = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a username', showCloseButton:true });
 
     const handleShowPassword = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a password', showCloseButton:true});
 
