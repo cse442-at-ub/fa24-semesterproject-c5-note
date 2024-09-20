@@ -48,6 +48,37 @@ export function Simple_notebook(){
   location.reload();
   }
 
+  const getCookie= (name) =>{
+    let cookie = {};
+    document.cookie.split(';').forEach(function(el) {
+      let split = el.split('=');
+      cookie[split[0].trim()] = split.slice(1).join("=");
+    })
+    return cookie[name];
+  }
+
+  const LoggedOut = ()=>{
+    var name = getCookie('username')
+    if (name != '' || typeof(myVariable) != "undefined" ){
+      clear_cookies()
+    fetch("backend/login.php", {
+      method: "POST",
+      body: JSON.stringify({
+        username: name,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json)
+      }
+      );
+  }
+    clear_cookies()
+}
+
     return(
         <>
             <Top_bar_simple_notes/>
@@ -72,7 +103,7 @@ export function Simple_notebook(){
                   <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li>
                   <li className="spacing"><Link to="/notebooks"><button className="green control_button_single">Create Notebook</button></Link></li>
                   <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
-                  <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={clear_cookies}>Log Out</button></Link></li>
+                  <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                   </ul>
                   </div>
               </div>

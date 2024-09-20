@@ -22,3 +22,7 @@ if($result->num_rows > 0) {
 }
 setcookie("username", "", time() - 60);
 setcookie("token", "", time() - 60);
+die(json_encode([
+    "status" => "good",
+    "message" => "done"
+]));
