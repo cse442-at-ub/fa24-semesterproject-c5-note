@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link,useNavigate  } from "react-router-dom";
 import Profile from '../C5.png';
 import './simple_note.css';
 import './home.css';
@@ -22,12 +22,22 @@ function Top_bar_simple_notes(){
   }
 
 export function Simple_notebook(){
+  const navigate = useNavigate();
+  const clear_cookies = ()=>{
+    cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
+      console.log('Cookie deleted:', cookie);
+      cookieStore.delete(cookie);
+  }));
+  navigate('/')
+  location.reload();
+  }
+
     return(
         <>
             <Top_bar_simple_notes/>
             <h1>Notebook Page</h1>
             <Link to="/"><button className="CoolButton">Take Notes</button></Link>
-            <Link to="/"><button className="logout_button">Log Out</button></Link>
+            <Link to="/"><button className="logout_button" onClick={clear_cookies}>Log Out</button></Link>
         </>
     )
 }
