@@ -1,6 +1,5 @@
 <?php
 
-<?php
 $target_dir = "uploads/";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
@@ -49,7 +48,7 @@ if ($uploadOk == 0) {
   }
 }
 
-header("Location: https://se-prod.cse.buffalo.edu/CSE442/2024-Fall/cse-442al/#/profile");
+//header("Location: https://se-prod.cse.buffalo.edu/CSE442/2024-Fall/cse-442al/#/profile");
  
 exit;
 
