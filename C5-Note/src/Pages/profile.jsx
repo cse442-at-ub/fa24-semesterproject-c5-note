@@ -19,6 +19,11 @@ export function Top_bar(){
 
 
 export function Profile(){
+  var preview = () =>{
+    frame.src=URL.createObjectURL(event.target.files[0]);
+}
+
+
     return(
         <>
         <Top_bar/>
@@ -27,8 +32,9 @@ export function Profile(){
           <div className='Colour'>
           <div className='container_text'>
           <article className="profile_info">
-          <div class="circle">
-          <p class="text"></p>
+          <img id="frame" src={logo} className="circle" alt="logo" />
+          <div className="">
+          <p className="text"></p>
           
           </div>
           </article>
@@ -37,8 +43,8 @@ export function Profile(){
                 </div>
               <form action='backend/image-upload.php' method='POST' encType='multipart/form-data'>
               <p>Select image to upload:</p>
-              <input type="file" name="fileToUpload" id="fileToUpload"></input>
-              <input type="submit" value="Upload Image" name="submit"></input>
+              <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
+              <input type="submit" value="Upload Image" name="Save Image"></input>
               </form>
               
               
