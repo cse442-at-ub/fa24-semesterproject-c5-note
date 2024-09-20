@@ -6,6 +6,18 @@ import './home.css';
 
 
 function Top_bar_simple_notes(){
+  const getCookie= (name) =>{
+    let cookie = {};
+    document.cookie.split(';').forEach(function(el) {
+      let split = el.split('=');
+      cookie[split[0].trim()] = split.slice(1).join("=");
+    })
+    cookie.get
+    return cookie[name];
+  }
+
+    const name = getCookie('username')
+
     return(
       <div className='Top_bar'>
         <div className='Top_bar_elms'>
@@ -13,7 +25,7 @@ function Top_bar_simple_notes(){
             {/*switch the image to be agnostic to database images*/}
             <div className="profile_div">
                 <img src={Profile} className="profile_image" alt="logo" />
-                <p>Username</p>
+                <p>{ name }</p>
                 </div>
         </div>
           
