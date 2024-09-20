@@ -16,7 +16,7 @@ function Top_bar_simple_notes(){
   }
 
     var name = getCookie('username')
-    if (name == '' || typeof(myVariable) == "undefined" ){
+    if (name == '' || typeof(name) == "undefined" ){
       name = 'DevModeOnly'
     }
 
@@ -58,13 +58,13 @@ export function Simple_notebook(){
   }
 
   const LoggedOut = ()=>{
-    var name = getCookie('username')
-    if (name != '' || typeof(myVariable) != "undefined" ){
+    var usaname = getCookie('username')
+    if (usaname != '' || typeof(myVariable) != "undefined" ){
       clear_cookies()
     fetch("backend/login.php", {
       method: "POST",
       body: JSON.stringify({
-        username: name,
+        username: usaname,
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8"
