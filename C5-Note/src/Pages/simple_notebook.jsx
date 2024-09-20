@@ -61,7 +61,7 @@ export function Simple_notebook(){
     var usaname = getCookie('username')
     if (usaname != '' || typeof(myVariable) != "undefined" ){
       clear_cookies()
-    fetch("backend/login.php", {
+    fetch("backend/logout.php", {
       method: "POST",
       body: JSON.stringify({
         username: usaname,
