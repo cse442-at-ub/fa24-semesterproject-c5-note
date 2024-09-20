@@ -2,7 +2,7 @@
     width: 5rem;
     height: 5rem;
     border-radius: 10rem;
-    border:1px solid #000;
+    
 
 }
 
@@ -48,7 +48,7 @@ ul{
     background-color: #848484;
     width: 30vmax;
     height: 5vmax;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-family: monofonto;
 }
 .label{
