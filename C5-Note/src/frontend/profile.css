@@ -1,0 +1,74 @@
+
+body{
+    margin: 0;
+}
+.Top_bar{
+    background-color: #2F2F2F;
+    overflow: hidden;
+}
+
+.Top_bar_text{
+    padding-top: 2vmin;
+    font-size: 8vmin;
+    padding-left: 8vmin;
+}
+
+.logo{
+    height: 20vmin;
+    width: 20vmin;
+}
+
+.Top_bar_elms{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.home_page{
+    min-height: 100vh
+}
+
+.profile_info_button{
+    margin-top: 6vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    
+}
+
+.take_notes_button{
+    margin-top: 6vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    
+}
+
+.log_out_button{
+    margin-top: 6vmin;
+    background-color: #AE3D3F;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+}
+
+.App_Buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}

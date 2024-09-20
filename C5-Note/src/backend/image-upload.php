@@ -1,25 +1,26 @@
 <?php
+$config = file_get_contents("../config.json");
+$data = json_decode($config);
 
-// If profile picture button is clicked without photo
-if (isset($_POST['profile-image'])) {
+$servername = "localhost:3306";
+$username = $data->username;
+$password = $data->password;
+$db_name = $data->db_name;
 
-    $filename = $_FILES["uploadfile"]["name"];
-    $tempname = $_FILES["uploadfile"]["tmp_name"];
-    $folder = "./image/" . $filename;
-
-    $db = mysqli_connect("localhost: 3306", "root", "", "geeksforgeeks");
-
-    // Get all the submitted data from the form
-    $sql = "INSERT INTO image (filename) VALUES ('$filename')";
-
-    // Execute query
-    mysqli_query($db, $sql);
-
-    // Now let's move the uploaded image into the folder: image
-    if (move_uploaded_file($tempname, $folder)) {
-        echo "<h3>&nbsp; Image uploaded successfully!</h3>";
-    } else {
-        echo "<h3>&nbsp; Failed to upload image!</h3>";
-    }
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+// Check connection
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
 }
-?>
+
+$sql = "INSERT INTO users (image) VALUES ('$filename')";
+
+if (mysqli_query($conn, $sql)) {
+  echo "New record created successfully";
+} else {
+  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+
+mysqli_close($conn);
+?> 
