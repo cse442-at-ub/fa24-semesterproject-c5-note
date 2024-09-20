@@ -42,6 +42,10 @@ try {
         http_response_code(201);
         setcookie("username", '$login_username', time() + 60);
         setcookie("token", "$token", time() + 60);
+        die(json_encode([
+            "status" => "valid",
+            "message" => "correct"
+        ]));
     }
     else {
 
