@@ -33,7 +33,7 @@ export function SignUpPage() {
     const [password, setPassword] = useState("");
     const [reenterPassword, setReenterPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-
+    const navigate = useNavigate();
 
 
     const handleRegisterClick = async () => {
@@ -59,20 +59,20 @@ export function SignUpPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestData),
-            });
-
-            if (response.status === 201) {
-                alert("User registered successfully!");
-                const navigate = useNavigate();
+            }).then((response) => response.json())
+            .then((json) =>{if (json.status === '201') {
+                console.log(json)
+                //alert("User registered successfully!");
                 navigate('/');
-            } else if (response.status === 409) {
-                setErrorMessage("User already exists.");
-            }else {
+            } else {
                 setErrorMessage("An error occurred during registration.");
             }
-        } catch (error) {
+        })}
+        catch (error) {
             setErrorMessage("Server error. Please try again later.");
         }
+
+            
     };
 
     return (

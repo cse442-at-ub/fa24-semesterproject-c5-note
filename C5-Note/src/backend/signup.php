@@ -26,6 +26,10 @@ try {
     $result = $connection->query("INSERT INTO users (username, password, email) VALUES ('$signup_name', '$signup_pass', '$signup_email')");
 
     http_response_code(201);
+    die(json_encode([
+        "status" => "201",
+        "message" => "done"
+    ]));
 }
 catch(Exception $e) {
 
