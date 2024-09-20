@@ -1,13 +1,3 @@
-.logout_button{
-    background-color: #AE3D3F;
-    height: 3em;
-    width: 10em;
-    border-radius: 1em;
-    color: white;
-    font-family: monofonto;
-    font-size: 1em;
-}
-
 .profile_image{
     width: 5rem;
     height: 5rem;
@@ -15,9 +5,83 @@
 
 }
 
+.profile_div_color{
+
+    padding-right: 2rem;
+    padding-top: 2rem;
+}
+
 .profile_div{
     display: flex;
     justify-content: flex-end;
     padding-right: 3rem;
     padding-top: 2rem;
+    font-family: monofonto;
+    font-size: 1rem;
+}
+
+.mainBody{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding-top: 3rem;
+    flex-direction: row;
+    padding-left: 2rem;
+}
+
+ul{
+    list-style-type: none;
+}
+
+.notebooks_list{
+    background-color: #848484;
+    align-content: center;
+    padding-right: 2rem;
+}
+
+.notebook_buttons{
+    background-color: #848484;
+    width: 30vmax;
+    height: 5vmax;
+    font-size: 2rem;
+    font-family: monofonto;
+}
+.label{
+    text-align: center;
+    font-size: 3rem;
+    font-family: monofonto;
+}
+
+.control_buttons{
+    background-color: #D9D9D9;
+    padding-right: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.control_button_single{
+    width: 30vmax;
+    height: 5vmax;
+    color: white;
+    font-family: monofonto;
+    font-size: 1em;
+    border: 0;
+}
+
+.spacing{
+    padding-bottom: 3rem;
+}
+
+.logout_button{
+    background-color: #AE3D3F;
+    
+}
+
+.options{
+    color: black;
+    padding-bottom: 1rem;
+}
+
+.green{
+    background-color: #157C00;
 }
