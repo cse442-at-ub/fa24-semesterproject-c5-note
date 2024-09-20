@@ -3,6 +3,7 @@ import logo from '../C5.png';
 import '../App.css';
 import './home.css';
 import { Link } from "react-router-dom";
+import { handleShowUsername } from "./home.jsx";
 
 export function Top_bar(){
   return(
@@ -22,7 +23,19 @@ export function Profile(){
   var preview = () =>{
     frame.src=URL.createObjectURL(event.target.files[0]);
 }
+const getCookie= (name) =>{
+  let cookie = {};
+  document.cookie.split(';').forEach(function(el) {
+    let split = el.split('=');
+    cookie[split[0].trim()] = split.slice(1).join("=");
+  })
+  return cookie[name];
+}
 
+  var name = getCookie('username')
+  if (name == '' || typeof(name) == "undefined" ){
+    name = 'DevModeOnly'
+  }
 
     return(
         <>
@@ -39,7 +52,7 @@ export function Profile(){
           </div>
           </article>
           </div> 
-                <h1>Jane Doe</h1>
+                <h1>{name}</h1>
                 </div>
               <form action='backend/image-upload.php' method='POST' encType='multipart/form-data'>
               <p>Select image to upload:</p>
