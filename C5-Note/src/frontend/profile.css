@@ -28,6 +28,14 @@ body{
     min-height: 100vh
 }
 
+.circle {
+    display: flex;
+    width: 100px;
+    height: 100px;
+    background-color: green;
+    border-radius: 50%;
+  }
+  
 .profile_info_button{
     margin-top: 6vmin;
     background-color: #3DAE56;
@@ -71,4 +79,22 @@ body{
     flex-direction: row;
     justify-content: space-evenly;
     flex-wrap: wrap;
+}
+
+.grid {
+    text-align: center;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 10rem;
+    grid-template-rows: 10rem 10rem 10rem;
+    grid-gap: 1rem;
+}
+
+/* Narrow Layout */
+@media all and (min-width: 600px){
+    /* Make the asides share the same row */
+    .aside { flex: 1 0 0; }
+
 }
