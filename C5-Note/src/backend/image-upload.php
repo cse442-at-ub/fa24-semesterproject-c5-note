@@ -23,9 +23,11 @@ if (file_exists($target_file)) {
   $uploadOk = 0;
 }
 
-// Check file size
-if ($_FILES["fileToUpload"]["size"] > 500000) {
+// Check file size less than 2MB
+if ($_FILES["fileToUpload"]["size"] > 2000000) {
   echo "Sorry, your file is too large.";
+  $message = "Sorry, your file is too large.";
+  echo "<script type='text/javascript'>alert('$message');</script>";
   $uploadOk = 0;
 }
 

@@ -70,7 +70,13 @@ const getCookie= (name) =>{
           <div className='container_text Profile_Buttons'>
           <Link to="/note"><button className="take_notes_button">Take Notes</button></Link> 
           <Link to="/"><button className="log_out_button">Log Out</button></Link> 
-          </div>    
+          </div> 
+
+          <div className='grid_template'>
+          <p>Public Notebooks</p>
+          <p>CSE 123</p>
+          <p>CSE 442:</p>
+          </div>   
         </>
     )
 }
