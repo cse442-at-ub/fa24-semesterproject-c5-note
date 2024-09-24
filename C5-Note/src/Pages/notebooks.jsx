@@ -23,11 +23,11 @@ export function PageNotebooks(){
                 {/* Header */}
                 <div className="nbpHeader">
                     <div className="nbpHeaderLeft">
-                        <img src={logo} className="nbpLogo"/>
+                        <Link to="/"><img src={logo} className="nbpLogo"/></Link>
                         <span>C5-Note</span>
                     </div>
                     <div className="nbpHeaderRight">
-                        <Link to="/"><button className="nbpButtonHome nbpAlignRight">Profile</button></Link>
+                        <Link to="/note"><button className="nbpButtonHome nbpAlignRight">Profile</button></Link>
                     </div>
                 </div>
 

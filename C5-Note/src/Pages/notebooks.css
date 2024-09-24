@@ -18,6 +18,10 @@ body{
     width: 3em;
 }
 
+.nbpLogo:hover{
+    filter:brightness(50%);
+}
+
 .nbpButtonHome{
     background-color: rgb(142, 142, 142);
     height: 3em;
