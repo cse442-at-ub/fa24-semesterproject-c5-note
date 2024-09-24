@@ -73,7 +73,7 @@ const getCookie= (name) =>{
           </div> 
 
           <div className='grid_template'>
-          <p>Public Notebooks</p>
+          <b>Public Notebooks</b>
           <p>CSE 123</p>
           <p>CSE 442:</p>
           </div>   

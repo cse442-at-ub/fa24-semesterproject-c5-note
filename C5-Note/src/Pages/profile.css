@@ -87,6 +87,7 @@ body{
     grid-template-columns: 10rem;
     grid-template-rows: 10rem 10rem 10rem;
     grid-gap: 1rem;
+    height: 8rem;
 }
 
 .container {
