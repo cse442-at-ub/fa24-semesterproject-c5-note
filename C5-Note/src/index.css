@@ -1,0 +1,57 @@
+@font-face {
+  font-family: monofonto;
+  src: url(./monofonto.otf);
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #525252;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.CoolButton{
+  background-color: cornflowerblue;
+  height: 3em;
+  width: 10em;
+  border-radius: 1em;
+  color: white;
+  font-family: monofonto;
+  font-size: 1em;
+}
+
+
+.App {
+  text-align: center;
+  font-family: monofonto;
+}
+
+.App-logo {
+  height: 10em;
+  pointer-events: none;
+}
+
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+

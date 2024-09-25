@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+}
+
+.Top_bar {
+    background-color: #2F2F2F;
+    overflow: hidden;
+}
+
+.Top_bar_text {
+    padding-top: 2vmin;
+    font-size: 8vmin;
+    padding-left: 8vmin;
+}
+
+.logo {
+    height: 20vmin;
+    width: 20vmin;
+}
+
+.Top_bar_elms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.home_page {
+    min-height: 100vh;
+}
+
+.form_text {
+    margin-top: 6vmin;
+    margin-bottom: 1rem;
+    height: 5rem;
+    width: 20rem;
+    background-color: #9D9D9D;
+    color: #FFFFFF;
+    font-family: monofonto;
+    font-size: 2rem;
+    text-align: center;
+    border: 0;
+}
+
+.go_back_button {
+    margin-top: 6vmin;
+    background-color: #ae3d3d;
+    height: 5rem;
+    width: 20rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    cursor: pointer;
+}
+
+.register_button {
+    margin-top: 6vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 20rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    cursor: pointer;
+}
+
+.container_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.SignUp_Buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
