@@ -33,8 +33,8 @@ if (mysqli_stmt_execute($sql) === TRUE){
     mysqli_stmt_fetch($sql);
 
     // Print those values
-    echo "Name:    $col3<br>";
-    echo "Content: $col4<br>";
+    echo "Name:    $col3<br>\n";
+    echo "Content: $col4<br>\n";
 }
 // Error checking
 else {
