@@ -121,6 +121,18 @@ body{
     text-align: left;
     background: rgb(38, 38, 38);
     min-height: 1000px;
+    padding: 0;
+}
+
+
+.tpwInputArea{
+    width: 100%;
+    height: 80%;
+    border-color: transparent;
+    resize: none;
+
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
 }
 
 .nbpSidebarNotebooks{

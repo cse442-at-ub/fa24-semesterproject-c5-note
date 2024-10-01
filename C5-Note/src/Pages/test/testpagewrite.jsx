@@ -37,11 +37,11 @@ export function TestPageWrite(){
                     <button className="tpwButton">Save</button>
                 </div>
 
-                <article className="nbpMain">
+                <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <h1>Example Note Page</h1>
-                    <p>text here????</p>
-                </article>
+                    <textarea className = "tpwInputArea"></textarea>
+                </form>
 
 
                 <aside className="aside nbpSidebarNotebooks">
