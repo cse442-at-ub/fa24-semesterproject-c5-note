@@ -7,6 +7,10 @@ import { PageNotebooks } from './Pages/notebooks';
 import { SignUpPage } from './Pages/signUpPage';
 
 
+// Test Pages
+import { TestPageWrite } from './Pages/test/testpagewrite';
+
+
 
 function App() {
 
@@ -18,6 +22,9 @@ function App() {
         <Route path="/note" element={ <Simple_notebook/> }/>
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
+
+        {/* Test Pages */}
+        <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
       </Routes>
     </Router>
   )
