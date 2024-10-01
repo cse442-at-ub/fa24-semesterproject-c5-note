@@ -1,6 +1,6 @@
 <?php
 
-$config = file_get_contents("../config.json");
+$config = file_get_contents("../../config.json");
 $data = json_decode($config);
 
 $username = $data->username;
