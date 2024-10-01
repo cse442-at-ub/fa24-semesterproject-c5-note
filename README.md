@@ -8,6 +8,14 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 
+
+Configuration:
+
+* Place the provided vite.config.js file in /C5-Note.
+
+* To enable running on Aptitude, change "cse-442al" to your UBIT.
+
+
 Dependencys to Run:
 NodeJS
 
