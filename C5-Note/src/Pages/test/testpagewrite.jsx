@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 
+import './testpagewrite.css';                        // Import CSS tied to this page
+import logo from '../../C5.png';
+
 /***************************************
  * testpagewrite.jsx
  * 
@@ -18,7 +21,42 @@ export function TestPageWrite(){
             */}
             <div className ="tpwWrapper">
 
-                <p>Test Page - Page Write Function</p>
+                {/* Header */}
+                <div className="nbpHeader">
+                    <div className="nbpHeaderLeft">
+                        <Link to="/"><img src={logo} className="nbpLogo"/></Link>
+                        <span>C5-Note Test Page:  Write to Page</span>
+                    </div>
+                    <div className="nbpHeaderRight">
+                        <Link to="/note"><button className="nbpButtonHome nbpAlignRight">Profile</button></Link>
+                    </div>
+                </div>
+
+                {/* Toolbar */}
+                <div className="nbpToolbar">
+                    <button className="tpwButton">Save</button>
+                </div>
+
+                <article className="nbpMain">
+                    {/* Lorem Ipsum for filler until note pages implemented */}
+                    <h1>Example Note Page</h1>
+                    <p>text here????</p>
+                </article>
+
+
+                <aside className="aside nbpSidebarNotebooks">
+                    <h1>Notebooks</h1>
+                    <p>My Notebook</p>
+                    <p>CSE 442</p>
+                </aside>
+                <aside className="aside nbpSidebarPages">
+                    <h1>Note Pages</h1>
+                    <p>Lecture 2</p>
+                    <p>Lecture 1</p>
+                    <p>Syllabus</p>
+                </aside>
+                <footer className="nbpFooter">Footer</footer>
+
 
             </div>
 
