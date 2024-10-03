@@ -83,9 +83,9 @@ export function Forgot_login(){
         handleShowEmail();
       }else{
 
-        var data = sendPasswordEmailFetch();
+        var data = sendPasswordEmailFetch().then( (data) => { var status = data.status; var message = data.message;
 
-        if (data.status == "success") {
+        if (status === "success") {
 
           ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your verification code.",
             showCloseButton: "false",
@@ -93,14 +93,14 @@ export function Forgot_login(){
           });
         
         }
-        else if (data.status === "failed"){
+        else if (status === "failed"){
           ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
         }
         else{
           ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
         }
-      }
-        
+      });
+    }
     }
 
     return(
