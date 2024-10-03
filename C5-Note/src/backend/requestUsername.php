@@ -32,7 +32,7 @@ if ($result && $output->num_rows == 1) {
     http_response_code(200);
     die(json_encode([
         "status" => "success",
-        "message" => "An email has been sent containing the email associated with " . $request_email . "."
+        "message" => "An email has been sent containing the username associated with " . $request_email . "."
     ]));
 }
 else {
