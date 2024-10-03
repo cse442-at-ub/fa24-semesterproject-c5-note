@@ -66,7 +66,10 @@ export function Home(){
           <div className='Login_Buttons'>
           <input required type="submit" className='login_button' onClick={login}></input>
           <Link to="/signUpPage"><button className="sign_up_button">Sign Up</button></Link> 
-          </div>    
+          </div>
+          <div className='Forgot_Button'>
+          <Link to="/signUpPage"><button className="forgot_login_button">Forgot Login</button></Link> 
+          </div>  
         </>
     )
 }

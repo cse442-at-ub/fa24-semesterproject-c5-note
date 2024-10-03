@@ -67,11 +67,30 @@ body{
     border: 0;
 }
 
+.forgot_login_button{
+    margin-top: 6vmin;
+    background-color: #F00A0A;
+    height: 5rem;
+    width: 20rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+}
+
 .container_text{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.Forgot_Button{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
 }
 
 .Login_Buttons{
