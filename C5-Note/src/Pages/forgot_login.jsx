@@ -25,6 +25,14 @@ export function Forgot_login(){
 
     const handleShowIncor = () => ghosta.fire({ headerTitle: 'ERROR',description:'There is no account with this email.', showCloseButton:true });
 
+    const sendUsernameEmail = () => {
+
+      if(document.getElementById("email").value == ''){
+        handleShowEmail();
+      }else{
+
+      }
+    }
 
     return(
         <>
@@ -34,11 +42,11 @@ export function Forgot_login(){
           <input required type="text" className='form_text' name='email' placeholder='email' id='email'></input>
           </div>
           <div className='Send_Info_Buttons'>
-          <Link to="/home"><button className="send_me_my_username" onClick={ handleShowEmail }>Send me my Username</button></Link> 
-          <Link to="/home"><button className="reset_my_password" onClick={ handleShowEmail }>Reset my Password</button></Link> 
+          <button className="send_me_my_username" onClick={ sendUsernameEmail }>Send me my Username</button>
+          <button className="reset_my_password" onClick={ handleShowEmail }>Reset my Password</button>
           </div>
           <div className='Back_Button'>
-          <Link to="/home"><button className="back_button">Back</button></Link> 
+          <Link to="/"><button className="back_button">Back</button></Link> 
           </div>  
         </>
     )
