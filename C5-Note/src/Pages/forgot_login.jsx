@@ -24,8 +24,7 @@ async function sendPasswordEmailFetch() {
   const response = await fetch("backend/resetPassword.php", {method: "POST", body:JSON.stringify(jsonData)});
 
   const data = await response.json();
-
-  console.log(data.status);
+  
   return data;
   
 }
