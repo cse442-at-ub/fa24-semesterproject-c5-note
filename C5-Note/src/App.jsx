@@ -6,6 +6,7 @@ import { Simple_notebook } from './Pages/simple_notebook';
 import { PageNotebooks } from './Pages/notebooks';
 import { SignUpPage } from './Pages/signUpPage';
 import { Forgot_login } from './Pages/forgot_login';
+import { Reset_Password } from './Pages/reset_password';
 
 
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
+        <Route path="/reset_password" element = { <Reset_Password/> }/>
       </Routes>
     </Router>
   )
