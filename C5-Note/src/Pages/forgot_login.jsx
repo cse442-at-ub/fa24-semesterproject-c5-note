@@ -12,8 +12,9 @@ async function sendUsernameEmailFetch() {
 
   const response = await fetch("backend/requestUsername.php", {method: "POST", body:JSON.stringify(jsonData)});
   const data = await response.json();
+
+  console.log(data.status);
   return data;
-  
 }
 
 async function sendPasswordEmailFetch() {
@@ -21,7 +22,10 @@ async function sendPasswordEmailFetch() {
   var jsonData = { "email": document.getElementById("email").value };
 
   const response = await fetch("backend/resetPassword.php", {method: "POST", body:JSON.stringify(jsonData)});
+
   const data = await response.json();
+
+  console.log(data.status);
   return data;
   
 }
@@ -49,23 +53,30 @@ export function Forgot_login(){
         handleShowEmail();
       }else{
 
-        var data = sendUsernameEmailFetch();
+        var status = "";
+        var message = "";
 
-        if (data.status == "success") {
+        sendUsernameEmailFetch().then( (data) => { status = data.status; message = data.message;
+        console.log(status);
+        console.log(message);
+
+        if (data.status === "success") {
 
           ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your username.", showCloseButton: "false",
             "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
           });
         
         }
-        else if (data.status == "failed"){
+        else if (data.status === "failed"){
           ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
         }
         else{
           ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
         }
-      }
+      });
     }
+    }
+    
 
     const sendResetPasswordEmail = () => {
 
@@ -75,7 +86,7 @@ export function Forgot_login(){
 
         var data = sendPasswordEmailFetch();
 
-        if (data.response == 200) {
+        if (data.status == "success") {
 
           ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your verification code.",
             showCloseButton: "false",
@@ -83,7 +94,7 @@ export function Forgot_login(){
           });
         
         }
-        else if (data.response == 400){
+        else if (data.status === "failed"){
           ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
         }
         else{
