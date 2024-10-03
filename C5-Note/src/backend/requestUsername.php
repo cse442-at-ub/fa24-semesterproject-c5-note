@@ -21,4 +21,18 @@ if ($result->num_rows == 1) {
     mail($request_email,
         "C5 Note Username Reminder",
         "The username associated with this email is " + $request_username ".");
+
+    http_response_code(200);
+    die(json_encode([
+        "status" => "success",
+        "message" => "An email has been sent containing the email associated with " + $request_email "."
+    ]));
+}
+else {
+
+    http_response_code(400);
+    die(json_encode([
+        "status" => "failed",
+        "message" => "There is no account associated with " + $request_email "."
+    ]));
 }
