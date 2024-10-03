@@ -85,7 +85,7 @@ export function Simple_notebook(){
   //useEffect will run when page first loads and in this case will fetch all notebooks for specific user
   useEffect(() => {
     const username = getCookie('username');
-    fetch('backend/notebookCreation.php', { //should be 'backend/notebookCreation.php'
+    fetch('backend/notebookFinder.php', { //should be 'backend/notebookCreation.php'
       method: "POST",
       headers: {
         "Content-type": "application/json; charset=UTF-8"

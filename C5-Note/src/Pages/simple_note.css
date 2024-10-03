@@ -128,3 +128,27 @@ max-width: 100%;
 .green{
     background-color: #157C00;
 }
+
+.modal-content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: auto;
+  }
+.checkbox-field {
+margin-top: 10px;
+}
+.color-options label {
+display: inline-block;
+margin-right: 10px;
+}
+.modal-actions {
+display: flex;
+justify-content: flex-end;
+margin-top: 20px;
+}
+.modal-close-button,
+.modal-submit-button {
+margin-left: 10px;
+}
