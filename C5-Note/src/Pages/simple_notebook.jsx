@@ -3,6 +3,7 @@ import { Link,useNavigate  } from "react-router-dom";
 import Profile from '../C5.png';
 import './simple_note.css';
 import './home.css';
+import { GhostaContainer, ghosta } from 'react-ghosta';
 
 
 
@@ -99,9 +100,96 @@ export function Simple_notebook(){
       .catch(error => console.error('Error fetching notebooks:', error));
   }, []);
 
+  //---
+  const createNotebookForm = () => {
+    let notebookData = {
+      title: '',
+      description: '',
+      isPrivate: true,
+      color: '#FFFFFF',
+    };
+
+    const handleInputChange = (e) => {
+      const { name, value, type, checked } = e.target;
+      notebookData = {
+        ...notebookData,
+        [name]: type === 'checkbox' ? checked : value,
+      };
+    };
+
+    const submitNotebook = () => {
+      const username = getCookie("username");
+
+      fetch("backend/notebookCreation.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          title: notebookData.title,
+          description: notebookData.description,
+          isPrivate: notebookData.isPrivate,
+          color: notebookData.color
+        })
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            ghosta.fire({ headerTitle: 'Success', description: 'Notebook created successfully!', showCloseButton: true });
+          } else {
+            ghosta.fire({ headerTitle: 'Error', description: 'Failed to create notebook', showCloseButton: true });
+          }
+        })
+        .catch((error) => {
+          ghosta.fire({ headerTitle: 'Error', description: 'Server error', showCloseButton: true });
+        });
+    };
+
+    ghosta.fire({
+      title: "Create New Notebook",
+      content: (
+        <div>
+          <label>
+            Title:
+            <input type="text" name="title" onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Description:
+            <input type="text" name="description" onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Private:
+            <input type="checkbox" name="isPrivate" onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Color:
+            <select name="color" onChange={handleInputChange}>
+              <option value="#0000FF">Blue</option>
+              <option value="#008000">Green</option>
+              <option value="#FF0000">Red</option>
+              <option value="#FFFF00">Yellow</option>
+              <option value="#FFFFFF">White</option>
+              <option value="#000000">Black</option>
+            </select>
+          </label>
+        </div>
+      ),
+      buttons: [
+        {
+          title: "Create",
+          variant: "primary",
+          onClick: submitNotebook,
+        }
+      ],
+    });
+  };
+
   return(
       <>
           <Top_bar_simple_notes/>
+          <GhostaContainer />
           <div className="mainBody">
             <div>
             <div className="notebooks_list spacing" >
@@ -134,7 +222,9 @@ export function Simple_notebook(){
                 <ul>
                 <li className="label options">Options</li>
                 <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li>
-                <li className="spacing"><Link to="/notebooks"><button className="green control_button_single">Create Notebook</button></Link></li>
+
+                <li className="spacing"><button className="green control_button_single" onClick={createNotebookForm}>Create Notebook</button></li>
+
                 <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
                 <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                 </ul>
