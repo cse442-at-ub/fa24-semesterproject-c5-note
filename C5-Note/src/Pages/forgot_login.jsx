@@ -51,14 +51,14 @@ export function Forgot_login(){
 
         var data = sendUsernameEmailFetch();
 
-        if (data.response == 200) {
+        if (data.status == "success") {
 
           ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your username.", showCloseButton: "false",
             "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
           });
         
         }
-        else if (data.response == 400){
+        else if (data.status == "failed"){
           ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
         }
         else{
@@ -79,7 +79,7 @@ export function Forgot_login(){
 
           ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your verification code.",
             showCloseButton: "false",
-            "buttons": [{title:"Go to reset password page", onClick:() => {navigate("/reset_password");}}]
+            "buttons": [{title:"Go to reset page", onClick:() => {navigate("/reset_password");}}]
           });
         
         }
