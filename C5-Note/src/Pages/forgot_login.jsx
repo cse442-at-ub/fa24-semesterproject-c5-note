@@ -6,6 +6,26 @@ import { GhostaContainer, ghosta } from 'react-ghosta';
 import 'react-ghosta/dist/ghosta.css';
 
 
+async function sendUsernameEmailFetch() {
+
+  var jsonData = { "email": document.getElementById("email").value };
+
+  const response = await fetch("backend/requestUsername.php", {method: "POST", body:JSON.stringify(jsonData)});
+  const data = await response.json();
+  return data;
+  
+}
+
+async function sendPasswordEmailFetch() {
+
+  var jsonData = { "email": document.getElementById("email").value };
+
+  const response = await fetch("backend/resetPassword.php", {method: "POST", body:JSON.stringify(jsonData)});
+  const data = await response.json();
+  return data;
+  
+}
+
 export function Top_bar(){
   return(
     <div className='Top_bar'>
@@ -23,20 +43,27 @@ export function Forgot_login(){
 
     const handleShowEmail = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter an email', showCloseButton:true });
 
-    const handleShowIncor = () => ghosta.fire({ headerTitle: 'ERROR',description:'There is no account with this email.', showCloseButton:true });
-
     const sendUsernameEmail = () => {
 
       if(document.getElementById("email").value == ''){
         handleShowEmail();
       }else{
 
+        var data = sendUsernameEmailFetch();
 
+        if (data.response == 200) {
 
-        ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your username.", showCloseButton: "false",
-          "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
-        });
+          ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your username.", showCloseButton: "false",
+            "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
+          });
         
+        }
+        else if (data.response == 400){
+          ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
+        }
+        else{
+          ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
+        }
       }
     }
 
@@ -46,13 +73,24 @@ export function Forgot_login(){
         handleShowEmail();
       }else{
 
-        
+        var data = sendPasswordEmailFetch();
 
-        ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your verification code.", showCloseButton: "false",
-          "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
-        });
+        if (data.response == 200) {
+
+          ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your verification code.",
+            showCloseButton: "false",
+            "buttons": [{title:"Go to reset password page", onClick:() => {navigate("/reset_password");}}]
+          });
         
+        }
+        else if (data.response == 400){
+          ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
+        }
+        else{
+          ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
+        }
       }
+        
     }
 
     return(
