@@ -12,20 +12,27 @@ $request_email = $json->email;
 
 $connection = new mysqli("localhost:3306", $username, $password, $db_name);
 
-$result = $connection->execute_query("SELECT * FROM users WHERE email = ?", $request_email);
+$statement = $connection->prepare("SELECT * FROM users WHERE email = ?");
 
-if ($result->num_rows == 1) {
-    $record = $result->fetch_assoc();
+$statement->bind_param("s", $request_email);
+
+$result = $statement->execute();
+if($result) {
+        $output = $statement->get_result();
+}
+
+if ($result && $output->num_rows == 1) {
+    $record = $output->fetch_assoc();
     $request_username = $record["username"];
 
     mail($request_email,
         "C5 Note Username Reminder",
-        "The username associated with this email is " + $request_username ".");
+        "The username associated with this email is " . $request_username . ".");
 
     http_response_code(200);
     die(json_encode([
         "status" => "success",
-        "message" => "An email has been sent containing the email associated with " + $request_email "."
+        "message" => "An email has been sent containing the email associated with " . $request_email . "."
     ]));
 }
 else {
@@ -33,6 +40,6 @@ else {
     http_response_code(400);
     die(json_encode([
         "status" => "failed",
-        "message" => "There is no account associated with " + $request_email "."
+        "message" => "There is no account associated with " . $request_email . "."
     ]));
 }
