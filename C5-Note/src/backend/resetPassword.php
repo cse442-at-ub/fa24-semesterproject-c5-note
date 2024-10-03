@@ -31,7 +31,7 @@ if ($result && $output->num_rows == 1) {
     for($count = 0; $count < 6; $count++) {
 
             $value = random_int(0,9);
-            $string = $string . $value;
+            $code = $code . $value;
     }
 
     $hashed_code = hash("sha256", $code);
@@ -44,9 +44,9 @@ if ($result && $output->num_rows == 1) {
 
     $statement->execute();
 
-    mail($request_username,
-        "C5-Note Password Reset".
-        "The verification code to reset your password is " . $code . ".");
+    mail($request_email,
+        "C5-Note Password Reset",
+        "The verification code to reset your password is " . $code . ".\n It expires in one minute.");
 
     http_response_code(200);
     die(json_encode([
