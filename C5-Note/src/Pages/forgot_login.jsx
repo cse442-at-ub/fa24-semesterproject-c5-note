@@ -21,54 +21,24 @@ export function Top_bar(){
 export function Forgot_login(){
     const navigate = useNavigate();
 
-    const handleShowUsername = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a username', showCloseButton:true });
+    const handleShowEmail = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter an email', showCloseButton:true });
 
-    const handleShowPassword = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a password', showCloseButton:true});
+    const handleShowIncor = () => ghosta.fire({ headerTitle: 'ERROR',description:'There is no account with this email.', showCloseButton:true });
 
-    const handleShowIncor = () => ghosta.fire({ headerTitle: 'ERROR',description:'Username or password incorrect', showCloseButton:true });
-
-    const login = ()=>{
-      if(document.getElementById("username").value == ''){
-        handleShowUsername();
-      }else if(document.getElementById("password").value == ''){
-        handleShowPassword();
-      }else{
-      fetch("backend/login.php", {
-        method: "POST",
-        body: JSON.stringify({
-          username: document.getElementById("username").value,
-          password: document.getElementById("password").value,
-        }),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          if(json.status =='failed'){
-            handleShowIncor();
-          }else{
-            navigate('/note')
-          }
-        }
-        );
-    }
-    }
 
     return(
         <>
         <Top_bar/>
         <GhostaContainer />
           <div id="Login_Text_Inputs" className='container_text'>
-          <input required type="text" className='form_text' name='username' placeholder='username' id='username'></input>
-          <input required type="password" className='form_text' name='password' placeholder='password' id='password'></input>
+          <input required type="text" className='form_text' name='email' placeholder='email' id='email'></input>
           </div>
-          <div className='Login_Buttons'>
-          <input required type="submit" className='login_button' onClick={login}></input>
-          <Link to="/signUpPage"><button className="sign_up_button">Sign Up</button></Link> 
+          <div className='Send_Info_Buttons'>
+          <Link to="/home"><button className="send_me_my_username" onClick={ handleShowEmail }>Send me my Username</button></Link> 
+          <Link to="/home"><button className="reset_my_password" onClick={ handleShowEmail }>Reset my Password</button></Link> 
           </div>
-          <div className='Forgot_Button'>
-          <Link to="/forgot_login"><button className="forgot_login_button">Forgot Login</button></Link> 
+          <div className='Back_Button'>
+          <Link to="/home"><button className="back_button">Back</button></Link> 
           </div>  
         </>
     )
