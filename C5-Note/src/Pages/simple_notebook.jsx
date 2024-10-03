@@ -43,6 +43,8 @@ export function Simple_notebook(){
   const navigate = useNavigate();
   const [notebooks, setNotebooks] = useState([]);
 
+  const [color, setColor] = useState('#000000');
+
   const clear_cookies = ()=>{
     cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
       console.log('Cookie deleted:', cookie);
@@ -102,23 +104,35 @@ export function Simple_notebook(){
 
   //---
   const createNotebookForm = () => {
-    let notebookData = {
+    console.log("createNotebookForm");
+
+    let notebookData = {  //bug here, for some reason no matter the checked box its always true for first click
       title: '',
       description: '',
       isPrivate: true,
-      color: '#FFFFFF',
+      color: '#E6E6FA',
     };
 
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
+      
+      if(name=='color'){
+         setColor(value);
+      }
+
       notebookData = {
         ...notebookData,
         [name]: type === 'checkbox' ? checked : value,
       };
+      console.log('Updated notebookData:', notebookData);
     };
 
-    const submitNotebook = () => {
+    const submitNotebook = (event) => {
+      event.preventDefault();
+
       const username = getCookie("username");
+
+      console.log("submitNotebook");
 
       fetch("backend/notebookCreation.php", {
         method: "POST",
@@ -144,13 +158,28 @@ export function Simple_notebook(){
         });
     };
 
+    // Ensure the event is only attached once
+    const bindCreateButton = () => {
+      const createButton = document.querySelector('.ghosta__button'); // Assuming this is the primary button class used in ghosta for the "Create" button
+      if (createButton) {
+
+        // Remove any existing event listeners first
+        createButton.removeEventListener('click', submitNotebook);
+        
+        // Attach the click event
+        createButton.addEventListener('click', submitNotebook);
+      }else {
+        console.log("Create button not found");
+      }
+    };
+
     ghosta.fire({
       title: "Create New Notebook",
       content: (
         <div>
           <label>
             Title:
-            <input type="text" name="title" onChange={handleInputChange} />
+            <input type="text" name="title" onChange={handleInputChange} autoFocus/>
           </label>
           <br />
           <label>
@@ -159,31 +188,33 @@ export function Simple_notebook(){
           </label>
           <br />
           <label>
-            Private:
+            Public:
             <input type="checkbox" name="isPrivate" onChange={handleInputChange} />
           </label>
           <br />
-          <label>
-            Color:
-            <select name="color" onChange={handleInputChange}>
-              <option value="#0000FF">Blue</option>
-              <option value="#008000">Green</option>
-              <option value="#FF0000">Red</option>
-              <option value="#FFFF00">Yellow</option>
-              <option value="#FFFFFF">White</option>
-              <option value="#000000">Black</option>
-            </select>
-          </label>
+
+          <div>
+            <label htmlFor="color">Color:</label>         
+            <input type="color" id="color" name="color" value={color} onChange={handleInputChange}/>
+          </div>
+
         </div>
       ),
       buttons: [
         {
           title: "Create",
           variant: "primary",
-          onClick: submitNotebook,
+          onClick: () => {},
         }
       ],
+      showCloseButton: true, // Add a close button for focusability
     });
+
+    
+    // Bind the event listener after ghosta finishes rendering
+    setTimeout(() => {
+      bindCreateButton();
+    }, 100);  // Small delay to ensure the button is rendered
   };
 
   return(
@@ -195,8 +226,6 @@ export function Simple_notebook(){
             <div className="notebooks_list spacing" >
               <ul>
                 <li className="label">Notebooks</li>
-
-                {console.log(notebooks)}
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
