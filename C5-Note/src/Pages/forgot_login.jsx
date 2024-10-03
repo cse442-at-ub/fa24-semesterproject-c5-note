@@ -1,6 +1,6 @@
 import logo from '../C5.png';
 import '../App.css';
-import './home.css';
+import './forgot_login.css';
 import { Link,useNavigate  } from "react-router-dom";
 import { GhostaContainer, ghosta } from 'react-ghosta';
 import 'react-ghosta/dist/ghosta.css';
@@ -18,7 +18,7 @@ export function Top_bar(){
 
 
 
-export function Home(){
+export function Forgot_login(){
     const navigate = useNavigate();
 
     const handleShowUsername = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a username', showCloseButton:true });

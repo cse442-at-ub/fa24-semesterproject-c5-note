@@ -5,6 +5,7 @@ import { Page1 } from './Pages/page1';
 import { Simple_notebook } from './Pages/simple_notebook';
 import { PageNotebooks } from './Pages/notebooks';
 import { SignUpPage } from './Pages/signUpPage';
+import { Forgot_login } from './Pages/forgot_login';
 
 
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/note" element={ <Simple_notebook/> }/>
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
+        <Route path="/forgot_login" element = { <Forgot_login/> }/>
       </Routes>
     </Router>
   )
