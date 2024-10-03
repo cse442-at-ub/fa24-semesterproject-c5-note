@@ -31,6 +31,27 @@ export function Forgot_login(){
         handleShowEmail();
       }else{
 
+
+
+        ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your username.", showCloseButton: "false",
+          "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
+        });
+        
+      }
+    }
+
+    const sendResetPasswordEmail = () => {
+
+      if(document.getElementById("email").value == ''){
+        handleShowEmail();
+      }else{
+
+        
+
+        ghosta.fire({ headerTitle: "Email Sent", description:"Check your inbox at " + document.getElementById("email").value + " for an email with your verification code.", showCloseButton: "false",
+          "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
+        });
+        
       }
     }
 
@@ -43,7 +64,7 @@ export function Forgot_login(){
           </div>
           <div className='Send_Info_Buttons'>
           <button className="send_me_my_username" onClick={ sendUsernameEmail }>Send me my Username</button>
-          <button className="reset_my_password" onClick={ handleShowEmail }>Reset my Password</button>
+          <button className="reset_my_password" onClick={ sendResetPasswordEmail }>Reset my Password</button>
           </div>
           <div className='Back_Button'>
           <Link to="/"><button className="back_button">Back</button></Link> 
