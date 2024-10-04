@@ -9,6 +9,10 @@ import { Forgot_login } from './Pages/forgot_login';
 import { Reset_Password } from './Pages/reset_password';
 
 
+// Test Pages
+import { TestPageWrite } from './Pages/test/testpagewrite';
+
+
 
 function App() {
 
@@ -22,6 +26,8 @@ function App() {
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
         <Route path="/reset_password" element = { <Reset_Password/> }/>
+        {/* Test Pages */}
+        <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
       </Routes>
     </Router>
   )
