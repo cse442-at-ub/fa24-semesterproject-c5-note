@@ -19,6 +19,9 @@ export function Top_bar(){
 
 
 export function Reset_Password(){
+
+    const validPassword = new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`! @#$%^&*()\-_+={}\[\]|\;:"<>,.\/?]).*.{8,}');
+
     const navigate = useNavigate();
 
     const handleShowEmail = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter an email address.', showCloseButton:true });
@@ -30,6 +33,10 @@ export function Reset_Password(){
     const handleShowRetype = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please retype your password', showCloseButton:true});
     
     const handleDifferentPassword = () => ghosta.fire({ headerTitle: 'ERROR',description:'Password and Retype password do not match.', showCloseButton:true});
+    
+    const handleInvalidPassword = () => ghosta.fire({ headerTitle: 'Invalid Password',
+        description:'Your password must be at least 8 characters long, and contain a number, lowercase letter, uppercase letter, and a special character.',
+        showCloseButton:true});
 
     const resetPassword = () => {
 
@@ -48,6 +55,11 @@ export function Reset_Password(){
         else if(document.getElementById("password").value != document.getElementById("retype").value) {
             handleDifferentPassword();
         }
+        else if(!validPassword.test(document.getElementById("password").value)) {
+            handleInvalidPassword();
+        }
+
+        
     }
 
 
