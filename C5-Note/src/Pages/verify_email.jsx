@@ -26,6 +26,9 @@ export function VerifyEmail(){
   const [rePassword, setRePassword] = useState("");
   const navigate = useNavigate();
 
+  const validPassword = new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()\\-_+={}\\[\\]|;:"<>,./?]).{8,}$');
+
+
 
   const handleRegisterClick = async () => {
 
@@ -51,7 +54,12 @@ export function VerifyEmail(){
       }else if(rePassword != password){
         const handleMatch = () => ghosta.fire({ headerTitle: 'ERROR',description:'Passwords must match!', showCloseButton:true });
         handleMatch();
-      }
+      }else if(!validPassword.test(password)) {
+        const handleInvalidPassword = () => ghosta.fire({ headerTitle: 'Invalid Password',
+          description:'Your password must be at least 8 characters long, and contain a number, lowercase letter, uppercase letter, and a special character.',
+          showCloseButton:true});
+        handleInvalidPassword();
+    }
       else{
       try {
           const response = fetch("backend/email_verification.php", {
@@ -62,8 +70,9 @@ export function VerifyEmail(){
               body: JSON.stringify(requestData),
           }).then((response) => response.json())
           .then((json) =>{if (json.status === '200') {
-              console.log(json)
-              navigate('/')
+              ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+                "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
+            });
               //alert("User registered successfully!");
           } else {
             const handleRsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });

@@ -4,6 +4,7 @@ import '../App.css';
 import './signUpPage.css';
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import { GhostaContainer, ghosta } from 'react-ghosta';
 
 
 export function Top_bar(){
@@ -34,6 +35,7 @@ export function SignUpPage() {
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
     
+    
 
     const handleRegisterClick = async () => {
         setErrorMessage("");
@@ -45,7 +47,8 @@ export function SignUpPage() {
             email: email
         };
         if(username == "" || email == ""){
-            setErrorMessage("Username or email can not be blank");
+            const empty_hand = () => ghosta.fire({ headerTitle: 'ERROR',description:'Username or email can not be blank', showCloseButton:true });
+            empty_hand();
         }else{
         try {
             const response = fetch("backend/emailSignup.php", {
@@ -57,14 +60,18 @@ export function SignUpPage() {
             }).then((response) => response.json())
             .then((json) =>{if (json.status === '200') {
                 console.log(json)
-                navigate('/verify')
+                ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+                    "buttons": [{title:"Go to verify account page", onClick:() => {navigate("/verify");}}]
+                });
                 //alert("User registered successfully!");
             } else {
-                setErrorMessage(json.message);
+                const handle_rsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
+                handle_rsp()
             }
         })}
         catch (error) {
-            setErrorMessage("Server error. Please try again later.");
+            const handleE1 = () => ghosta.fire({ headerTitle: 'ERROR',description:'Server error. Please try again later.', showCloseButton:true });
+            handleE1()
         }
 
     } 
@@ -73,6 +80,7 @@ export function SignUpPage() {
     return (
         <>
         <Top_bar />
+        <GhostaContainer />
         <div id="SignUp_Text_Inputs" className='container_text'>
             <input required type="text" className='form_text' placeholder='Username' 
                 value={username} 
