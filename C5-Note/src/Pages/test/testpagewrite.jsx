@@ -12,7 +12,30 @@ import logo from '../../C5.png';
  */
 
 
+export function DefaultPageLoad(){
+    fetch("../../backend/test/tpwloadpagejson.php", {
+        method: "POST",
+        headers: {
+            Accept: 'application.json',
+            "Content-Type": "application/json"
+            },
+        body: "page='1'"
+    })
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) =>{
+        const text1 = data[0].pagename;
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
+
+
+
 export function TestPageWrite(){
+
     return(
         <>
             {/* Formatting the Note-Taking App via Flexbox
@@ -39,7 +62,7 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1>Example Note Page</h1>
+                    <h1 className = "tpwPageTitle">Example Note Page</h1>
                     <textarea className = "tpwInputArea"></textarea>
                 </form>
 
@@ -59,7 +82,9 @@ export function TestPageWrite(){
 
 
             </div>
+            
 
         </>
     )
+
 }

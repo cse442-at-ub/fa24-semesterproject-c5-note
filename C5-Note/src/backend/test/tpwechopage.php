@@ -1,5 +1,11 @@
 <?php
 
+// TPW Echo Page
+
+// Echoes the contents of the the page with page_id = 1
+
+
+
 // Extract info from config.json so that we can access the database
 $config = file_get_contents("../../config.json");
 $data = json_decode($config);
