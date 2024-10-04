@@ -70,6 +70,6 @@ if ($result && $output->num_rows == 1) {
 
 http_response_code(400);
 die(json_encode([
-    "status" => "failure",
+    "status" => "failed",
     "message" => "Either the code was invalid or there is no account with this email."
 ]));
