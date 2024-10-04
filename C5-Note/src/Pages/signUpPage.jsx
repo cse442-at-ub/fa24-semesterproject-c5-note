@@ -30,8 +30,7 @@ async function hashPassword(password) {
 
 export function SignUpPage() {
     const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [reenterPassword, setReenterPassword] = useState("");
+    const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
@@ -39,21 +38,15 @@ export function SignUpPage() {
     const handleRegisterClick = async () => {
         setErrorMessage("");
 
-        // Check if passwords match
-        if (password !== reenterPassword) {
-            setErrorMessage("Passwords do not match!");
-            return;
-        }
 
         //const hashedPword = await hashPassword(password);
         const requestData = {
             username: username,
-            password: password,
-            email: username
+            email: email
         };
 
         try {
-            const response = fetch("backend/signup.php", {
+            const response = fetch("backend/email_signup.php", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,13 +76,9 @@ export function SignUpPage() {
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
             />
-            <input required type="password" className='form_text' placeholder='Password' 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <input required type="password" className='form_text' placeholder='Re-enter Password' 
-                value={reenterPassword}
-                onChange={(e) => setReenterPassword(e.target.value)}
+            <input required type="text" className='form_text' placeholder='Email' 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
         </div>
 
