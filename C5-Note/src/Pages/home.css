@@ -55,6 +55,19 @@ body{
     
 }
 
+.sign_up_reg_button{
+    margin-top: 6vmin;
+    background-color: #AE8A3D;
+    height: 5rem;
+    width: 20rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    
+}
+
 .login_button{
     margin-top: 6vmin;
     background-color: #AE8A3D;

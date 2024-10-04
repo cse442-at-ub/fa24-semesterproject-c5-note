@@ -64,8 +64,8 @@ export function Home(){
           <input required type="password" className='form_text' name='password' placeholder='password' id='password'></input>
           </div>
           <div className='Login_Buttons'>
-          <input required type="submit" className='login_button' onClick={login}></input>
-          <Link to="/signUpPage"><button className="sign_up_button">Sign Up</button></Link> 
+          <input required type="submit" className='sign_up_button' onClick={login}></input>
+          <Link to="/signUpPage"><button className="sign_up_reg_button">Sign Up</button></Link> 
           </div>
           <div className='Forgot_Button'>
           <Link to="/forgot_login"><button className="forgot_login_button">Forgot Login</button></Link> 
