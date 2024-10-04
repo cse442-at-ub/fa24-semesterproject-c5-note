@@ -7,7 +7,9 @@ import 'react-ghosta/dist/ghosta.css';
 
 async function resetPasswordFetch() {
 
-    var jsonData = { "email": document.getElementById("email").value, "code":document.getElementById("password").value };
+    var jsonData = { "email": document.getElementById("email").value,
+        "code":document.getElementById("code").value,
+        "password":document.getElementById("password").value };
 
     const response = await fetch("backend/updatePassword.php", {method: "POST", body:JSON.stringify(jsonData)});
     const data = await response.json();
