@@ -44,35 +44,37 @@ export function SignUpPage() {
             username: username,
             email: email
         };
-
+        if(username == "" || email == ""){
+            setErrorMessage("Username or Password can not be blank");
+        }else{
         try {
-            const response = fetch("backend/email_signup.php", {
+            const response = fetch("backend/emailSignup.php", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestData),
             }).then((response) => response.json())
-            .then((json) =>{if (json.status === '201') {
+            .then((json) =>{if (json.status === '200') {
                 console.log(json)
+                navigate('/verify')
                 //alert("User registered successfully!");
-                navigate('/');
             } else {
-                setErrorMessage("An error occurred during registration.");
+                setErrorMessage(json.message);
             }
         })}
         catch (error) {
             setErrorMessage("Server error. Please try again later.");
         }
 
-            
+    } 
     };
 
     return (
         <>
         <Top_bar />
         <div id="SignUp_Text_Inputs" className='container_text'>
-            <input required type="text" className='form_text' placeholder='Username (Email)' 
+            <input required type="text" className='form_text' placeholder='Username' 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
             />
