@@ -113,18 +113,35 @@ export function Simple_notebook(){
       color: '#E6E6FA',
     };
 
+    const colors = ['#E6E6FA', '#6f2da8', '#fc8eac', '#fbec5d', '#F28500', '#096C6C', '#41424C', '#4f86f7', '#82c87e', '#FF6347'];
+
+
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
-      
-      if(name=='color'){
-         setColor(value);
-      }
 
       notebookData = {
         ...notebookData,
         [name]: type === 'checkbox' ? checked : value,
       };
       console.log('Updated notebookData:', notebookData);
+    };
+
+    const handleColorClick = (colorValue) => {
+      notebookData = {
+        ...notebookData,
+        color: colorValue,
+      };
+      console.log('Color selected:', colorValue);
+  
+      // Update the border of selected color box
+      const colorBoxes = document.querySelectorAll('.notebook-color-box');
+      colorBoxes.forEach((box) => {
+        if (box.getAttribute('data-color') === colorValue) {
+          box.style.border = '2px solid black';
+        } else {
+          box.style.border = '1px solid gray';
+        }
+      });
     };
 
     const submitNotebook = (event) => {
@@ -134,28 +151,71 @@ export function Simple_notebook(){
 
       console.log("submitNotebook");
 
-      fetch("backend/notebookCreation.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          title: notebookData.title,
-          description: notebookData.description,
-          isPrivate: notebookData.isPrivate,
-          color: notebookData.color
-        })
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            ghosta.fire({ headerTitle: 'Success', description: 'Notebook created successfully!', showCloseButton: true });
-          } else {
-            ghosta.fire({ headerTitle: 'Error', description: 'Failed to create notebook', showCloseButton: true });
+      if(notebookData.title.length <= 1000 && notebookData.title.length > 0){ 
+        if(notebookData.description.length <= 1000 && notebookData.description.length > 0){ 
+          fetch("backend/notebookCreation.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username,
+              title: notebookData.title,
+              description: notebookData.description,
+              isPrivate: notebookData.isPrivate,
+              color: notebookData.color
+            })
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                ghosta.fire({ headerTitle: 'Success', description: 'Notebook created successfully!', showCloseButton: false });
+
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000); // 1000 milliseconds = 1 second
+
+              } else {
+                ghosta.fire({ headerTitle: 'Error', description: 'Failed to create notebook..', showCloseButton: true }); //shouldnt ever reach here
+              }
+            })
+            .catch((error) => {
+              ghosta.fire({ headerTitle: 'Error', description: 'Server error', showCloseButton: true });
+            });
+        }else{
+          if(notebookData.description.length > 1000){
+            const id = ghosta.fire({ headerTitle: 'Error', description: 'Description exceeds character limit', showCloseButton: true });
+
+            setTimeout(() => {
+              ghosta.close(id);
+              createNotebookForm();
+            }, 1500);
+          }else{
+            const id = ghosta.fire({ headerTitle: 'Error', description: "Description can't be empty", showCloseButton: true });
+
+            setTimeout(() => {
+              ghosta.close(id);
+              createNotebookForm();
+            }, 1500);
           }
-        })
-        .catch((error) => {
-          ghosta.fire({ headerTitle: 'Error', description: 'Server error', showCloseButton: true });
-        });
+        }
+      }else{
+        if(notebookData.title.length > 1000){
+          const id = ghosta.fire({ headerTitle: 'Error', description: 'Title exceeds character limit', showCloseButton: true });
+
+          setTimeout(() => {
+            ghosta.close(id);
+            createNotebookForm();
+          }, 1500);
+
+        }else{
+          const id = ghosta.fire({ headerTitle: 'Error', description: "Title can't be empty", showCloseButton: true });
+
+          setTimeout(() => {
+            ghosta.close(id);
+            createNotebookForm();
+          }, 1500);
+        }
+      }
+
     };
 
     // Ensure the event is only attached once
@@ -194,8 +254,24 @@ export function Simple_notebook(){
           <br />
 
           <div>
-            <label htmlFor="color">Color:</label>         
-            <input type="color" id="color" name="color" value={color} onChange={handleInputChange}/>
+            <label htmlFor="color">Color:</label>
+            <div className="color-selector">
+              {colors.map((hexColor) => (
+                <div
+                  key={hexColor}
+                  data-color={hexColor}
+                  onClick={() => handleColorClick(hexColor)}
+                  className="notebook-color-box"
+                  style={{
+                    backgroundColor: hexColor,
+                    border:
+                      notebookData.color === hexColor
+                        ? '2px solid black'
+                        : '1px solid gray',
+                  }}
+                ></div>
+              ))}
+            </div>
           </div>
 
         </div>
@@ -207,10 +283,9 @@ export function Simple_notebook(){
           onClick: () => {},
         }
       ],
-      showCloseButton: true, // Add a close button for focusability
+      showCloseButton: true,
     });
 
-    
     // Bind the event listener after ghosta finishes rendering
     setTimeout(() => {
       bindCreateButton();
@@ -230,7 +305,7 @@ export function Simple_notebook(){
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
                     <button className="notebook_buttons">
-                      <div className="notebook-color-box" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
+                      <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
     
                       <div className="notebook-content">
                         <div className="notebook-title">{notebook.title}</div>

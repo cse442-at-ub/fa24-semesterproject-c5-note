@@ -23,7 +23,7 @@ $isPrivate = $input['isPrivate'] ? 1 : 0;  //1 is true 0 is false
 $notebookColor = $input['color'];
 
 try {
-    $stmt = $connection->prepare("INSERT INTO notebooks (username, title, description, isPrivate, color) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $connection->prepare("INSERT INTO notebooks (username, title, description, isPrivate, color) VALUES (?, ?, ?, ?, ?)"); //prepared statements protect from SQL injection
     $stmt->bind_param("sssds", $loggedInUsername, $notebookTitle, $notebookDescription, $isPrivate, $notebookColor);
     $stmt->execute();
 

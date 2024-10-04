@@ -43,7 +43,13 @@ ul{
     align-content: center;
     padding-right: 2rem;
 }
-
+.color-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
 .notebook_buttons {
 display: flex;
 align-items: center;
@@ -57,14 +63,24 @@ border: 1px solid white;
 text-align: left;
 min-height: 5rem;
 }
-  
-.notebook-color-box {
+.notebook-color-box-pointer {
 width: 1.5rem;
 height: 1.5rem;
 margin-right: 1rem;
+margin-bottom: 1rem;
 display: inline-block;
 border-radius: 0.3rem;
 flex-shrink: 0;
+cursor: pointer;
+border: 1px solid gray;
+}
+.notebook-color-box {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    display: inline-block;
+    border-radius: 0.3rem;
+    flex-shrink: 0;
 }
 
 .notebook-content {
