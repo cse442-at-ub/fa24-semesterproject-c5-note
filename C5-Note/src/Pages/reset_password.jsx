@@ -5,6 +5,17 @@ import { Link,useNavigate  } from "react-router-dom";
 import { GhostaContainer, ghosta } from 'react-ghosta';
 import 'react-ghosta/dist/ghosta.css';
 
+async function resetPasswordFetch() {
+
+    var jsonData = { "email": document.getElementById("email").value, "code":document.getElementById("password").value };
+
+    const response = await fetch("backend/updatePassword.php", {method: "POST", body:JSON.stringify(jsonData)});
+    const data = await response.json();
+
+    console.log(data.status);
+    return data;
+}
+
 
 export function Top_bar(){
   return(
@@ -58,8 +69,32 @@ export function Reset_Password(){
         else if(!validPassword.test(document.getElementById("password").value)) {
             handleInvalidPassword();
         }
-
+        else{
+    
+            var status = "";
+            var message = "";
+    
+            resetPasswordFetch().then( (data) => { status = data.status; message = data.message;
+                console.log(status);
+                console.log(message);
         
+                if (data.status === "success") {
+        
+                ghosta.fire({ headerTitle: "Password Reset Successfully", description:"", showCloseButton: "false",
+                    "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
+                });
+                
+                }
+                else if (data.status === "failed"){
+                ghosta.fire({ headerTitle: "Error", description:"Invalid verification code or email"});
+                }
+                else{
+                ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
+                }
+            });
+        }
+
+
     }
 
 
