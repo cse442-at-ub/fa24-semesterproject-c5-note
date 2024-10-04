@@ -33,7 +33,8 @@ export function Top_bar(){
 
 export function Reset_Password(){
 
-    const validPassword = new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`! @#$%^&*()\-_+={}\[\]|\;:"<>,.\/?]).*.{8,}');
+    const validPassword = new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()\\-_+={}\\[\\]|;:"<>,./?]).{8,}$');
+
 
     const navigate = useNavigate();
 

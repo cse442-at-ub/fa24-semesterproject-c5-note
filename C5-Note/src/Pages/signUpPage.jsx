@@ -4,6 +4,7 @@ import '../App.css';
 import './signUpPage.css';
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import { GhostaContainer, ghosta } from 'react-ghosta';
 
 
 export function Top_bar(){
@@ -33,7 +34,8 @@ export function SignUpPage() {
     const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
-
+    
+    
 
     const handleRegisterClick = async () => {
         setErrorMessage("");
@@ -44,35 +46,43 @@ export function SignUpPage() {
             username: username,
             email: email
         };
-
+        if(username == "" || email == ""){
+            const empty_hand = () => ghosta.fire({ headerTitle: 'ERROR',description:'Username or email can not be blank', showCloseButton:true });
+            empty_hand();
+        }else{
         try {
-            const response = fetch("backend/email_signup.php", {
+            const response = fetch("backend/emailSignup.php", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestData),
             }).then((response) => response.json())
-            .then((json) =>{if (json.status === '201') {
+            .then((json) =>{if (json.status === '200') {
                 console.log(json)
+                ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+                    "buttons": [{title:"Go to verify account page", onClick:() => {navigate("/verify");}}]
+                });
                 //alert("User registered successfully!");
-                navigate('/');
             } else {
-                setErrorMessage("An error occurred during registration.");
+                const handle_rsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
+                handle_rsp()
             }
         })}
         catch (error) {
-            setErrorMessage("Server error. Please try again later.");
+            const handleE1 = () => ghosta.fire({ headerTitle: 'ERROR',description:'Server error. Please try again later.', showCloseButton:true });
+            handleE1()
         }
 
-            
+    } 
     };
 
     return (
         <>
         <Top_bar />
+        <GhostaContainer />
         <div id="SignUp_Text_Inputs" className='container_text'>
-            <input required type="text" className='form_text' placeholder='Username (Email)' 
+            <input required type="text" className='form_text' placeholder='Username' 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
             />
