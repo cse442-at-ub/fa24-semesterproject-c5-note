@@ -42,7 +42,7 @@ body{
     
 }
 
-.sign_up_button{
+.send_me_my_username{
     margin-top: 6vmin;
     background-color: #3DAE56;
     height: 5rem;
@@ -55,9 +55,9 @@ body{
     
 }
 
-.login_button{
+.reset_my_password{
     margin-top: 6vmin;
-    background-color: #AE8A3D;
+    background-color: #F00A0A;
     height: 5rem;
     width: 20rem;
     border-radius: 1em;
@@ -67,9 +67,9 @@ body{
     border: 0;
 }
 
-.forgot_login_button{
+.back_button{
     margin-top: 6vmin;
-    background-color: #F00A0A;
+    background-color: #AE8A3D;
     height: 5rem;
     width: 20rem;
     border-radius: 1em;
@@ -86,14 +86,14 @@ body{
     justify-content: center;
 }
 
-.Forgot_Button{
+.Back_Button{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     flex-wrap: wrap;
 }
 
-.Login_Buttons{
+.Send_Info_Buttons{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
