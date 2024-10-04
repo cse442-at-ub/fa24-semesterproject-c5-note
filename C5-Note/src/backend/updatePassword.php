@@ -49,7 +49,7 @@ if ($result && $output->num_rows == 1) {
         $start_time = $record["time"];
 
 
-        if(!((time() - $start_time) > 60)) {
+        if((time() - $start_time) < 60) {
             
             $connection = new mysqli("localhost:3306", $username, $password, $db_name);
 
