@@ -66,6 +66,7 @@ if ($result && $output->num_rows == 1) {
             ]));
     }
 }
+}
 
 http_response_code(400);
 die(json_encode([
