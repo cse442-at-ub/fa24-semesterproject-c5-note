@@ -12,25 +12,25 @@ import logo from '../../C5.png';
  */
 
 
-export function DefaultPageLoad(){
-    fetch("../../backend/test/tpwloadpagejson.php", {
-        method: "POST",
-        headers: {
-            Accept: 'application.json',
-            "Content-Type": "application/json"
-            },
-        body: "page='1'"
-    })
-    .then((response) => {
-        return response.json();
-    })
-    .then((data) =>{
-        const text1 = data[0].pagename;
-    })
-    .catch(error => {
-        console.error(error);
-    });
-}
+// export function DefaultPageLoad(){
+//     fetch("../../backend/test/tpwloadpagejson.php", {
+//         method: "POST",
+//         headers: {
+//             Accept: 'application.json',
+//             "Content-Type": "application/json"
+//             },
+//         body: "page='1'"
+//     })
+//     .then((response) => {
+//         return response.json();
+//     })
+//     .then((data) =>{
+//         const text1 = data[0].pagename;
+//     })
+//     .catch(error => {
+//         console.error(error);
+//     });
+// }
 
 
 
