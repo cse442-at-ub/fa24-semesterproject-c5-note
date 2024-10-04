@@ -43,14 +43,68 @@ ul{
     align-content: center;
     padding-right: 2rem;
 }
-
-.notebook_buttons{
-    background-color: #848484;
-    width: 30vmax;
-    height: 5vmax;
-    font-size: 1.5rem;
-    font-family: monofonto;
+.color-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+.notebook_buttons {
+display: flex;
+align-items: center;
+justify-content: flex-start;
+background-color: #848484;
+width: 30vmax;
+padding: 1rem;
+font-size: 1.5rem;
+font-family: monofonto;
+border: 1px solid white;
+text-align: left;
+min-height: 5rem;
 }
+.notebook-color-box-pointer {
+width: 1.5rem;
+height: 1.5rem;
+margin-right: 1rem;
+margin-bottom: 1rem;
+display: inline-block;
+border-radius: 0.3rem;
+flex-shrink: 0;
+cursor: pointer;
+border: 1px solid gray;
+}
+.notebook-color-box {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    display: inline-block;
+    border-radius: 0.3rem;
+    flex-shrink: 0;
+}
+
+.notebook-content {
+display: inline-block;
+max-width: calc(100% - 2rem); 
+vertical-align: middle;
+}
+
+.notebook-title {
+font-weight: bold;
+font-size: 1.5rem;
+color: white;
+margin-bottom: 0.5rem;
+}
+
+.notebook-description {
+font-size: 1rem;
+color: #ccc;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+max-width: 100%;
+}
+
 .label{
     text-align: center;
     font-size: 3rem;
@@ -89,4 +143,28 @@ ul{
 
 .green{
     background-color: #157C00;
+}
+
+.modal-content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: auto;
+  }
+.checkbox-field {
+margin-top: 10px;
+}
+.color-options label {
+display: inline-block;
+margin-right: 10px;
+}
+.modal-actions {
+display: flex;
+justify-content: flex-end;
+margin-top: 20px;
+}
+.modal-close-button,
+.modal-submit-button {
+margin-left: 10px;
 }

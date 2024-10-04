@@ -15,6 +15,6 @@ To run this application use the following commands:
 
 cd C5-Note
 npm install
-npm run dev 
+npm run dev
 
 This will start and make the pre generated vite application viewable in the browser.

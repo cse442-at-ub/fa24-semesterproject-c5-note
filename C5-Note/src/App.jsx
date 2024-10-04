@@ -6,6 +6,10 @@ import { Simple_notebook } from './Pages/simple_notebook';
 import { PageNotebooks } from './Pages/notebooks';
 import { SignUpPage } from './Pages/signUpPage';
 import { VerifyEmail } from './Pages/verify_email';
+import { Forgot_login } from './Pages/forgot_login';
+import { Reset_Password } from './Pages/reset_password';
+// Test Pages
+import { TestPageWrite } from './Pages/test/testpagewrite';
 
 
 
@@ -20,6 +24,10 @@ function App() {
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
         <Route path="/verify" element = { <VerifyEmail/> }/>
+        <Route path="/forgot_login" element = { <Forgot_login/> }/>
+        <Route path="/reset_password" element = { <Reset_Password/> }/>
+        {/* Test Pages */}
+        <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
       </Routes>
     </Router>
   )
