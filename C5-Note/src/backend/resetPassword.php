@@ -38,9 +38,9 @@ if ($result && $output->num_rows == 1) {
 
     $connection = new mysqli("localhost:3306", $username, $password, $db_name);
 
-    $statement = $connection->prepare("INSERT INTO password_codes (username, code) VALUES ( ? , ? )");
+    $statement = $connection->prepare("INSERT INTO password_codes (username, code, time) VALUES ( ? , ? , ?)");
 
-    $statement->bind_param("ss", $request_username, $hashed_code);
+    $statement->bind_param("ssi", $request_username, $hashed_code, time());
 
     $statement->execute();
 
