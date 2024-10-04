@@ -50,19 +50,21 @@ if ($result && $output->num_rows == 1) {
 
 
         if((time() - $start_time) < 60) {
+
+		$hashed_password = password_hash($json->password, PASSWORD_DEFAULT);
             
             $connection = new mysqli("localhost:3306", $username, $password, $db_name);
 
             $statement = $connection->prepare("UPDATE users SET password = ? WHERE username = ?");
 
-            $statement->bind_param("ss", password_hash($password, PASSWORD_DEFAULT), $request_username);
+            $statement->bind_param("ss", $hashed_password, $request_username);
 
             $result = $statement->execute();
             
             http_response_code(200);
             die(json_encode([
                 "status" => "success",
-                "message" => "Password Updated."
+                "message" => "An email has been sent containing a verification code."
             ]));
     }
 }
