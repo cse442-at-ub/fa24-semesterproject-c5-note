@@ -33,7 +33,7 @@ export function SignUpPage() {
     const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
-
+    
 
     const handleRegisterClick = async () => {
         setErrorMessage("");
@@ -45,7 +45,7 @@ export function SignUpPage() {
             email: email
         };
         if(username == "" || email == ""){
-            setErrorMessage("Username or Password can not be blank");
+            setErrorMessage("Username or email can not be blank");
         }else{
         try {
             const response = fetch("backend/emailSignup.php", {

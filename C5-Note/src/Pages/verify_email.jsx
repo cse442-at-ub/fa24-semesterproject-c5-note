@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import logo from '../C5.png';
 import './verify_email.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
@@ -18,23 +19,90 @@ export function Top_bar(){
 export function VerifyEmail(){
   const handleCheckEmail = () => ghosta.fire({ headerTitle: 'Notice',description:'Please check your email for a verification code', showCloseButton:true });
 
-  useEffect(() => {
-    handleCheckEmail();
-  }, []);
+
+  const [code, setCode] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
+  const navigate = useNavigate();
+
+
+  const handleRegisterClick = async () => {
+
+
+      //const hashedPword = await hashPassword(password);
+      const requestData = {
+          password: password,
+          email: email,
+          code: code,
+      };
+      if(email == ""){
+        const handleEmailEmpty = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter an email', showCloseButton:true });
+        handleEmailEmpty();
+      }else if (password == ""){
+        const handlePassEmpty = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter a password', showCloseButton:true });
+        handlePassEmpty();
+      }else if(rePassword == ""){
+        const handleRePassEmpty = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please reenter the password', showCloseButton:true });
+        handleRePassEmpty();
+      }else if(code == ""){
+        const handleVeriEmpty = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter the verification code', showCloseButton:true });
+        handleVeriEmpty();
+      }else if(rePassword != password){
+        const handleMatch = () => ghosta.fire({ headerTitle: 'ERROR',description:'Passwords must match!', showCloseButton:true });
+        handleMatch();
+      }
+      else{
+      try {
+          const response = fetch("backend/email_verification.php", {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(requestData),
+          }).then((response) => response.json())
+          .then((json) =>{if (json.status === '200') {
+              console.log(json)
+              navigate('/')
+              //alert("User registered successfully!");
+          } else {
+            const handleRsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
+            handleRsp();
+          }
+      })}
+      catch (error) {
+        const handleServerError = () => ghosta.fire({ headerTitle: 'ERROR',description:'Server Error! Try Again Later', showCloseButton:true });
+        handleServerError();
+      }
+
+  } 
+  };
+
     return(
         <>
             <Top_bar/>
             <GhostaContainer />
             <div className="container_text">
                 <br></br>
-            <input type="text" placeholder="EMAIL" className="form_text"></input>
-            <input type="text" placeholder="Code" className="form_text"></input>
-            <input type="text" placeholder="Password" className="form_text"></input>
-            <input type="text" placeholder="Re-Password" className="form_text"></input>
-            <Link to="/"><button className="login_button">Verify Account</button></Link>
-            </div>
-            <div onLoad={handleCheckEmail()}>
-
+            <input required type="text" className='form_text' placeholder='Email' 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            />
+            <input required type="text" className='form_text' placeholder='CODE' 
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+            />
+            <input required type="text" className='form_text' placeholder='Password' 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
+            <input required type="text" className='form_text' placeholder='Re-Password' 
+                value={rePassword}
+                onChange={(e) => setRePassword(e.target.value)}
+            />
+            <button type="button" className='login_button' onClick={handleRegisterClick}>
+                Create Account
+            </button>
             </div>
         </>
     )
