@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import './testpagewrite.css';                        // Import CSS tied to this page
 import logo from '../../C5.png';
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 /***************************************
  * testpagewrite.jsx
@@ -40,33 +40,32 @@ const testpage = {
 };
 
 
+
 export function TestPageWrite(){
 
-
-
-    // Grab page via php
-    const testpagephp =()=> fetch("backend/test/tpwloadpagejson.php", {
-        method: "POST",
-        headers: {
-            Accept: 'application.json',
-            "Content-Type": "application/json"
-            },
-        body: "page='1'"
-    })
-    .then((response) => {
-        console.log(response);
-        return response.json();
-    })
-    .catch(error => {
-        console.error(error);
-    });
-
-
+    const [data,setData] = useState([]);
 
     // Runs on page load
     useEffect(() => {
 
-    }
+        fetch("backend/test/tpwloadpagejson.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application.json',
+                "Content-Type": "application/json"
+                },
+            body: "page='1'"
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then(data => setData(data))
+        .catch(error => {
+            console.error(error);
+        });
+
+    },[]);
 
 
 
@@ -98,7 +97,7 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">{testpagephp.pagename}</h1>
+                    <h1 className = "tpwPageTitle">{mypage.pagename}</h1>
                     <textarea className = "tpwInputArea">{testpage.pagetext}</textarea>
                 </form>
 
