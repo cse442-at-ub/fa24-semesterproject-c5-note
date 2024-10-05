@@ -32,6 +32,12 @@ import logo from '../../C5.png';
 //     });
 // }
 
+// Create a test page as a JSON object
+const testpage = {
+    pagename:   'My Test Page',
+    pagetext:   'Text in a text page that was not fetched from any database.',
+};
+
 
 
 export function TestPageWrite(){
@@ -62,8 +68,8 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">Example Note Page</h1>
-                    <textarea className = "tpwInputArea"></textarea>
+                    <h1 className = "tpwPageTitle">{testpage.pagename}</h1>
+                    <textarea className = "tpwInputArea">{testpage.pagetext}</textarea>
                 </form>
 
 
