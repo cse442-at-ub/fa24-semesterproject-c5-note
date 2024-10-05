@@ -97,7 +97,7 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">{mypage.pagename}</h1>
+                    <h1 className = "tpwPageTitle">{testpage.pagename}</h1>
                     <textarea className = "tpwInputArea">{testpage.pagetext}</textarea>
                 </form>
 
