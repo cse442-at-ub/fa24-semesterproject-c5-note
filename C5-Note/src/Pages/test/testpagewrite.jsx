@@ -38,7 +38,20 @@ const testpage = {
     pagetext:   'Text in a text page that was not fetched from any database.',
 };
 
-
+const testpagephp = fetch("backend/test/tpwloadpagejson.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application.json',
+                "Content-Type": "application/json"
+                },
+            body: "page='1'"
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
 export function TestPageWrite(){
 
@@ -68,8 +81,8 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">{testpage.pagename}</h1>
-                    <textarea className = "tpwInputArea">{testpage.pagetext}</textarea>
+                    <h1 className = "tpwPageTitle">{testpagephp.pagename}</h1>
+                    <textarea className = "tpwInputArea">{testpagephp.pagetext}</textarea>
                 </form>
 
 
