@@ -29,17 +29,23 @@ async function defaultPageFetch() {
         body: "page='1'"
     })
 
-    // Convert
-    mypage = await response.json();
+    // Convert to JavaScript object
+    const fetchedPage = await response.json();
 
-    // Test
-    console.log("Loaded page:");
-    console.log(mypage);
+    console.log("Function Running Output:")
+    console.log(fetchedPage[0].pagename);
+    console.log(fetchedPage[0].pagetext);
 
+    // Return the page
+    // PHP file returns an array with a single element - grab it
+    return fetchedPage[0];
 }
 
 // Call the function that was just declared
-defaultPageFetch();
+mypage = defaultPageFetch();
+
+console.log("Obtained page data:");
+console.log(mypage);
 
 
 // Create a test page as a JSON object
@@ -78,8 +84,8 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">{testpage.pagename}</h1>
-                    <textarea className = "tpwInputArea">{testpage.pagetext}</textarea>
+                    <h1 className = "tpwPageTitle">{mypage.pagename}</h1>
+                    <textarea className = "tpwInputArea">{mypage.pagetext}</textarea>
                 </form>
 
 
