@@ -49,7 +49,7 @@ export function TestPageWrite(){
         console.log(data.pagetext);
 
         // Update page title and page content
-        document.getElementById('tpwPageTitle').value = data.pagename;
+        document.getElementById('loadPageTitle').value = data.pagename;
     })
 
 
@@ -79,8 +79,8 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">Loading. . .</h1>
-                    <textarea className = "tpwInputArea">Loading. . .</textarea>
+                    <h1 className = "tpwPageTitle" id = "loadPageTitle">Loading. . .</h1>
+                    <textarea className = "tpwInputArea" id ="loadPageText">Loading. . .</textarea>
                 </form>
 
 
