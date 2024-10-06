@@ -58,6 +58,18 @@ const testpage = {
 
 export function TestPageWrite(){
 
+    var defaultPage;
+
+    defaultPageFetch()
+    .then((thispage) => {
+        console.log("THIS");
+        console.log(thispage);
+        defaultPage = thispage;
+    });
+
+    console.log("Maybe this works?");
+    console.log(defaultPage);
+
     return(
         <>
             {/* Formatting the Note-Taking App via Flexbox
