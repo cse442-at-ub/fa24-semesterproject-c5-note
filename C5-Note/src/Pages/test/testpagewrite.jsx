@@ -12,6 +12,35 @@ import { useState, useEffect } from "react";
  * 
  */
 
+// Store the default page as a var
+var mypage;
+
+
+// Get the default page from PHP
+async function defaultPageFetch() {
+
+    // Fetch the page
+    const response = await fetch("backend/test/tpwloadpagejson.php", {
+        method: "POST",
+        headers: {
+            Accept: 'application.json',
+            "Content-Type": "application/json"
+        },
+        body: "page='1'"
+    })
+
+    // Convert
+    mypage = await response.json();
+
+    // Test
+    console.log("Loaded page:");
+    console.log(mypage);
+
+}
+
+// Call the function that was just declared
+defaultPageFetch();
+
 
 // export function DefaultPageLoad(){
 //     fetch("../../backend/test/tpwloadpagejson.php", {
