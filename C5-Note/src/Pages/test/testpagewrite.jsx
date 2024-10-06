@@ -42,26 +42,6 @@ async function defaultPageFetch() {
 defaultPageFetch();
 
 
-// export function DefaultPageLoad(){
-//     fetch("../../backend/test/tpwloadpagejson.php", {
-//         method: "POST",
-//         headers: {
-//             Accept: 'application.json',
-//             "Content-Type": "application/json"
-//             },
-//         body: "page='1'"
-//     })
-//     .then((response) => {
-//         return response.json();
-//     })
-//     .then((data) =>{
-//         const text1 = data[0].pagename;
-//     })
-//     .catch(error => {
-//         console.error(error);
-//     });
-// }
-
 // Create a test page as a JSON object
 const testpage = {
     pagename:   'My Test Page',
@@ -71,34 +51,6 @@ const testpage = {
 
 
 export function TestPageWrite(){
-
-    const [data,setData] = useState([]);
-
-    // Runs on page load
-    useEffect(() => {
-
-        fetch("backend/test/tpwloadpagejson.php", {
-            method: "POST",
-            headers: {
-                Accept: 'application.json',
-                "Content-Type": "application/json"
-                },
-            body: "page='1'"
-        })
-        .then((response) => {
-            console.log(response);
-            return response.json();
-        })
-        .then(data => setData(data))
-        .catch(error => {
-            console.error(error);
-        });
-
-    },[]);
-
-
-
-
 
     return(
         <>
