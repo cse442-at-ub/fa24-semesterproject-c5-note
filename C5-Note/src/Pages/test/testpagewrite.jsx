@@ -12,10 +12,6 @@ import { useState, useEffect } from "react";
  * 
  */
 
-// Store the default page as a var
-var mypage;
-
-
 // Get the default page from PHP
 async function defaultPageFetch() {
 
@@ -32,20 +28,10 @@ async function defaultPageFetch() {
     // Convert to JavaScript object
     const fetchedPage = await response.json();
 
-    console.log("Function Running Output:")
-    console.log(fetchedPage[0].pagename);
-    console.log(fetchedPage[0].pagetext);
-
     // Return the page
     // PHP file returns an array with a single element - grab it
     return fetchedPage[0];
 }
-
-// Call the function that was just declared
-mypage = defaultPageFetch();
-
-console.log("Obtained page data:");
-console.log(mypage);
 
 
 // Create a test page as a JSON object
@@ -58,17 +44,14 @@ const testpage = {
 
 export function TestPageWrite(){
 
-    var defaultPage;
+    defaultPageFetch().then((data) =>{
+        console.log(data.pagename);
+        console.log(data.pagetext);
 
-    defaultPageFetch()
-    .then((thispage) => {
-        console.log("THIS");
-        console.log(thispage);
-        defaultPage = thispage;
-    });
+        // Update page title and page content
+        document.getElementById('tpwPageTitle').value = data.pagename;
+    })
 
-    console.log("Maybe this works?");
-    console.log(defaultPage);
 
     return(
         <>
@@ -96,8 +79,8 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">{mypage.pagename}</h1>
-                    <textarea className = "tpwInputArea">{mypage.pagetext}</textarea>
+                    <h1 className = "tpwPageTitle">Loading. . .</h1>
+                    <textarea className = "tpwInputArea">Loading. . .</textarea>
                 </form>
 
 
