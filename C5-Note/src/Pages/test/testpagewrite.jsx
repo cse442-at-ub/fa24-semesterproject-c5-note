@@ -52,6 +52,7 @@ export function TestPageWrite(){
         })
           .then((response) => response.json())
           .then((data) => {
+            console.log(data[0]);
             setTitle(data[0].pagename);
             setContents(data[0].pagetext);
             console.log(contents);
