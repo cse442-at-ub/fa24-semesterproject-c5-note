@@ -34,23 +34,41 @@ async function defaultPageFetch() {
 }
 
 
-// Create a test page as a JSON object
-const testpage = {
-    pagename:   'My Test Page',
-    pagetext:   'Text in a text page that was not fetched from any database.',
-};
-
 
 
 export function TestPageWrite(){
 
-    defaultPageFetch().then((data) =>{
-        console.log(data.pagename);
-        console.log(data.pagetext);
+    const [title, setTitle] = useState('Loading. . .');
+    const [contents, setContents]=useState('Loading. . . .');
 
+    useEffect(() => {
+        fetch("backend/test/tpwloadpagejson.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application.json',
+                "Content-Type": "application/json"
+            },
+            body: "page='1'"
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            setTitle(data[0].pagename);
+            setContents(data[0].pagetext);
+            console.log(contents);
+        })
+        .catch((error) => console.log(error));
+    }, []);
+
+
+    /*defaultPageFetch().then((data) =>{
+        //console.log(data.pagename);
+        //console.log(data.pagetext);
+        setTitle(data.pagename);
+        setContents(data.pagetext);
+        console.log(contents);
         // Update page title and page content
-        document.getElementById('loadPageTitle').value = data.pagename;
-    })
+        //document.getElementById('loadPageTitle').value = data.pagename;
+    })*/
 
 
     return(
@@ -79,8 +97,8 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle" id = "loadPageTitle">Loading. . .</h1>
-                    <textarea className = "tpwInputArea" id ="loadPageText">Loading. . .</textarea>
+                    <h1 className = "tpwPageTitle" id = "loadPageTitle">{title}</h1>
+                    <textarea className = "tpwInputArea" id ="loadPageText">{contents}</textarea>
                 </form>
 
 
