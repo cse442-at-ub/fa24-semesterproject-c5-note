@@ -1,4 +1,6 @@
-
+import bold_button from './images/bold-button.png'
+import italic_button from './images/italic-button.png'
+import underline_button from './images/underline-text.png'
 import { Link } from "react-router-dom";
 import './toolbar.css';
 
@@ -7,7 +9,9 @@ export function Toolbar(){
         <>
 
             <div className="toolbar_main">
-                <label for="cars"> Font:</label>
+                <div className='toolbar_sub'>
+
+                <span className='seperator'>|</span>
                 <select name="cars" id="cars" className="option_drop">
                     <option value="times_new" className="times_new" >Times New Roman</option>
                     <option value="Arial"className="Arial">Arial</option>
@@ -21,7 +25,7 @@ export function Toolbar(){
                     <option value="Futura" className="Futura">Futura</option>
                 </select>
 
-                <label for="cars"> Size: </label>
+                <span className='seperator'>|</span>
                 <select name="cars" id="cars">
                     <option value="volvo">4px</option>
                     <option value="saab">6px</option>
@@ -40,8 +44,7 @@ export function Toolbar(){
                     <option value="audi">64px</option>
                     <option value="audi">72px</option>
                 </select>
-
-                <label for="cars"> Color: </label>
+                <span className='seperator'>|</span>
                 <select name="cars" id="cars">
                     <option value="volvo">Black</option>
                     <option value="saab">White</option>
@@ -62,7 +65,7 @@ export function Toolbar(){
                     <option value="saab">Navy</option>
                 </select>
 
-                <label for="cars"> Highlight: </label>
+                <span className='seperator'>|</span>
                 <select name="cars" id="cars">
                     <option value="volvo">None</option>
                     <option value="saab">Yellow</option>
@@ -75,16 +78,19 @@ export function Toolbar(){
                     <option value="audi">Light Gray</option>
                     <option value="audi">Turquoise</option>
                 </select>
+                <span className='seperator'>|</span>
+                <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" hidden></input>
+                <label for="vehicle1">{<img src={bold_button} className="button_icons" />}</label>
+                <span className='seperator'>|</span>
+                <input type="checkbox" id="vehicle2" name="vehicle2" value="Bike" hidden></input>
+                <label for="vehicle2">{<img src={italic_button} className="button_icons" />}</label>
+                <span className='seperator'>|</span>
+                <input type="checkbox" id="vehicle3" name="vehicle3" value="Bike" hidden></input>
+                <label for="vehicle3">{<img src={underline_button} className="button_icons"  />}</label>
+                <span className='seperator'>|</span>
 
-                <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike"></input>
-                <label for="vehicle1">Bold </label>
-
-                <input type="checkbox" id="vehicle2" name="vehicle2" value="Bike"></input>
-                <label for="vehicle2">Italics </label>
-
-                <input type="checkbox" id="vehicle3" name="vehicle3" value="Bike"></input>
-                <label for="vehicle3">Underline </label>
-
+                </div>
+            
 
             </div>
 

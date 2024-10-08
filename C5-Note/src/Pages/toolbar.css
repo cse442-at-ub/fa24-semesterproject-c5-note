@@ -1,7 +1,22 @@
 .toolbar_main{
-    background-color: black;
+    background-color: #757572;
     display: flex;
     justify-content: center;
+}
+
+.toolbar_sub{
+    align-items: baseline;
+}
+
+.button_icons{
+    height: 2rem;
+    width: 2rem;
+}
+
+.seperator{
+    font-size: 2rem;
+    padding-right: .5rem;
+    padding-left: .5rem;
 }
 
 .times_new{
