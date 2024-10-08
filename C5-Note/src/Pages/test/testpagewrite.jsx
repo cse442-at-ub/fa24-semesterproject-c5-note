@@ -41,6 +41,12 @@ export function TestPageWrite(){
     const [title, setTitle] = useState('Loading. . .');
     const [contents, setContents]=useState('Loading. . . .');
 
+    const savePage = () => {
+
+        var jsonData = { "updatetext":  contents};
+        fetch("backend/test/tpwwritepage.php", {method: "POST", body:JSON.stringify(jsonData)});
+    };
+
     useEffect(() => {
         fetch("backend/test/tpwloadpagejson.php", {
             method: "POST",
@@ -93,7 +99,7 @@ export function TestPageWrite(){
 
                 {/* Toolbar */}
                 <div className="nbpToolbar">
-                    <button className="tpwButton">Save</button>
+                    <button className="tpwButton" onClick={ savePage }>Save</button>
                 </div>
 
                 <form className="nbpMain">
