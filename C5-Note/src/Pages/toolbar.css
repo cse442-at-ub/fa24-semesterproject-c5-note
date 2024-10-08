@@ -1,5 +1,7 @@
 .toolbar_main{
     background-color: black;
+    display: flex;
+    justify-content: center;
 }
 
 .times_new{
@@ -40,4 +42,13 @@
 
 .Futura{
     font-family: Futura;
+}
+
+.option_drop{
+    font-size: 10pt;
+}
+
+
+.test_box{
+    justify-content: center;
 }

@@ -8,17 +8,17 @@ export function Toolbar(){
 
             <div className="toolbar_main">
                 <label for="cars"> Font:</label>
-                <select name="cars" id="cars">
-                    <option value="volvo" className="times_new">Times New Roman</option>
-                    <option value="saab"className="Arial">Arial</option>
-                    <option value="mercedes"className="Helvetica">Helvetica</option>
-                    <option value="audi" className="Calibri">Calibri</option>
-                    <option value="volvo" className="Verdana">Verdana</option>
-                    <option value="saab" className="Georgia">Georgia</option>
-                    <option value="mercedes" className="Courier">Courier New</option>
-                    <option value="audi" className="Roboto">Roboto</option>
-                    <option value="audi" className="Garamond">Garamond</option>
-                    <option value="audi" className="Futura">Futura</option>
+                <select name="cars" id="cars" className="option_drop">
+                    <option value="times_new" className="times_new" >Times New Roman</option>
+                    <option value="Arial"className="Arial">Arial</option>
+                    <option value="Helvetica"className="Helvetica">Helvetica</option>
+                    <option value="Calibri" className="Calibri">Calibri</option>
+                    <option value="Verdana" className="Verdana">Verdana</option>
+                    <option value="Georgia" className="Georgia">Georgia</option>
+                    <option value="Courier" className="Courier">Courier New</option>
+                    <option value="Roboto" className="Roboto">Roboto</option>
+                    <option value="Garamond" className="Garamond">Garamond</option>
+                    <option value="Futura" className="Futura">Futura</option>
                 </select>
 
                 <label for="cars"> Size: </label>
