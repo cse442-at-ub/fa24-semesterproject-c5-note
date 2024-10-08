@@ -12,6 +12,8 @@ $username = $data->username;        // Database username
 $password = $data->password;        // Database password
 $db_name = $data->db_name;          // Database name
 
+$json = json_decode(file_get_contents("php://input"));
+
 // Server name is hardcoded
 $server_name = "localhost:3306";    // Server name provided.
 
@@ -23,18 +25,15 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
-
-// Since this is connected by POST, there's $_POST["updatetext"] coming from the other php file.
-// Sanitize the text
-$sanitizedtext = htmlspecialchars($_POST["updatetext"]);
+$text = $json->updatetext;
 
 // Update the database
 //  > Specifically column 4 of page_id 1 in the database
-$sql = mysqli_prepare($connection, "UPDATE notepages SET column4='(?)' WHERE ID='1'");
-mysqli_stmt_bind_param($sql, "s", $sanitizedtext);
+$sql = mysqli_prepare($connection, "UPDATE notepages SET pagetext = ? WHERE page_id = 1");
+$sql->bind_param("s", $text);
 
 // Determine if the page was saved
-if (mysqli_stmt_execute($sql) === TRUE){
+if ($sql->execute()){
     echo 'Page saved successfully.<br>\n';
 }
 else {
