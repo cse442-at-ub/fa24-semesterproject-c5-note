@@ -43,8 +43,13 @@ export function TestPageWrite(){
 
     const savePage = () => {
 
-        var jsonData = { "updatetext":  contents};
+        var jsonData = { "updatetext":  document.getElementById("loadPageText").value };
         fetch("backend/test/tpwwritepage.php", {method: "POST", body:JSON.stringify(jsonData)});
+    };
+
+    const updateContents = () => {
+
+        setContents(document.getElementById("loadPageText").value);
     };
 
     useEffect(() => {
@@ -105,7 +110,7 @@ export function TestPageWrite(){
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <h1 className = "tpwPageTitle" id = "loadPageTitle">{title}</h1>
-                    <textarea className = "tpwInputArea" id ="loadPageText">{contents}</textarea>
+                    <textarea className = "tpwInputArea" id ="loadPageText" value={contents} onChange={updateContents}/>
                 </form>
 
 
