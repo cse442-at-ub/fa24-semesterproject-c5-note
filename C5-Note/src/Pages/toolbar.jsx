@@ -23,11 +23,7 @@ export function Toolbar(){
             
 
             <div className="toolbar_main">
-            <ColorPicker 
-                colors={colors} 
-                initialColor="#ffffff" 
-                onColorChange={handleColorChange} 
-            />
+
                 <div className='toolbar_sub'>
 
                 <span className='seperator'>|</span>
@@ -64,25 +60,11 @@ export function Toolbar(){
                     <option value="audi">72px</option>
                 </select>
                 <span className='seperator'>|</span>
-                <select name="cars" id="cars">
-                    <option value="volvo">Black</option>
-                    <option value="saab">White</option>
-                    <option value="mercedes">Gray</option>
-                    <option value="audi">Dark Gray</option>
-                    <option value="volvo">Light Gray</option>
-                    <option value="saab">Blue</option>
-                    <option value="mercedes">Dark Blue</option>
-                    <option value="audi">Light Blue</option>
-                    <option value="audi">Red</option>
-                    <option value="audi">Dark Red</option>
-                    <option value="volvo">Green</option>
-                    <option value="saab">Dark Green</option>
-                    <option value="mercedes">Light Green</option>
-                    <option value="audi">Yellow</option>
-                    <option value="audi">Brown</option>
-                    <option value="audi">Teal</option>
-                    <option value="saab">Navy</option>
-                </select>
+                <ColorPicker 
+                colors={colors} 
+                initialColor="#ffffff" 
+                onColorChange={handleColorChange} 
+            />
 
                 <span className='seperator'>|</span>
                 <select name="cars" id="cars">

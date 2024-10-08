@@ -1,30 +1,38 @@
-body {
-    font-family: Arial, sans-serif;
-}
-
 .color-picker {
     position: relative;
     display: inline-block;
 }
 
-#color-button {
-    border: 1px solid #ccc;
-    padding: 10px;
+.color-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     cursor: pointer;
-    background-color: white;
+    outline: none; /* Remove focus outline */
+}
+
+.letter {
+    font-size: 24px; /* Size of the letter A */
+    margin-bottom: 5px; /* Space between letter and color box */
+}
+
+.color-box {
+    width: 30px; /* Size of the color box */
+    height: 7.5px; /* Height is 1/4th of the width */
+    border: 1px solid #ccc; /* Border around color box */
 }
 
 .dropdown-content {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 columns */
-    gap: 5px; /* Space between color options */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
     position: absolute;
     background-color: white;
     border: 1px solid #ccc;
     z-index: 1;
     margin-top: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    padding: 5px; /* Optional padding */
+    padding: 5px;
 }
 
 .color-option {
@@ -36,4 +44,8 @@ body {
 
 .color-option:hover {
     border: 2px solid #000;
+}
+
+.color-option.active {
+    border: 2px solid #ff0000; /* Active color indicator */
 }

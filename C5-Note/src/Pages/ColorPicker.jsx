@@ -31,19 +31,28 @@ const ColorPicker = ({ colors = [], initialColor = '#ffffff', onColorChange }) =
 
     return (
         <div className="color-picker" ref={dropdownRef}>
-            <button
-                id="color-button"
-                style={{ backgroundColor: selectedColor }}
+            <div
+                className="color-display"
                 onClick={toggleDropdown}
+                tabIndex={0} // Make it focusable
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        toggleDropdown();
+                    }
+                }}
             >
-                Pick a Color
-            </button>
+                <span className="letter">A</span>
+                <div
+                    className="color-box"
+                    style={{ backgroundColor: selectedColor }}
+                />
+            </div>
             {isOpen && (
                 <div className="dropdown-content">
                     {colors.map(color => (
                         <div
                             key={color}
-                            className="color-option"
+                            className={`color-option ${selectedColor === color ? 'active' : ''}`}
                             style={{ backgroundColor: color }}
                             onClick={() => selectColor(color)}
                         />
@@ -52,6 +61,7 @@ const ColorPicker = ({ colors = [], initialColor = '#ffffff', onColorChange }) =
             )}
         </div>
     );
+    
 };
 
 export default ColorPicker;
