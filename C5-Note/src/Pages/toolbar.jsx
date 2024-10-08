@@ -2,13 +2,32 @@ import bold_button from './images/bold-button.png'
 import italic_button from './images/italic-button.png'
 import underline_button from './images/underline-text.png'
 import { Link } from "react-router-dom";
+import ColorPicker from './ColorPicker';
 import './toolbar.css';
 
 export function Toolbar(){
+
+    const colors = [
+        '#000000', '#FFFFFF', '#808080', '#333333', '#D3D3D3',
+        '#0000FF', '#003366', '#ADD8E6', '#FF0000', '#8B0000',
+        '#008000', '#006400', '#90EE90', '#FFFF00', '#FFA500',
+        '#800080', '#FFC0CB', '#A52A2A', '#008080', '#000080'
+    ];
+
+    const handleColorChange = (color) => {
+        console.log('Selected Color:', color);
+    };
+
     return(
         <>
+            
 
             <div className="toolbar_main">
+            <ColorPicker 
+                colors={colors} 
+                initialColor="#ffffff" 
+                onColorChange={handleColorChange} 
+            />
                 <div className='toolbar_sub'>
 
                 <span className='seperator'>|</span>
