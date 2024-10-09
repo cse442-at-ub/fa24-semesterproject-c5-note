@@ -12,7 +12,7 @@
 }
 
 .letter {
-    font-size: 24px; /* Size of the letter A */
+    font-size: 12px; /* Adjusted to half the original size */
     margin-bottom: 5px; /* Space between letter and color box */
 }
 
@@ -48,4 +48,7 @@
 
 .color-option.active {
     border: 2px solid #ff0000; /* Active color indicator */
+}
+.longer{
+    width: 40px;
 }

@@ -14,6 +14,21 @@ export function Toolbar(){
         '#800080', '#FFC0CB', '#A52A2A', '#008080', '#000080'
     ];
 
+    const colorList = [
+        null,        // None
+        "#FFFF00",   // Yellow
+        "#00FF00",   // Green
+        "#FFC0CB",   // Pink
+        "#ADD8E6",   // Blue
+        "#FFA500",   // Orange
+        "#800080",   // Purple
+        "#FF0000",   // Red
+        "#32CD32",   // Lime Green
+        "#D3D3D3",   // Light Gray
+        "#40E0D0"    // Turquoise
+    ];
+    
+
     const handleColorChange = (color) => {
         console.log('Selected Color:', color);
     };
@@ -62,23 +77,17 @@ export function Toolbar(){
                 <span className='seperator'>|</span>
                 <ColorPicker 
                 colors={colors} 
-                initialColor="#ffffff" 
+                initialColor="#000000" 
                 onColorChange={handleColorChange} 
             />
 
                 <span className='seperator'>|</span>
-                <select name="cars" id="cars">
-                    <option value="volvo">None</option>
-                    <option value="saab">Yellow</option>
-                    <option value="mercedes">Green</option>
-                    <option value="audi">Pink</option>
-                    <option value="volvo">Orange</option>
-                    <option value="saab">Purple</option>
-                    <option value="mercedes">Red</option>
-                    <option value="audi">Lime Green</option>
-                    <option value="audi">Light Gray</option>
-                    <option value="audi">Turquoise</option>
-                </select>
+                <ColorPicker 
+                icon={'H'}
+                colors={colorList} 
+                initialColor={null} 
+                onColorChange={handleColorChange} 
+            />
                 <span className='seperator'>|</span>
                 <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" hidden></input>
                 <label for="vehicle1">{<img src={bold_button} className="button_icons" />}</label>
