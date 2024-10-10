@@ -107,11 +107,11 @@ export function TestPageWrite(){
                     <button className="tpwButton" onClick={ savePage }>Save</button>
                 </div>
 
-                <form className="nbpMain">
+                <div className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <textarea className = "tpwPageTitle" id ="loadPageTitle" value={title}   onChange={updateTitle}/>
                     <textarea className = "tpwInputArea" id ="loadPageText" value={contents} onChange={updateContents}/>
-                </form>
+                </div>
 
 
                 <aside className="aside nbpSidebarNotebooks">
