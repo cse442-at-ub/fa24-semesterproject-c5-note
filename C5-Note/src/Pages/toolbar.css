@@ -67,3 +67,55 @@
 .test_box{
     justify-content: center;
 }
+
+.Editor_Area{
+    background-color: white;
+    color-scheme: None;
+    color: black;
+}
+
+
+
+.ql-picker.ql-font .ql-picker-label[data-value="Times New Roman"]::before, 
+.ql-picker.ql-font .ql-picker-item[data-value="Times New Roman"]::before
+{
+    font-family: "Times New Roman";
+    content: "Times New Roman";
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Arial"]::before, 
+.ql-picker.ql-font .ql-picker-item[data-value="Arial"]::before
+{
+    font-family: "Arial";
+    content: "Arial";
+}
+
+.ql-font-times-new-roman
+.ql-font span[data-value="times-new-roman"]::before {
+    font-family: 'Times New Roman', serif; /* Fallback to serif */
+}
+
+.ql-font-arial,
+.ql-font span[data-value="arial"]::before {
+  font-family: Arial, sans-serif;
+}
+.ql-font-comic-sans,
+.ql-font span[data-value="comic-sans"]::before {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+.ql-font-courier-new,
+.ql-font span[data-value="courier-new"]::before {
+  font-family: "Courier New";
+}
+.ql-font-georgia,
+.ql-font span[data-value="georgia"]::before {
+  font-family: Georgia, serif;
+}
+.ql-font-helvetica,
+.ql-font span[data-value="helvetica"]::before {
+  font-family: Helvetica, sans-serif;
+}
+.ql-font-lucida,
+.ql-font span[data-value="lucida"]::before {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
