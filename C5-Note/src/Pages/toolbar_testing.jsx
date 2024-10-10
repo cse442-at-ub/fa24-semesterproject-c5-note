@@ -5,7 +5,10 @@ import './notebooks.css';
 import logo from '../C5.png';
 import { Toolbar } from './toolbar'
 import './toolbar.css';
-import Quill from 'quill';
+
+import React from 'react';
+import { Editor } from './Editor'; // Adjust the path if necessary
+//import Quill from 'quill';
 
 
 import { useQuill } from "react-quilljs";
@@ -16,17 +19,10 @@ import "quill/dist/quill.snow.css"; // Add css for snow theme
 
 
 export function ToolTest(){
-    const Font = Quill.import("formats/font");
-Font.whitelist = [
-  "arial",
-  "comic-sans",
-  "courier-new",
-  "georgia",
-  "helvetica",
-  "lucida",
-  "Times New Roman"
-];
-Quill.register(Font, true);
+
+
+
+    
 
 
     const theme = 'snow';
@@ -45,6 +41,8 @@ Quill.register(Font, true);
 const fontOptions = fonts.map(font => font.value);
 
 
+
+
 const modules = {
     toolbar: [
         ['bold', 'italic', 'underline', 'strike'],
@@ -52,7 +50,7 @@ const modules = {
         [{ align: [] }],
         [{ list: 'ordered'}, { list: 'bullet' }, { 'list': 'check' }],
         [{ indent: '-1'}, { indent: '+1' }],
-        [{ size: ['small', false, 'large', 'huge'] }],
+        [{ size: ['10px','11px'] }],
         [{ header: [1, 2, 3, 4, 5, 6, false] }],
         ['link', 'image', 'video'],
         [{ color: [] }, { background: [] }],
@@ -74,7 +72,21 @@ const modules = {
     'clean'
   ];
 
-  const { quill, quillRef } = useQuill({ theme, modules, formats, placeholder });
+  const { quill, quillRef, Quill } = useQuill({ theme, modules, formats, placeholder });
+
+  if (Quill && !quill) {
+    const Font = Quill.import("formats/font");
+Font.whitelist = [
+  "arial",
+  "comic-sans",
+  "courier-new",
+  "georgia",
+  "helvetica",
+  "lucida",
+  "Times New Roman"
+];
+Quill.register(Font, true);
+  }
 
 
     return(
@@ -106,9 +118,10 @@ const modules = {
                 <article className="nbpMain">
                     <div className="Editor_Area">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <div style={{ width: 1200, height: 1000 }}>
-                    <div ref={quillRef} />
-                    </div>
+                    <div className="custom-toolbar-example">
+                    <h3>Page 1</h3>
+                    <Editor placeholder={"A story awaits ..."} />
+                </div>
                     </div>
                 </article>
                 <aside className="aside nbpSidebarNotebooks">

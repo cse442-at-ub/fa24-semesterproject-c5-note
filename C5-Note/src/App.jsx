@@ -11,7 +11,7 @@ import { Reset_Password } from './Pages/reset_password';
 // Test Pages
 import { TestPageWrite } from './Pages/test/testpagewrite';
 import { ToolTest } from './Pages/toolbar_testing'
-
+import { Etest } from './Pages/Etest'
 
 
 function App() {
