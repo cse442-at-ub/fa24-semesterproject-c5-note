@@ -50,6 +50,11 @@ export function TestPageWrite(){
         fetch("backend/test/tpwwritepage.php", {method: "POST", body:JSON.stringify(jsonData)});
     };
 
+    const updateTitle = () => {
+
+        setTitle(document.getElementById("loadPageTitle").value);
+    };
+
     const updateContents = () => {
 
         setContents(document.getElementById("loadPageText").value);
@@ -73,17 +78,6 @@ export function TestPageWrite(){
         })
         .catch((error) => console.log(error));
     }, []);
-
-
-    /*defaultPageFetch().then((data) =>{
-        //console.log(data.pagename);
-        //console.log(data.pagetext);
-        setTitle(data.pagename);
-        setContents(data.pagetext);
-        console.log(contents);
-        // Update page title and page content
-        //document.getElementById('loadPageTitle').value = data.pagename;
-    })*/
 
 
     return(
@@ -112,7 +106,7 @@ export function TestPageWrite(){
 
                 <form className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle" id = "loadPageTitle">{title}</h1>
+                    <textarea className = "tpwPageTitle" id ="loadPageTitle" value={title}   onChange={updateTitle}/>
                     <textarea className = "tpwInputArea" id ="loadPageText" value={contents} onChange={updateContents}/>
                 </form>
 
