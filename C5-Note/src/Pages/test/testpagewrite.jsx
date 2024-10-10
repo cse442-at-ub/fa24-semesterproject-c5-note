@@ -43,7 +43,10 @@ export function TestPageWrite(){
 
     const savePage = () => {
 
+        // What to send in the PHP query
+        //  > Test page is hardcoded to load page with page_id = 1
         var jsonData = {
+            "sourcepageid":     1,
             "updatetitle":      document.getElementById("loadPageTitle").value,
             "updatetext":       document.getElementById("loadPageText").value
         };

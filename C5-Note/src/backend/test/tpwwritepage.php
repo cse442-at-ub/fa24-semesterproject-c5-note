@@ -25,13 +25,14 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
-$pagetitle = $json->updatetitle;
-$text = $json->updatetext;
+$sourceid   = $json->sourcepageid;      // Get the page to write to
+$pagetitle  = $json->updatetitle;       // What to update the title to
+$text       = $json->updatetext;        // What to update the page contents to
 
 // Update the database
 //  > Specifically column 4 of page_id 1 in the database
-$sql = mysqli_prepare($connection, "UPDATE notepages SET pagename = ?, pagetext = ? WHERE page_id = 1");
-$sql->bind_param("ss", $pagetitle, $text);
+$sql = mysqli_prepare($connection, "UPDATE notepages SET pagename = ?, pagetext = ? WHERE page_id = ?");
+$sql->bind_param("ssi", $pagetitle, $text, $sourceid);
 
 // Determine if the page was saved
 if ($sql->execute()){
