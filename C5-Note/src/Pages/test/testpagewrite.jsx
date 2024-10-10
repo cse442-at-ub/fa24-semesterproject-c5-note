@@ -43,7 +43,10 @@ export function TestPageWrite(){
 
     const savePage = () => {
 
-        var jsonData = { "updatetext":  document.getElementById("loadPageText").value };
+        var jsonData = {
+            "updatetitle":      document.getElementById("loadPageTitle").value,
+            "updatetext":       document.getElementById("loadPageText").value
+        };
         fetch("backend/test/tpwwritepage.php", {method: "POST", body:JSON.stringify(jsonData)});
     };
 

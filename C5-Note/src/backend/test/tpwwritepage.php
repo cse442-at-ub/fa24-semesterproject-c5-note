@@ -25,6 +25,7 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
+$pagetitle = $json->updatetitle;
 $text = $json->updatetext;
 
 // Update the database
