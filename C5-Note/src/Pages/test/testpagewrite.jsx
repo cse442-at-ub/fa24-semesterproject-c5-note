@@ -13,7 +13,8 @@ import { useState, useEffect } from "react";
  */
 
 
-
+// Set a variable to detect if changes were made
+let unsavedChanges = 0;
 
 export function TestPageWrite(){
 
@@ -31,16 +32,20 @@ export function TestPageWrite(){
             "updatetext":       document.getElementById("loadPageText").value
         };
         fetch("backend/test/tpwwritepage.php", {method: "POST", body:JSON.stringify(jsonData)});
+
+        unsavedChanges = 0;
     };
 
     const updateTitle = () => {
 
         setTitle(document.getElementById("loadPageTitle").value);
+        unsavedChanges = 1;
     };
 
     const updateContents = () => {
 
         setContents(document.getElementById("loadPageText").value);
+        unsavedChanges = 1;
     };
 
     useEffect(
@@ -75,7 +80,9 @@ export function TestPageWrite(){
     useEffect(() => {
         const handleBeforeUnload = (event) => {
             // Perform actions before the component unloads
-            event.preventDefault();
+            if(unsavedChanges == 1){
+                event.preventDefault();
+            }
             event.returnValue = '';
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
