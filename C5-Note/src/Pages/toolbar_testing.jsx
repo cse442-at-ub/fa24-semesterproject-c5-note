@@ -1,92 +1,27 @@
 
 
 import { Link } from "react-router-dom";
-import './notebooks.css';   
+//import './notebooks.css';   
 import logo from '../C5.png';
 import { Toolbar } from './toolbar'
-import './toolbar.css';
+//import './toolbar.css';
 
-import React from 'react';
-import { Editor } from './Editor'; // Adjust the path if necessary
-//import Quill from 'quill';
-
-
-import { useQuill } from "react-quilljs";
-// or const { useQuill } = require('react-quilljs');
-
-import "quill/dist/quill.snow.css"; // Add css for snow theme
-// or import 'quill/dist/quill.bubble.css'; // Add css for bubble theme
+import React, { useState, useRef, useMemo } from 'react';
+import JoditEditor from 'jodit-react';
 
 
 export function ToolTest(){
 
-
-
+        const placeholder = 'Start typing...'
+        const editor = useRef(null);
+        const [content, setContent] = useState('');
     
-
-
-    const theme = 'snow';
-  // const theme = 'bubble';
-
-  const fonts = [
-    { value: 'sans-serif', label: 'Sans Serif' },
-    { value: 'serif', label: 'Serif' },
-    { value: 'monospace', label: 'Monospace' },
-    { value: 'arial', label: 'arial' },
-    { value: 'comic-sans', label: 'comic-sans' },
-    { value: 'Times New Roman', label: 'times-new-roman' }
-];
-
-
-const fontOptions = fonts.map(font => font.value);
-
-
-
-
-const modules = {
-    toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'font': fontOptions }], // Add the font options here
-        [{ align: [] }],
-        [{ list: 'ordered'}, { list: 'bullet' }, { 'list': 'check' }],
-        [{ indent: '-1'}, { indent: '+1' }],
-        [{ size: ['10px','11px'] }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ['link', 'image', 'video'],
-        [{ color: [] }, { background: [] }],
-        ['clean'],
-    ],
-    clipboard: {
-        matchVisual: false,
-    },
-};
-
-  const placeholder = 'type here....';
-
-  const formats = [
-    'bold', 'italic', 'underline', 'strike','font',
-    'align', 'list', 'indent',
-    'size', 'header',
-    'link', 'image', 'video',
-    'color', 'background',
-    'clean'
-  ];
-
-  const { quill, quillRef, Quill } = useQuill({ theme, modules, formats, placeholder });
-
-  if (Quill && !quill) {
-    const Font = Quill.import("formats/font");
-Font.whitelist = [
-  "arial",
-  "comic-sans",
-  "courier-new",
-  "georgia",
-  "helvetica",
-  "lucida",
-  "Times New Roman"
-];
-Quill.register(Font, true);
-  }
+        const config = useMemo(() => ({
+                readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+                placeholder: placeholder || 'Start typings...'
+            }),
+            [placeholder]
+        );
 
 
     return(
@@ -119,8 +54,14 @@ Quill.register(Font, true);
                     <div className="Editor_Area">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <div className="custom-toolbar-example">
-                    <h3>Page 1</h3>
-                    <Editor placeholder={"A story awaits ..."} />
+                    <JoditEditor
+                        ref={editor}
+                        value={content}
+                        config={config}
+                        tabIndex={1} // tabIndex of textarea
+                        onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
+                        onChange={newContent => {}}
+                    />
                 </div>
                     </div>
                 </article>
