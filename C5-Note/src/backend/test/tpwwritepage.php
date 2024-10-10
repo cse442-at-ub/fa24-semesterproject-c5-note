@@ -30,8 +30,8 @@ $text = $json->updatetext;
 
 // Update the database
 //  > Specifically column 4 of page_id 1 in the database
-$sql = mysqli_prepare($connection, "UPDATE notepages SET pagetext = ? WHERE page_id = 1");
-$sql->bind_param("s", $text);
+$sql = mysqli_prepare($connection, "UPDATE notepages SET pagename = ?, pagetext = ? WHERE page_id = 1");
+$sql->bind_param("ss", $pagetitle, $text);
 
 // Determine if the page was saved
 if ($sql->execute()){
