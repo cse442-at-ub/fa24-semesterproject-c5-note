@@ -45,13 +45,19 @@ export function TestPageWrite(){
 
     useEffect(
         () => {
+
+            // What to send in the PHP query
+            //  > Test page is hardcoded to load page with page_id = 1
+            var jsonDataLoad = {
+                "sourcepageid":  1,
+            };
             fetch("backend/test/tpwloadpagejson.php", {
                 method: "POST",
                 headers: {
                     Accept: 'application.json',
                     "Content-Type": "application/json"
                 },
-                body: "page='1'"
+                body:JSON.stringify(jsonDataLoad)
             })
             .then((response) => response.json())
             .then((data) => {
