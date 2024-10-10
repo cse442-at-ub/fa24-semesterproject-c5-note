@@ -12,31 +12,11 @@ import { useState, useEffect } from "react";
  * 
  */
 
-// Get the default page from PHP
-async function defaultPageFetch() {
-
-    // Fetch the page
-    const response = await fetch("backend/test/tpwloadpagejson.php", {
-        method: "POST",
-        headers: {
-            Accept: 'application.json',
-            "Content-Type": "application/json"
-        },
-        body: "page='1'"
-    })
-
-    // Convert to JavaScript object
-    const fetchedPage = await response.json();
-
-    // Return the page
-    // PHP file returns an array with a single element - grab it
-    return fetchedPage[0];
-}
-
 
 
 
 export function TestPageWrite(){
+
 
     const [title, setTitle] = useState('Loading. . .');
     const [contents, setContents]=useState('Loading. . . .');
@@ -63,25 +43,60 @@ export function TestPageWrite(){
         setContents(document.getElementById("loadPageText").value);
     };
 
-    useEffect(() => {
-        fetch("backend/test/tpwloadpagejson.php", {
-            method: "POST",
-            headers: {
-                Accept: 'application.json',
-                "Content-Type": "application/json"
-            },
-            body: "page='1'"
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data[0]);
-            setTitle(data[0].pagename);
-            setContents(data[0].pagetext);
-            console.log(contents);
-        })
-        .catch((error) => console.log(error));
-    }, []);
+    useEffect(
+        () => {
+            fetch("backend/test/tpwloadpagejson.php", {
+                method: "POST",
+                headers: {
+                    Accept: 'application.json',
+                    "Content-Type": "application/json"
+                },
+                body: "page='1'"
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data[0]);
+                setTitle(data[0].pagename);
+                setContents(data[0].pagetext);
+                console.log(contents);
+            })
+            .catch((error) => console.log(error));
+        }, []
 
+    );
+
+
+    // const hasUnsavedChanges = Boolean(contents);
+
+    // useEffect(
+    //     () =>
+    //         navigation.addListener('beforeRemove', (e) => {
+    //             if (!hasUnsavedChanges) {
+    //                 // If we don't have unsaved changes, then we don't need to do anything
+    //                 return;
+    //             }
+    
+    //             // Prevent default behavior of leaving the screen
+    //             e.preventDefault();
+    
+    //             // Prompt the user before leaving the screen
+    //             Alert.alert(
+    //                 'Discard changes?',
+    //                 'You have unsaved changes. Are you sure to discard them and leave the screen?',
+    //                 [
+    //                     { text: "Don't leave", style: 'cancel', onPress: () => {} },
+    //                     {
+    //                     text: 'Discard',
+    //                     style: 'destructive',
+    //                     // If the user confirmed, then we dispatch the action we blocked earlier
+    //                     // This will continue the action that had triggered the removal of the screen
+    //                     onPress: () => navigation.dispatch(e.data.action),
+    //                     },
+    //                 ]
+    //                 );
+    //       }),
+    //     [navigation, hasUnsavedChanges]
+    // );
 
     return(
         <>
