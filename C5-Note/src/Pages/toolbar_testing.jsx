@@ -19,7 +19,21 @@ export function ToolTest(){
         const config = useMemo(() => ({
                 readonly: false, // all options from https://xdsoft.net/jodit/docs/,
                 placeholder: placeholder || 'Start typings...',
-                theme: 'light'
+                theme: 'light',
+                controls: {
+                    font: {
+                        list: {
+                            'Roboto' : 'Roboto',
+                            "Calibri" : 'Calibri',
+                            'Garamond' : 'Garamond',
+                            'Futura' : 'Futura',
+                            'Comic Sans MS' : 'Comic-Sans'
+                        }
+                    },
+                    fontsize: {
+                        list: [4,6,8,10,12,14,16,18,22,26,32,40,48,56,64]
+                    }
+                }
             }),
             [placeholder]
         );

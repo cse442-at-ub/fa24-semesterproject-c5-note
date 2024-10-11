@@ -123,3 +123,19 @@
 .ql-font span[data-value="lucida"]::before {
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
+
+.jodit{
+    color: black;
+}
+
+.jodit-popup__content{
+    color: black;
+}
+
+.jodit-ui-input__input{
+    color: black;
+}
+
+.jodit-ui-text-area__input{
+    color: black;
+}
