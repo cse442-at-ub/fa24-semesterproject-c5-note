@@ -1,0 +1,54 @@
+.color-picker {
+    position: relative;
+    display: inline-block;
+}
+
+.color-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    outline: none; /* Remove focus outline */
+}
+
+.letter {
+    font-size: 12px; /* Adjusted to half the original size */
+    margin-bottom: 5px; /* Space between letter and color box */
+}
+
+.color-box {
+    width: 30px; /* Size of the color box */
+    height: 7.5px; /* Height is 1/4th of the width */
+    border: 1px solid #ccc; /* Border around color box */
+}
+
+.dropdown-content {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1;
+    margin-top: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+}
+
+.color-option:hover {
+    border: 2px solid #000;
+}
+
+.color-option.active {
+    border: 2px solid #ff0000; /* Active color indicator */
+}
+.longer{
+    width: 40px;
+}

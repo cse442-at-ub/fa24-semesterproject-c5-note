@@ -1,0 +1,152 @@
+.toolbar_main{
+    background-color: #757572;
+    display: flex;
+    justify-content: center;
+}
+
+.toolbar_sub{
+    align-items: baseline;
+}
+
+.button_icons{
+    height: 2rem;
+    width: 2rem;
+}
+
+.seperator{
+    font-size: 2rem;
+    padding-right: .5rem;
+    padding-left: .5rem;
+}
+
+.times_new{
+    font-family: 'Times New Roman';
+}
+
+.Arial{
+    font-family: Arial;
+}
+
+.Helvetica{
+    font-family: Helvetica;
+}
+
+.Calibri{
+    font-family: Calibri;
+}
+
+.Verdana{
+    font-family: Verdana;
+}
+
+.Georgia{
+    font-family: Georgia;
+}
+
+.Courier{
+    font-family: 'Courier New';
+}
+
+.Roboto{
+    font-family: Roboto;
+}
+
+.Garamond{
+    font-family: Garamond;
+}
+
+.Futura{
+    font-family: Futura;
+}
+
+.option_drop{
+    font-size: 10pt;
+}
+
+
+.test_box{
+    justify-content: center;
+}
+
+.Editor_Area{
+    background-color: white;
+    color-scheme: light;
+    color: black;
+    font-style: None;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+
+
+.ql-picker.ql-font .ql-picker-label[data-value="Times New Roman"]::before, 
+.ql-picker.ql-font .ql-picker-item[data-value="Times New Roman"]::before
+{
+    font-family: "Times New Roman";
+    content: "Times New Roman";
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Arial"]::before, 
+.ql-picker.ql-font .ql-picker-item[data-value="Arial"]::before
+{
+    font-family: "Arial";
+    content: "Arial";
+}
+
+.ql-font-times-new-roman
+.ql-font span[data-value="times-new-roman"]::before {
+    font-family: 'Times New Roman', serif; /* Fallback to serif */
+}
+
+.ql-font-arial,
+.ql-font span[data-value="arial"]::before {
+  font-family: Arial, sans-serif;
+}
+.ql-font-comic-sans,
+.ql-font span[data-value="comic-sans"]::before {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+.ql-font-courier-new,
+.ql-font span[data-value="courier-new"]::before {
+  font-family: "Courier New";
+}
+.ql-font-georgia,
+.ql-font span[data-value="georgia"]::before {
+  font-family: Georgia, serif;
+}
+.ql-font-helvetica,
+.ql-font span[data-value="helvetica"]::before {
+  font-family: Helvetica, sans-serif;
+}
+.ql-font-lucida,
+.ql-font span[data-value="lucida"]::before {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.jodit{
+    color: black;
+}
+
+.jodit-popup__content{
+    color: black;
+}
+
+.jodit-ui-input__input{
+    color: black;
+}
+
+.jodit-ui-text-area__input{
+    color: black;
+}
+
+.jodit-ui-image-properties-form,
+.jodit-ui-image-properties-form_lock-size_true, 
+.jodit-ui-image-properties-form_lock_false{
+    color: black;
+}
+
+.jodit-toolbar-button__text{
+    font-family: 'Times New Roman';
+    font-size: 10px;
+}

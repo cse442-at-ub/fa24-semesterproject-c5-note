@@ -10,7 +10,8 @@ import { Forgot_login } from './Pages/forgot_login';
 import { Reset_Password } from './Pages/reset_password';
 // Test Pages
 import { TestPageWrite } from './Pages/test/testpagewrite';
-
+import { ToolTest } from './Pages/toolbar_testing'
+import { Etest } from './Pages/Etest'
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
         <Route path="/reset_password" element = { <Reset_Password/> }/>
         {/* Test Pages */}
+        <Route path="/test/toolbar" element = { <ToolTest/> }/>
         <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
       </Routes>
     </Router>
