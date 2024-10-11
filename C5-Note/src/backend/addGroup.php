@@ -13,7 +13,7 @@ if ($connection->connect_error) {
     die("Could not connect to the database");
 }
 
-//read input
+// Read input
 $input = json_decode(file_get_contents("php://input"), true);
 
 $loggedInUsername = $input['username'];
@@ -30,9 +30,17 @@ try {
     $notebookId = $notebook['id'];
 
     if ($notebookId) {
-        // Add the new group to the notebook (updated table name)
-        $stmt = $connection->prepare("INSERT INTO notebook_groups (notebook_id, group_name) VALUES (?, ?)");
-        $stmt->bind_param("is", $notebookId, $groupName);
+        // Fetch the highest group_order for this notebook
+        $stmt = $connection->prepare("SELECT MAX(group_order) AS max_order FROM notebook_groups WHERE notebook_id = ?");
+        $stmt->bind_param("i", $notebookId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $newGroupOrder = $row['max_order'] !== null ? $row['max_order'] + 1 : 1;
+
+        // Add the new group with the calculated group_order
+        $stmt = $connection->prepare("INSERT INTO notebook_groups (notebook_id, group_name, group_order) VALUES (?, ?, ?)");
+        $stmt->bind_param("isi", $notebookId, $groupName, $newGroupOrder);
         $stmt->execute();
 
         $groupId = $connection->insert_id;  // Get the newly inserted group ID

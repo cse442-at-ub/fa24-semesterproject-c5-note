@@ -98,6 +98,9 @@ export function ToolTest(){
         // Update state and persist the new order
         setGroups(reorderedGroups);
 
+        console.log(reorderedGroups);
+        console.log(reorderedGroups.map(group => group.group_id));
+
         // Send new order to backend to persist it
         const username = getCookie('username');
         await fetch("backend/updateGroupOrder.php", {
@@ -254,18 +257,31 @@ export function ToolTest(){
                 </aside>
 
                 <aside className="aside nbpSidebarPages">
-                    {/* Initialize expanded state to manage which groups are expanded */}
-                    {groups.map((group, index) => (
-                        <GroupDropdown
-                            key={index}
-                            group={group}
-                            notebook={notebook}
-                            isExpanded={expanded[index]} // Track the expanded state for each group
-                            toggleGroup={() => toggleGroup(index)} // Toggle the group expansion
-                            isSelectedGroup={group.group_id === parseInt(groupID)}
-                            selectedPage={parseInt(pageNum)}
-                        />
-                    ))}
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="groups">
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                    {groups.map((group, index) => (
+                                        <Draggable key={group.group_id} draggableId={`${group.group_id}`} index={index}>
+                                            {(provided) => (
+                                                <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                    <GroupDropdown
+                                                        group={group}
+                                                        notebook={notebook}
+                                                        isExpanded={expanded[index]}
+                                                        toggleGroup={() => toggleGroup(index)}
+                                                        isSelectedGroup={group.group_id === parseInt(groupID)}
+                                                        selectedPage={parseInt(pageNum)}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </aside>
 
                 <footer className="nbpFooter" style={{ backgroundColor: notebook.color }}>Footer</footer>

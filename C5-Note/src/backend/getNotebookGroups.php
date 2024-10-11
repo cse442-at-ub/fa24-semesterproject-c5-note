@@ -29,8 +29,8 @@ try {
     $notebookId = $notebook['id'];
 
     if ($notebookId) {
-        // Fetch the groups for the notebook from notebook_groups table, include group_id
-        $stmt = $connection->prepare("SELECT id, group_name FROM notebook_groups WHERE notebook_id = ?");
+        // Fetch the groups for the notebook ordered by group_order
+        $stmt = $connection->prepare("SELECT id, group_name, group_order FROM notebook_groups WHERE notebook_id = ? ORDER BY group_order ASC");
         $stmt->bind_param("i", $notebookId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -39,7 +39,7 @@ try {
         while ($group = $result->fetch_assoc()) {
             $groupId = $group['id'];
 
-            // Fetch the pages for each group from the pages table
+            // Fetch the pages for each group
             $stmtPages = $connection->prepare("SELECT page_number, page_content FROM pages WHERE group_id = ?");
             $stmtPages->bind_param("i", $groupId);
             $stmtPages->execute();
@@ -50,10 +50,11 @@ try {
                 $pages[] = $page;
             }
 
-            // Include the group_id in the response
+            // Include the group_id, group_name, and group_order in the response
             $groups[] = [
-                'group_id' => $group['id'],  // Added group_id
+                'group_id' => $group['id'],
                 'group_name' => $group['group_name'],
+                'group_order' => $group['group_order'],
                 'pages' => $pages
             ];
         }
