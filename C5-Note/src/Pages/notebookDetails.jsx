@@ -65,6 +65,8 @@ export function NotebookDetail() {
         },
         ... can be more group names and pages here
     ]
+
+    Note: thinking when clicking into a page, we get redirected to the 
     */
 
     const getCookie= (name) =>{
@@ -76,6 +78,7 @@ export function NotebookDetail() {
         return cookie[name];
     }
 
+    const username = getCookie('username');
 
     // Fetch groups JSON for the notebook
     useEffect(() => {
@@ -127,11 +130,65 @@ export function NotebookDetail() {
         const data = await response.json();
         if (data.success) {
             // After successfully adding the group, reload the groups
-            setGroups((prevGroups) => [...prevGroups, { group_name: "Untitled Group", pages: [] }]);
+            const newGroup = {
+                group_id: data.group_id,  // Use the group_id from the response
+                group_name: "Untitled Group",
+                pages: []
+            };
+    
+            // Update the state with the new group including the group_id
+            setGroups((prevGroups) => [...prevGroups, newGroup]);
             setGroupsEmpty(false);
         } else {
             console.error("Failed to add group");
         }
+    };
+
+    // Function to add a new page to a group
+    const handleAddPages = async (group) => {
+        const username = getCookie('username');
+
+        const response = await fetch("backend/addPages.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,  // The logged-in user
+                title: notebook.title,  // The notebook title
+                group_id: group.group_id,  // The ID of the group where the page will be added
+                page_content: ""  // Page content can be an empty string
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // After successfully adding the page, reload the groups/pages
+            const newPage = {
+                page_number: group.pages.length + 1,  // New page number based on existing pages
+                page_content: ""  // Empty content
+            };
+            
+            // Update the state with the newly added page
+            setGroups((prevGroups) =>
+                prevGroups.map((g) => 
+                    g.group_id === group.group_id ? 
+                    { ...g, pages: [...g.pages, newPage] } : g
+                )
+            );
+        } else {
+            console.error("Failed to add page");
+        }
+    };
+
+    const handleGroupPageClick = (group, page) => {
+        navigate(`/notebooks/${group.group_id}/${page.page_number}`, { //thinking after the group id there should be the page
+            state: { 
+                notebook: notebook,  // Pass current notebook info
+                group: group,         // Pass the clicked group info (group_id, group_name, and pages)
+                page: page           // Pass the clicked page info (page_number, page_content)
+            }
+        });
     };
 
     return (
@@ -158,18 +215,28 @@ export function NotebookDetail() {
                 {!groupsEmpty && groups && (
                     <div>
                         <h3>Current Groups:</h3>
-                            <ul>
-                                {groups.map((group, index) => (
-                                    <li key={index}>
-                                        {group.group_name}
-                                        <ul>
-                                            {group.pages.map((page, pageIndex) => (
-                                                <li key={pageIndex}>Page {page.page_number}: {page.page_content}</li>
-                                            ))}
-                                        </ul>
-                                    </li>
-                                ))}
-                            </ul>
+                        <ul>
+                            {groups.map((group, index) => (
+                                <li key={index}>
+                                    {group.group_name}
+
+                                    <button onClick={() => handleAddPages(group)}>Add Page</button>
+
+                                    <ul>
+                                        {group.pages.map((page, pageIndex) => (
+                                            <li key={pageIndex}>
+                                                <button onClick={() => handleGroupPageClick(group, page)}>
+                                                    Page {page.page_number}: {page.page_content}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            ))}
+                        </ul>
+
+                        <button onClick={handleAddGroup}>Add Group</button>
+
                     </div>
                 )}
 

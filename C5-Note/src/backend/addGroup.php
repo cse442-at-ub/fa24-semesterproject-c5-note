@@ -35,7 +35,12 @@ try {
         $stmt->bind_param("is", $notebookId, $groupName);
         $stmt->execute();
 
-        echo json_encode(["success" => true]);
+        $groupId = $connection->insert_id;  // Get the newly inserted group ID
+
+        echo json_encode([
+            "success" => true,
+            "group_id" => $groupId
+        ]);
     } else {
         echo json_encode(["success" => false, "message" => "Notebook not found"]);
     }

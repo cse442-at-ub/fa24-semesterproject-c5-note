@@ -35,7 +35,7 @@ function App() {
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
         <Route path="/reset_password" element = { <Reset_Password/> }/>
         {/* Test Pages */}
-        <Route path="/test/toolbar" element = { <ToolTest/> }/>
+        <Route path="/notebooks/:groupID/:pageNum" element = { <ToolTest/> }/>
         <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
       </Routes>
     </Router>
