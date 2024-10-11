@@ -150,3 +150,12 @@
     font-family: 'Times New Roman';
     font-size: 10px;
 }
+
+.selected-group {
+    border: 2px solid black;
+    padding: 5px;
+}.selected-page {
+    border: 1px solid black;
+    padding: 3px;
+    display: block;
+}

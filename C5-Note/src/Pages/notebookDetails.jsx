@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 import Profile from '../C5.png';
 import './notebookDetails.css';
 import './home.css';
@@ -46,6 +47,13 @@ export function NotebookDetail() {
 
     const [groups, setGroups] = useState(null); // Store the groups JSON
     const [groupsEmpty, setGroupsEmpty] = useState(false);
+
+    const [editingGroupId, setEditingGroupId] = useState(null);  // Track which group is being edited
+    const [newGroupName, setNewGroupName] = useState("");  // Store the new group name
+
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [groupToDelete, setGroupToDelete] = useState(null);
 
     /* Example of what groups would like life after useEffect()
     [
@@ -110,6 +118,62 @@ export function NotebookDetail() {
 
         fetchGroups();
     }, [notebook]);
+
+    // Function to handle the confirmation of deleting a group
+    const handleConfirmDeleteGroup = async () => {
+        if (groupToDelete) {
+            const response = await fetch("backend/deleteGroup.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    group_id: groupToDelete.group_id,  // Send the group_id to delete
+                }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setGroups((prevGroups) => prevGroups.filter((g) => g.group_id !== groupToDelete.group_id));
+            } else {
+                console.error("Failed to delete group");
+            }
+            setShowDeleteModal(false); // Close the modal
+        }
+    };
+
+    // Function to open the delete confirmation modal
+    const handleDeleteGroup = (group) => {
+        setGroupToDelete(group);
+        setShowDeleteModal(true);  // Show the modal
+    };
+
+    // Function to edit group name using group_id
+    const handleEditGroupName = async (group) => {
+        const response = await fetch("backend/editGroupName.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                group_id: group.group_id,  // Send the group_id to the backend
+                new_group_name: newGroupName,
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // Update the group name in state
+            setGroups((prevGroups) => 
+                prevGroups.map((g) =>
+                    g.group_id === group.group_id ? { ...g, group_name: newGroupName } : g
+                )
+            );
+            setEditingGroupId(null);  // Exit edit mode
+        } else {
+            console.error("Failed to update group name");
+        }
+    };
 
     // Function to add a new group named "Untitled Group"
     const handleAddGroup = async () => {
@@ -195,10 +259,24 @@ export function NotebookDetail() {
     <>
         <Top_bar_simple_notes/>
 
+        {/* React Bootstrap Modal for Deleting Confirmation */}
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+            <Modal.Header>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the group "{groupToDelete?.group_name}"? This action cannot be undone.
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+                <Button variant="danger" onClick={handleConfirmDeleteGroup} style={{ backgroundColor: 'red', borderColor: 'red' }} >Delete</Button>
+            </Modal.Footer>
+        </Modal>
+
         <div className="mainBody">
             <div className="notebooks_list spacing" >
                 <h1 className="label">{notebook.title}</h1>
-                <h3>{notebook.description}</h3> {/* fix css */}
+                <h3>Description: {notebook.description}</h3> {/* fix css */}
                 <div className="note-pages-header">
                     <h2>Note Pages</h2>
                     <div className="notebook-color-indicator" style={{ backgroundColor: notebook.color }}></div>
@@ -218,9 +296,27 @@ export function NotebookDetail() {
                         <ul>
                             {groups.map((group, index) => (
                                 <li key={index}>
-                                    {group.group_name}
 
-                                    <button onClick={() => handleAddPages(group)}>Add Page</button>
+                                    {/* Check if this group is being edited */}
+                                    {editingGroupId === group.group_id ? (
+                                        <div>
+                                            <input
+                                                type="text"
+                                                value={newGroupName}
+                                                onChange={(e) => setNewGroupName(e.target.value)}
+                                                placeholder="New Group Name"
+                                            />
+                                            <button onClick={() => handleEditGroupName(group)}>Save</button>
+                                            <button onClick={() => setEditingGroupId(null)}>Cancel</button>
+                                            <button style={{color: "red"}} onClick={() => handleDeleteGroup(group)}>Delete X</button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span>{group.group_name}</span>
+                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
+                                            <button onClick={() => handleAddPages(group)}>Add Page</button>
+                                        </>
+                                    )}
 
                                     <ul>
                                         {group.pages.map((page, pageIndex) => (

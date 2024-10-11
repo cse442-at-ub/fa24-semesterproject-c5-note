@@ -1,5 +1,4 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom"; //to enable state 
-
 import { Link } from "react-router-dom";
 import './notebooks.css';   
 import logo from '../C5.png';
@@ -9,6 +8,32 @@ import './toolbar.css';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import JoditEditor from 'jodit-react';
 
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+
+function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
+    return (
+        <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
+            {/* Group name acts as a dropdown button */}
+            <h1 className="clickableGroupName" onClick={toggleGroup}>
+                {group.group_name}
+            </h1>
+
+            {/* Show pages only if the group is expanded */}
+            {isExpanded && (
+                <ul>
+                    {group.pages.map((page, pageIndex) => (
+                        <li key={pageIndex}>
+                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
+                                Page {page.page_number}: {page.page_content || "Untitled Page"}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+}
 
 export function ToolTest(){
     //will be used later
@@ -18,6 +43,7 @@ export function ToolTest(){
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [groups, setGroups] = useState([]); // Store the groups of the current notebook
+    const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
 
     //considering validation with user and current notebook content
 
@@ -58,6 +84,40 @@ export function ToolTest(){
         })
         return cookie[name];
     }
+
+    // Handle drag end for reordering
+    const handleDragEnd = async (result) => {
+        const { source, destination } = result;
+        if (!destination) return; // Dropped outside the list
+
+        // Reorder groups array
+        const reorderedGroups = Array.from(groups);
+        const [movedGroup] = reorderedGroups.splice(source.index, 1);
+        reorderedGroups.splice(destination.index, 0, movedGroup);
+
+        // Update state and persist the new order
+        setGroups(reorderedGroups);
+
+        // Send new order to backend to persist it
+        const username = getCookie('username');
+        await fetch("backend/updateGroupOrder.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: username,
+                title: notebook.title,
+                reorderedGroups: reorderedGroups.map(group => group.group_id)  // Send only group IDs in the new order
+            })
+        });
+    };
+
+    const toggleGroup = (groupIndex) => {
+        setExpanded((prevExpanded) => {
+            const newExpanded = [...prevExpanded];
+            newExpanded[groupIndex] = !newExpanded[groupIndex]; // Toggle visibility for the specific group
+            return newExpanded;
+        });
+    };
 
     // Fetch the user's notebooks
     useEffect(() => {
@@ -178,7 +238,7 @@ export function ToolTest(){
                 </article>
 
                 <aside className="aside nbpSidebarNotebooks">
-                    <h1 className="clickableNotebookTitle" onClick={() => navigate(`/notebook/${notebook.id}`, { state: { notebook } })}> {notebook.title} </h1>
+                    <h1 className="clickableNotebookTitle" onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook } })}> {notebook.title} </h1>
                     <h3>Other Notebooks</h3>
                     <ul>
                         {notebooks
@@ -194,19 +254,17 @@ export function ToolTest(){
                 </aside>
 
                 <aside className="aside nbpSidebarPages">
+                    {/* Initialize expanded state to manage which groups are expanded */}
                     {groups.map((group, index) => (
-                        <div key={index}>
-                            <h1>{group.group_name}</h1>
-                            <ul>
-                                {group.pages.map((page, pageIndex) => (
-                                    <li key={pageIndex}>
-                                        <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }}>
-                                            Page {page.page_number}: {page.page_content || "Untitled Page"}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        <GroupDropdown
+                            key={index}
+                            group={group}
+                            notebook={notebook}
+                            isExpanded={expanded[index]} // Track the expanded state for each group
+                            toggleGroup={() => toggleGroup(index)} // Toggle the group expansion
+                            isSelectedGroup={group.group_id === parseInt(groupID)}
+                            selectedPage={parseInt(pageNum)}
+                        />
                     ))}
                 </aside>
 
@@ -215,5 +273,10 @@ export function ToolTest(){
             </div>
 
         </>
-    )
+    );
+
+
+
+
+
 }

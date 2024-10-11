@@ -30,3 +30,13 @@ border: 1px solid #000;
 margin-left: 10px;
 display: inline-block;
 }
+
+.modal-content {
+    background-color: white !important;  
+    color: black !important;            
+}.modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
