@@ -10,6 +10,7 @@ import { Forgot_login } from './Pages/forgot_login';
 import { Reset_Password } from './Pages/reset_password';
 // Test Pages
 import { TestPageWrite } from './Pages/test/testpagewrite';
+import { PageOverflowTest } from './Pages/test/pageOverflow_test'
 
 
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/reset_password" element = { <Reset_Password/> }/>
         {/* Test Pages */}
         <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
+        <Route path="/test/pageOverflow" element = { <PageOverflowTest/> }/>
       </Routes>
     </Router>
   )
