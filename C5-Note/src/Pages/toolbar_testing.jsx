@@ -33,7 +33,9 @@ export function ToolTest(){
                     fontsize: {
                         list: [4,6,8,10,12,14,16,18,22,26,32,40,48,56,64]
                     }
-                }
+                },
+                width: '100%',
+                height: 1000
             }),
             [placeholder]
         );

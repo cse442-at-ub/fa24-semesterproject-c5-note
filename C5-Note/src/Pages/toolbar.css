@@ -139,3 +139,9 @@
 .jodit-ui-text-area__input{
     color: black;
 }
+
+.jodit-ui-image-properties-form,
+.jodit-ui-image-properties-form_lock-size_true, 
+.jodit-ui-image-properties-form_lock_false{
+    color: black;
+}
