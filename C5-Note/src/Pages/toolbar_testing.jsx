@@ -1,10 +1,10 @@
 
 
 import { Link } from "react-router-dom";
-//import './notebooks.css';   
+import './notebooks.css';   
 import logo from '../C5.png';
-import { Toolbar } from './toolbar'
-//import './toolbar.css';
+import './toolbar.css';
+
 
 import React, { useState, useRef, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
