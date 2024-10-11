@@ -145,3 +145,8 @@
 .jodit-ui-image-properties-form_lock_false{
     color: black;
 }
+
+.jodit-toolbar-button__text{
+    font-family: 'Times New Roman';
+    font-size: 10px;
+}
