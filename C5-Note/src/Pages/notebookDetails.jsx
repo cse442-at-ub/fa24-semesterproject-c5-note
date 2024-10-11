@@ -50,6 +50,7 @@ export function NotebookDetail() {
     /* Example of what groups would like life after useEffect()
     [
         {
+            group_id: 1,  // The unique ID of the group
             group_name: "Chapter 1",
             pages: [
                 {

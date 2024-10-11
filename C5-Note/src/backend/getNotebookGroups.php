@@ -29,7 +29,7 @@ try {
     $notebookId = $notebook['id'];
 
     if ($notebookId) {
-        // Fetch the groups for the notebook from notebook_groups table
+        // Fetch the groups for the notebook from notebook_groups table, include group_id
         $stmt = $connection->prepare("SELECT id, group_name FROM notebook_groups WHERE notebook_id = ?");
         $stmt->bind_param("i", $notebookId);
         $stmt->execute();
@@ -50,7 +50,9 @@ try {
                 $pages[] = $page;
             }
 
+            // Include the group_id in the response
             $groups[] = [
+                'group_id' => $group['id'],  // Added group_id
                 'group_name' => $group['group_name'],
                 'pages' => $pages
             ];
@@ -66,6 +68,7 @@ try {
             "success": true,
             "groups": [
                 {
+                    "group_id": 1,  // The unique ID of the group
                     "group_name": "Chapter 1",
                     "pages": [
                         {
@@ -79,6 +82,7 @@ try {
                     ]
                 },
                 {
+                    "group_id": 2,  // The unique ID of the group
                     "group_name": "Chapter 2",
                     "pages": [
                         {
