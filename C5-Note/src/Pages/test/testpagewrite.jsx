@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import './testpagewrite.css';                        // Import CSS tied to this page
 import logo from '../../C5.png';
+import { useState, useEffect } from "react";
 
 /***************************************
  * testpagewrite.jsx
@@ -12,29 +13,85 @@ import logo from '../../C5.png';
  */
 
 
-// export function DefaultPageLoad(){
-//     fetch("../../backend/test/tpwloadpagejson.php", {
-//         method: "POST",
-//         headers: {
-//             Accept: 'application.json',
-//             "Content-Type": "application/json"
-//             },
-//         body: "page='1'"
-//     })
-//     .then((response) => {
-//         return response.json();
-//     })
-//     .then((data) =>{
-//         const text1 = data[0].pagename;
-//     })
-//     .catch(error => {
-//         console.error(error);
-//     });
-// }
-
-
+// Set a variable to detect if changes were made
+let unsavedChanges = 0;
 
 export function TestPageWrite(){
+
+
+    const [title, setTitle] = useState('Loading. . .');
+    const [contents, setContents]=useState('Loading. . . .');
+
+    const savePage = () => {
+
+        // What to send in the PHP query
+        //  > Test page is hardcoded to load page with page_id = 1
+        var jsonData = {
+            "sourcepageid":     1,
+            "updatetitle":      document.getElementById("loadPageTitle").value,
+            "updatetext":       document.getElementById("loadPageText").value
+        };
+        fetch("backend/test/tpwwritepage.php", {method: "POST", body:JSON.stringify(jsonData)});
+
+        unsavedChanges = 0;
+    };
+
+    const updateTitle = () => {
+
+        setTitle(document.getElementById("loadPageTitle").value);
+        unsavedChanges = 1;
+    };
+
+    const updateContents = () => {
+
+        setContents(document.getElementById("loadPageText").value);
+        unsavedChanges = 1;
+    };
+
+    useEffect(
+        () => {
+
+            // What to send in the PHP query
+            //  > Test page is hardcoded to load page with page_id = 1
+            var jsonDataLoad = {
+                "sourcepageid":  1,
+            };
+            fetch("backend/test/tpwloadpagejson.php", {
+                method: "POST",
+                headers: {
+                    Accept: 'application.json',
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify(jsonDataLoad)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data[0]);
+                setTitle(data[0].pagename);
+                setContents(data[0].pagetext);
+                console.log(contents);
+            })
+            .catch((error) => console.log(error));
+        }, []
+
+    );
+
+    // Generic "are you sure" dialog prompt
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            // Perform actions before the component unloads
+            if(unsavedChanges == 1){
+                event.preventDefault();
+            }
+            event.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+
 
     return(
         <>
@@ -57,14 +114,14 @@ export function TestPageWrite(){
 
                 {/* Toolbar */}
                 <div className="nbpToolbar">
-                    <button className="tpwButton">Save</button>
+                    <button className="tpwButton" onClick={ savePage }>Save</button>
                 </div>
 
-                <form className="nbpMain">
+                <div className="nbpMain">
                     {/* Lorem Ipsum for filler until note pages implemented */}
-                    <h1 className = "tpwPageTitle">Example Note Page</h1>
-                    <textarea className = "tpwInputArea"></textarea>
-                </form>
+                    <textarea className = "tpwPageTitle" id ="loadPageTitle" value={title}   onChange={updateTitle}/>
+                    <textarea className = "tpwInputArea" id ="loadPageText" value={contents} onChange={updateContents}/>
+                </div>
 
 
                 <aside className="aside nbpSidebarNotebooks">
