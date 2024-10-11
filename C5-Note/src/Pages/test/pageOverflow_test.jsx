@@ -2,21 +2,21 @@ import React, { useState } from 'react';
 import './pageOverflow_test.css';
 
 export function PageOverflowTest() {
-    const [content1, setContent1] = useState("");
-    const [content2, setContent2] = useState("");
     let fullText = "";
 
-    const maxChars = 20;
+    const maxChars = 22;
 
     const handleUpdatedText = () => {
-        if(content1 === "") {
-            fullText = content2;
+        fullText = "";
+
+        if(document.getElementById('1').value === "") {
+            fullText = document.getElementById('2').value;
         }
-        else if(content2 === "") {
-            fullText = content1;
+        else if(document.getElementById('2').value === "") {
+            fullText = document.getElementById('1').value;
         }
         else {
-            fullText = content1 + " " + content2;
+            fullText = document.getElementById('1').value + " " + document.getElementById('2').value;
         }
         
         console.log(fullText);
@@ -26,8 +26,8 @@ export function PageOverflowTest() {
 
         if(fullText.length < maxChars) {
 
-            setContent1(fullText);
-            setContent2("");
+            document.getElementById('1').value = fullText;
+            document.getElementById('2').value = "";
         }
         else {
             let string = "";
@@ -46,15 +46,15 @@ export function PageOverflowTest() {
                         string2 = string2 + " " + word;
                 }
             }
-            setContent1(string);
-            setContent2(string2);
+            document.getElementById('1').value = string;
+            document.getElementById('2').value = string2;
         }
     }
 
     return(
         <div className='textContainer'>
-            <textarea id='1' value={content1} onChange={(e) => {setContent1(e.target.value); }}/>
-            <textarea id='2' value={content2} onChange={(e) => {setContent2(e.target.value); }}/>
+            <textarea id='1' onChange={() => {handleUpdatedText}}/>
+            <textarea id='2' onChange={() => {handleUpdatedText}}/>
             <button onClick={handleUpdatedText}>overflow</button>
         </div>
     );
