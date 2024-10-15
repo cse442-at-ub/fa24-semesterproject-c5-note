@@ -44,7 +44,7 @@ export function Top_bar(){
 export function Forgot_login(){
     const navigate = useNavigate();
 
-    const handleShowEmail = () => ghosta.fire({ headerTitle: 'ERROR',description:'Please enter an email', showCloseButton:true });
+    const handleShowEmail = () => ghosta.fire({ headerTitle: 'Error',description:'Please enter an email.', showCloseButton:true });
 
     const sendUsernameEmail = () => {
 
@@ -67,7 +67,7 @@ export function Forgot_login(){
         
         }
         else if (data.status === "failed"){
-          ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
+          ghosta.fire({ headerTitle: "Error", description:"There is no account associated with " + document.getElementById("email").value + "."});
         }
         else{
           ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
@@ -94,7 +94,7 @@ export function Forgot_login(){
         
         }
         else if (status === "failed"){
-          ghosta.fire({ headerTitle: "Error", description:"There is no account associatd with " + document.getElementById("email").value + "."});
+          ghosta.fire({ headerTitle: "Error", description:"There is no account associated with " + document.getElementById("email").value + "."});
         }
         else{
           ghosta.fire({ headerTitle: "Error", description:"There was an error with the server."});
