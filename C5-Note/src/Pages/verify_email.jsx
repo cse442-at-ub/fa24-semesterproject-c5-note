@@ -101,11 +101,11 @@ export function VerifyEmail(){
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
             />
-            <input required type="text" className='form_text' placeholder='Password' 
+            <input required type="password" className='form_text' placeholder='Password' 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <input required type="text" className='form_text' placeholder='Re-Password' 
+            <input required type="password" className='form_text' placeholder='Re-Password' 
                 value={rePassword}
                 onChange={(e) => setRePassword(e.target.value)}
             />
