@@ -49,12 +49,22 @@ export function ToolTest(){
 
     //considering validation with user and current notebook content
 
-    var placeholder = 'Start typing...'
+    var [placeholder,setPlace] = useState('Start typing...')
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
 
     const config = useMemo(() => ({
+        cleanHTML: {
+            denyTags: {
+              script: true,
+              button: true,
+              img: {
+                onload : true
+              }
+            }
+          },
+        
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder,
             theme: 'light',
@@ -254,7 +264,12 @@ export function ToolTest(){
                 console.log(data)
                 console.log(data['content']);
                 setContent(data['content']);
-                placeholder = '';
+                if (data['content'] != "<p><br></p>"){
+                    setPlace('')
+                }else{
+                    setPlace('Start Typing...')
+                }
+                
             })
             .catch((error) => console.log(error));
         }, []
@@ -288,7 +303,7 @@ export function ToolTest(){
                 {/* Header */}
                 <div className="nbpHeader">
                     <div className="nbpHeaderLeft">
-                        <Link to="/"><img src={logo} className="nbpLogo"/></Link>
+                        <Link to="/note"><img src={logo} className="nbpLogo"/></Link>
                         <span>C5-Note</span>
                     </div>
                     <div className="nbpHeaderRight">

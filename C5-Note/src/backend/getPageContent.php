@@ -13,6 +13,10 @@ if ($connection->connect_error) {
     die("Could not connect to the database: " . $connection->connect_error);
 }
 
+require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
+    
+$purifier = new HTMLPurifier();
+
 $json = json_decode(file_get_contents('php://input')); // Ensure you read input correctly
 $loadpageid = $json->pageid;
 $groupid = $json->groupid;
@@ -27,7 +31,9 @@ $sql->execute();
 $result = $sql->get_result();
 $outp = $result->fetch_assoc(); // Fetch the result correctly
 
-echo json_encode(["content" => $outp['page_content']]); // Fixed JSON encoding
+$clean_html = $purifier->purify($outp['page_content']);
+
+echo json_encode(["content" => $clean_html]); // Fixed JSON encoding
 
 $sql->close(); // Close the statement
 $connection->close(); // Close the connection

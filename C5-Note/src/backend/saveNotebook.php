@@ -24,14 +24,20 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
+require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
+    
+$purifier = new HTMLPurifier();
+
 $sourceid   = $json->pageid;      // Get the page to write to
 $GroupID  = $json->groupid;       // What to update the title to
 $text       = $json->updatetext;        // What to update the page contents to
 
+$clean_html = $purifier->purify($text);
+
 // Update the database
 //  > Specifically column 4 of page_id 1 in the database
 $sql = mysqli_prepare($connection, "UPDATE pages SET page_content = ? WHERE page_number = ? AND group_id = ?");
-$sql->bind_param("sii", $text, $sourceid,$GroupID);
+$sql->bind_param("sii", $clean_html, $sourceid,$GroupID);
 
 // Determine if the page was saved
 if ($sql->execute()){
