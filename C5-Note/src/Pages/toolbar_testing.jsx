@@ -264,6 +264,28 @@ export function ToolTest(){
         }
     };
 
+    const fetchPageNumContent = async (page) => {
+        var jsonDataLoad = {
+            "pageid": page,
+            "groupid": groupID
+        };
+        
+        const response = await fetch("backend/getPageContent.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jsonDataLoad)
+        });
+        
+        const data = await response.json();
+        if (data['content']) {
+            return data['content'];
+        }
+        return "";
+    };
+
     // Fetch page content whenever pageNum or groupID changes
     useEffect(() => {
         fetchPageContent();
@@ -335,12 +357,17 @@ export function ToolTest(){
                             var elem  = document.getElementsByClassName("jodit-wysiwyg")[0];
                             console.log(elem.clientHeight < elem.scrollHeight);
                             if (elem.clientHeight < elem.scrollHeight) {
+                                var pagesContent = ["zero"];
+                                for (let i = 1; i <= 100; i++) {
+                                    pagesContent[i] = fetchPageNumContent(i);
+                                }
                                 var text = document.getElementById("editor").value;
                                 var pTags = text.split("</p>");
                                 for(let index = 0; index < pTags.length; index++) {
                                     pTags[index] = pTags[index].replace("<p>","");
                                 }
                                 console.log(pTags);
+                                console.log(pagesContent);
                             }
                         }}
                     />
