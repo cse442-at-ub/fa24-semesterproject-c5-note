@@ -230,7 +230,7 @@ export function NotebookDetail() {
             // After successfully adding the page, reload the groups/pages
             const newPage = {
                 page_number: group.pages.length + 1,  // New page number based on existing pages
-                page_content: ""  // Empty content
+                page_content: "Untitled Page"  // Empty content
             };
             
             // Update the state with the newly added page
@@ -322,7 +322,7 @@ export function NotebookDetail() {
                                         {group.pages.map((page, pageIndex) => (
                                             <li key={pageIndex}>
                                                 <button onClick={() => handleGroupPageClick(group, page)}>
-                                                    Page {page.page_number}: {page.page_content}
+                                                    Page {page.page_number}: {page.page_name || "Untitle Page"}
                                                 </button>
                                             </li>
                                         ))}
