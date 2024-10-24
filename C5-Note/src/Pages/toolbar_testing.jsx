@@ -269,15 +269,18 @@ export function ToolTest(){
         fetchPageContent();
     }, [pageNum, groupID]); // Run when pageNum or groupID changes
 
+    const stripTags = (stuff) => {
+        const plainText = stuff.replace(/<[^>]+>/g, ''); // Regular expression to strip tags
+        return plainText
+    };
+
     // Generic "are you sure" dialog prompt
     useEffect(() => {
         const handleBeforeUnload = (event) => {
-            console.log(testcontent != editor.current.value)
+            // Perform actions before the component unloads
             console.log(testcontent)
             console.log(editor.current.value)
-            console.log(unsavedChanges)
-            // Perform actions before the component unloads
-            if(unsavedChanges == 1 || testcontent != editor.current.value){
+            if((unsavedChanges == 1 && stripTags(testcontent) != stripTags(editor.current.value)) || (stripTags(testcontent) != stripTags(editor.current.value))){
                 event.preventDefault();
             }
             event.returnValue = '';
