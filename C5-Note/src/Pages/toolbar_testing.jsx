@@ -11,6 +11,8 @@ import JoditEditor from 'jodit-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
+let unsavedChanges = 0;
+
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
@@ -198,6 +200,83 @@ export function ToolTest(){
         }
     };
 
+    //This is where code from the testpagewrite.jsx starts
+
+    const [title, setTitle] = useState('Loading. . .');
+    const [contents, setContents]=useState('Loading. . . .');
+
+    const savePage = () => {
+        console.log(editor.current.value)
+
+        // What to send in the PHP query
+        //  > Test page is hardcoded to load page with page_id = 1
+        var jsonData = {
+            "pageid":  pageNum,
+            "groupid": groupID,
+            "updatetext" : editor.current.value,
+        };
+        fetch("backend/saveNotebook.php", {method: "POST", body:JSON.stringify(jsonData)});
+
+        unsavedChanges = 0;
+    };
+
+    const updateTitle = () => {
+
+        setTitle(document.getElementById("loadPageTitle").value);
+        unsavedChanges = 1;
+    };
+
+    const updateContents = () => {
+
+        setContents(document.getElementById("loadPageText").value);
+        unsavedChanges = 1;
+    };
+
+    useEffect(
+        () => {
+
+            // What to send in the PHP query
+            //  > Test page is hardcoded to load page with page_id = 1
+            var jsonDataLoad = {
+                "pageid":  pageNum,
+                "groupid": groupID
+            };
+            fetch("backend/getPageContent.php", {
+                method: "POST",
+                headers: {
+                    Accept: 'application.json',
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify(jsonDataLoad)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data[0]);
+                setTitle(data[0].pagename);
+                setContents(data[0].pagetext);
+                console.log(contents);
+            })
+            .catch((error) => console.log(error));
+        }, []
+
+    );
+
+    // Generic "are you sure" dialog prompt
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            // Perform actions before the component unloads
+            if(unsavedChanges == 1){
+                event.preventDefault();
+            }
+            event.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+
     return(
         <>
             {/* Formatting the Note-Taking App via Flexbox
@@ -223,6 +302,7 @@ export function ToolTest(){
                     <Link to="/"><button className="nbpButtonHome">Access</button></Link>
                     <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
+                    <button className="tpwButton" onClick={ savePage }>Save</button>
                 </div>
                 <article className="nbpMain">
                     <div className="Editor_Area">
