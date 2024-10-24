@@ -49,14 +49,14 @@ export function ToolTest(){
 
     //considering validation with user and current notebook content
 
-    const placeholder = 'Start typing...'
+    var placeholder = 'Start typing...'
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
 
     const config = useMemo(() => ({
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
-            placeholder: placeholder || 'Start typings...',
+            placeholder: placeholder,
             theme: 'light',
             controls: {
                 font: {
@@ -203,7 +203,6 @@ export function ToolTest(){
     //This is where code from the testpagewrite.jsx starts
 
     const [title, setTitle] = useState('Loading. . .');
-    const [contents, setContents]=useState('Loading. . . .');
 
     const savePage = () => {
         console.log(editor.current.value)
@@ -254,7 +253,8 @@ export function ToolTest(){
             .then((data) => {
                 console.log(data)
                 console.log(data['content']);
-                editor.value = data['content'];
+                setContent(data['content']);
+                placeholder = '';
             })
             .catch((error) => console.log(error));
         }, []
