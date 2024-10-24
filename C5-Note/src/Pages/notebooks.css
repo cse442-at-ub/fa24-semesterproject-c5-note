@@ -11,6 +11,11 @@ body{
     padding: 0;
 }
 
+.clickableNotebookTitle {
+    cursor: pointer; /* Shows the pointer to indicate it's clickable */
+    transition: color 0.3s ease; /* Optional: smooth transition for color change */
+}
+
 .nbpLogo{
     /* Force the image to be 3em/3em so it'll take up its space
      *  even when not loaded in. */

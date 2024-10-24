@@ -12,6 +12,8 @@
     $password = $data->password;        // Database password
     $db_name = $data->db_name;          // Database name
 
+    $json = json_decode(file_get_contents("php://input"));
+
     // Server name is hardcoded
     $server_name = "localhost:3306";    // Server name provided.
 
@@ -24,7 +26,11 @@
     }
 
 
-    $sql = $connection->prepare("SELECT * FROM notepages WHERE page_id=1");
+    $loadpageid = $json -> sourcepageid;
+
+
+    $sql = $connection->prepare("SELECT * FROM notepages WHERE page_id = ?");
+    $sql->bind_param("i", $loadpageid);
     
     header("Content-Type: application/json; charset=UTF-8");
 

@@ -292,6 +292,10 @@ export function Simple_notebook(){
     }, 100);  // Small delay to ensure the button is rendered
   };
 
+  const handleNotebookClick = (notebook) => {
+    navigate(`/notebooks/${notebook.title}`, { state: { notebook } });
+  };
+
   return(
       <>
           <Top_bar_simple_notes/>
@@ -304,7 +308,7 @@ export function Simple_notebook(){
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
-                    <button className="notebook_buttons">
+                    <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
                       <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
     
                       <div className="notebook-content">

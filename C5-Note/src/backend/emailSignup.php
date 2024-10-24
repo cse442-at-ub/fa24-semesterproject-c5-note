@@ -39,8 +39,8 @@ if (filter_var($signup_email, FILTER_VALIDATE_EMAIL) === false) {
 // Ensure no line breaks in the email
 $signup_email = str_replace(["\r", "\n"], "", $signup_email);
 
-$signup_name = htmlspecialchars($signup_name, ENT_QUOTES, 'UTF-8');
-$signup_email = htmlspecialchars($signup_email, ENT_QUOTES, 'UTF-8');
+//$signup_name = htmlspecialchars($signup_name, ENT_QUOTES, 'UTF-8');
+//$signup_email = htmlspecialchars($signup_email, ENT_QUOTES, 'UTF-8');
 
 // Connect to the database
 $mysqli = new mysqli("localhost:3306", $username, $password, $db_name);
