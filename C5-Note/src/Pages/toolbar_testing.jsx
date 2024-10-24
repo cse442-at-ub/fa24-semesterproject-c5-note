@@ -241,6 +241,7 @@ export function ToolTest(){
                 "pageid":  pageNum,
                 "groupid": groupID
             };
+            console.log(jsonDataLoad)
             fetch("backend/getPageContent.php", {
                 method: "POST",
                 headers: {
@@ -251,10 +252,9 @@ export function ToolTest(){
             })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data[0]);
-                setTitle(data[0].pagename);
-                setContents(data[0].pagetext);
-                console.log(contents);
+                console.log(data)
+                console.log(data['content']);
+                editor.value = data['content'];
             })
             .catch((error) => console.log(error));
         }, []

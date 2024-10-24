@@ -6,28 +6,29 @@ $username = $data->username;
 $password = $data->password;
 $db_name = $data->db_name;
 
-$connection = new mysqli("localhost:3306", $username, $password, $db_name);
-
+$connection = new mysqli("localhost", $username, $password, $db_name, 3306); // Fixed host and port
 
 // Test the connection
-if($connection->connect_error) {
-    die("Could not connect to the database");
+if ($connection->connect_error) {
+    die("Could not connect to the database: " . $connection->connect_error);
 }
 
+$json = json_decode(file_get_contents('php://input')); // Ensure you read input correctly
+$loadpageid = $json->pageid;
+$groupid = $json->groupid;
 
-$loadpageid = $json -> pageid;
-$groupid = $json -> groupid;
-
-
-$sql = $connection->prepare("SELECT * FROM pages WHERE page_number = ? AND group_id = ?");
-$sql->bind_param("i","i", $loadpageid,$groupid);
+// Prepare the SQL statement
+$sql = $connection->prepare("SELECT page_content FROM pages WHERE page_number = ? AND group_id = ?");
+$sql->bind_param("ii", $loadpageid, $groupid); // Fixed parameter binding
 
 header("Content-Type: application/json; charset=UTF-8");
 
 $sql->execute();
 $result = $sql->get_result();
-$outp = $result->fetch_all(MYSQLI_ASSOC);
+$outp = $result->fetch_assoc(); // Fetch the result correctly
 
-echo json_encode($outp);
+echo json_encode(["content" => $outp['page_content']]); // Fixed JSON encoding
 
+$sql->close(); // Close the statement
+$connection->close(); // Close the connection
 ?>
