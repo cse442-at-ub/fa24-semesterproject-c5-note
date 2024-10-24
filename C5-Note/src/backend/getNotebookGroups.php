@@ -40,7 +40,7 @@ try {
             $groupId = $group['id'];
 
             // Fetch the pages for each group
-            $stmtPages = $connection->prepare("SELECT page_number, page_content FROM pages WHERE group_id = ?");
+            $stmtPages = $connection->prepare("SELECT page_number, page_content, page_name FROM pages WHERE group_id = ?");
             $stmtPages->bind_param("i", $groupId);
             $stmtPages->execute();
             $resultPages = $stmtPages->get_result();

@@ -27,7 +27,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                     {group.pages.map((page, pageIndex) => (
                         <li key={pageIndex}>
                             <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
-                                Page {page.page_number}: {page.page_content || "Untitled Page"}
+                                Page {page.page_number}: {page.page_name || "Untitled Page"}
                             </Link>
                         </li>
                     ))}
