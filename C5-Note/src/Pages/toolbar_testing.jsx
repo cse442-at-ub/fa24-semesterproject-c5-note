@@ -38,7 +38,6 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
 }
 
 export function ToolTest(){
-    //will be used later
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
     const { notebook, group, page } = location.state;  // Access state passed during navigation
@@ -46,10 +45,8 @@ export function ToolTest(){
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [groups, setGroups] = useState([]); // Store the groups of the current notebook
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
-
-    //considering validation with user and current notebook content
-
-    var [placeholder,setPlace] = useState('Start typing...')
+    
+    const [placeholder, setPlace] = useState('Start typing...');
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
@@ -238,40 +235,35 @@ export function ToolTest(){
         unsavedChanges = 1;
     };
 
-    useEffect(
-        () => {
 
-            // What to send in the PHP query
-            //  > Test page is hardcoded to load page with page_id = 1
-            var jsonDataLoad = {
-                "pageid":  pageNum,
-                "groupid": groupID
-            };
-            console.log(jsonDataLoad)
-            fetch("backend/getPageContent.php", {
-                method: "POST",
-                headers: {
-                    Accept: 'application.json',
-                    "Content-Type": "application/json"
-                },
-                body:JSON.stringify(jsonDataLoad)
-            })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                console.log(data['content']);
-                setContent(data['content']);
-                if (data['content'] != "<p><br></p>"){
-                    setPlace('')
-                }else{
-                    setPlace('Start Typing...')
-                }
-                
-            })
-            .catch((error) => console.log(error));
-        }, []
+    const fetchPageContent = async () => {
+        var jsonDataLoad = {
+            "pageid": pageNum,
+            "groupid": groupID
+        };
+        
+        const response = await fetch("backend/getPageContent.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jsonDataLoad)
+        });
+        
+        const data = await response.json();
+        console.log(data)
+        if (data['content']) {
+            setContent(data['content']);
+        } else {
+            setContent('');
+        }
+    };
 
-    );
+    // Fetch page content whenever pageNum or groupID changes
+    useEffect(() => {
+        fetchPageContent();
+    }, [pageNum, groupID]); // Run when pageNum or groupID changes
 
     // Generic "are you sure" dialog prompt
     useEffect(() => {
@@ -287,6 +279,7 @@ export function ToolTest(){
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, []);
+    
 
 
     return(
