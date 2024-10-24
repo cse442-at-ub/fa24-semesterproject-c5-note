@@ -12,7 +12,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
 let unsavedChanges = 0;
-
+let testcontent = ""
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
@@ -220,7 +220,9 @@ export function ToolTest(){
         };
         fetch("backend/saveNotebook.php", {method: "POST", body:JSON.stringify(jsonData)});
 
+        testcontent = editor.current.value; 
         unsavedChanges = 0;
+        
     };
 
     const updateTitle = () => {
@@ -229,9 +231,9 @@ export function ToolTest(){
         unsavedChanges = 1;
     };
 
-    const updateContents = () => {
-
-        setContents(document.getElementById("loadPageText").value);
+    const updateContents = (content) => {
+        console.log(content)
+        setContent(content);
         unsavedChanges = 1;
     };
 
@@ -255,8 +257,10 @@ export function ToolTest(){
         console.log(data)
         if (data['content']) {
             setContent(data['content']);
+            testcontent = data['content'];
         } else {
             setContent('');
+            testcontent = '';
         }
     };
 
@@ -268,8 +272,12 @@ export function ToolTest(){
     // Generic "are you sure" dialog prompt
     useEffect(() => {
         const handleBeforeUnload = (event) => {
+            console.log(testcontent != editor.current.value)
+            console.log(testcontent)
+            console.log(editor.current.value)
+            console.log(unsavedChanges)
             // Perform actions before the component unloads
-            if(unsavedChanges == 1){
+            if(unsavedChanges == 1 || testcontent != editor.current.value){
                 event.preventDefault();
             }
             event.returnValue = '';
@@ -318,7 +326,7 @@ export function ToolTest(){
                         value={content}
                         config={config}
                         tabIndex={1} // tabIndex of textarea
-                        onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
+                        onBlur={newContent => updateContents(newContent)} // preferred to use only this option to update the content for performance reasons
                         onChange={newContent => {}}
                     />
                 </div>
