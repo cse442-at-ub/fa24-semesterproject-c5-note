@@ -330,17 +330,18 @@ export function ToolTest(){
                         value={content}
                         config={config}
                         tabIndex={1} // tabIndex of textarea
-                        onBlur={newContent => {updateContents(newContent); 
-                            var text = document.getElementById("editor").value;
-                            var pTags = text.split("</p>");
-                            for(let index = 0; index < pTags.length; index++) {
-                                pTags[index] = pTags[index].replace("<p>","");
-                            }
-                            console.log(pTags);
-                            }} // preferred to use only this option to update the content for performance reasons
+                        onBlur={newContent => {updateContents(newContent);}} // preferred to use only this option to update the content for performance reasons
                         onChange={newContent => {
                             var elem  = document.getElementsByClassName("jodit-wysiwyg")[0];
                             console.log(elem.clientHeight < elem.scrollHeight);
+                            if (elem.clientHeight < elem.scrollHeight) {
+                                var text = document.getElementById("editor").value;
+                                var pTags = text.split("</p>");
+                                for(let index = 0; index < pTags.length; index++) {
+                                    pTags[index] = pTags[index].replace("<p>","");
+                                }
+                                console.log(pTags);
+                            }
                         }}
                     />
                 </div>
