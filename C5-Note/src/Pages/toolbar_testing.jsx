@@ -59,9 +59,6 @@ export function ToolTest(){
             denyTags: {
               script: true,
               button: true,
-              img: {
-                onload : true
-              }
             }
           },
         
