@@ -286,6 +286,18 @@ export function ToolTest(){
         return "";
     };
 
+    async function processPromisesArray(array) {
+
+        var newArray = ["zero"];
+        for (var i in array) {
+            var value = await array[i];
+            if (value != "") {
+                newArray[i] = value;
+            }
+        }
+        return newArray;
+    }
+
     // Fetch page content whenever pageNum or groupID changes
     useEffect(() => {
         fetchPageContent();
@@ -358,16 +370,13 @@ export function ToolTest(){
                             console.log(elem.clientHeight < elem.scrollHeight);
                             if (elem.clientHeight < elem.scrollHeight) {
                                 var pagesContent = ["zero"];
-                                for (let i = 1; i <= 100; i++) {
+                                for (let i = 1; i <= 10; i++) {
                                     pagesContent[i] = fetchPageNumContent(i);
                                 }
-                                var text = document.getElementById("editor").value;
-                                var pTags = text.split("</p>");
-                                for(let index = 0; index < pTags.length; index++) {
-                                    pTags[index] = pTags[index].replace("<p>","");
-                                }
-                                console.log(pTags);
-                                console.log(pagesContent);
+                                processPromisesArray(pagesContent).then(con => {
+                                    con[pageNum] = document.getElementById("editor").value;
+                                    console.log(con);
+                                });
                             }
                         }}
                     />
