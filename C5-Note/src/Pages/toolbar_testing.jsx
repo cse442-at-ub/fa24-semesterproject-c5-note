@@ -377,11 +377,23 @@ export function ToolTest(){
                                     con[pageNum] = document.getElementById("editor").value;
                                     var allContents = "";
                                     for(let i = 1; i < con.length; i++) {
-                                        allContents += con[i];
+                                        if(con[i] != "<p><br><p>") {
+                                            allContents += con[i];
+                                        }
                                     }
                                     allContents = allContents.replaceAll("<p>","");
                                     var pTags = allContents.split("</p>");
                                     console.log(pTags);
+                                    var counter = 0;
+                                    var tempContents = ["",""];
+                                    while(counter < pTags.length) {
+                                        if(counter % 20 == 0) {
+                                            tempContents[Math.floor(counter / 20) + 1] = "";
+                                        }
+                                        tempContents[Math.floor(counter / 20) + 1] += "<p>" + pTags[counter] + "</p>";
+                                        counter++;
+                                    }
+                                    console.log(tempContents);
                                 });
                             }
                         }}
