@@ -39,6 +39,7 @@ function Top_bar_simple_notes(){
     )
 }
 
+//need to adjust sharednotebooks not opening straigh to availbble pages
 export function Simple_notebook(){
   const navigate = useNavigate();
   const [notebooks, setNotebooks] = useState([]);
