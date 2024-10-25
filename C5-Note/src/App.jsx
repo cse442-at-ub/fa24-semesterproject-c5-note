@@ -16,6 +16,7 @@ import { Reset_Password } from './Pages/reset_password';
 import { TestPageWrite } from './Pages/test/testpagewrite';
 import { ToolTest } from './Pages/toolbar_testing'
 import { Etest } from './Pages/Etest'
+import { PageOverflowTest } from './Pages/test/pageOverflow_test'
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
         {/* Test Pages */}
         <Route path="/notebooks/:groupID/:pageNum" element = { <ToolTest/> }/>
         <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
+        <Route path="/test/pageOverflow" element = { <PageOverflowTest/> }/>
       </Routes>
     </Router>
   )

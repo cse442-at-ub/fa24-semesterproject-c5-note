@@ -43,6 +43,7 @@ function Top_bar_simple_notes(){
 export function Simple_notebook(){
   const navigate = useNavigate();
   const [notebooks, setNotebooks] = useState([]);
+  const [sort_typing, setSortTyping] = useState(0)  
   const [sharedNotebooks, setSharedNotebooks] = useState([]); // For shared notebooks
 
 
@@ -90,7 +91,22 @@ export function Simple_notebook(){
   useEffect(() => {
     const username = getCookie('username');
 
-    //fetches current user notebooks
+    fetch('backend/getSortType.php', { //should be 'backend/notebookCreation.php'
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        username: username
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        setSortTyping(data['sort_type'])
+        console.log(data)
+      }) //data = response.json(), also sets what this users availble notebooks are
+      .catch(error => console.error('Error fetching notebooks:', error));
+
     fetch('backend/notebookFinder.php', { //should be 'backend/notebookCreation.php'
       method: "POST",
       headers: {
@@ -101,7 +117,10 @@ export function Simple_notebook(){
       })
     })
       .then(response => response.json())
-      .then(data => setNotebooks(data)) //data = response.json(), also sets what this users availble notebooks are
+      .then(data => {
+        setNotebooks(data)
+        console.log(data)
+      }) //data = response.json(), also sets what this users availble notebooks are
       .catch(error => console.error('Error fetching notebooks:', error));
 
 
@@ -332,28 +351,96 @@ export function Simple_notebook(){
     navigate(`/notebooks/${notebook.title}`, { state: { notebook } });
 };
 
+
+
+
+  const handleSortChange = (event) => {
+    const selectedValue = event.target.value;
+    setSortTyping(selectedValue); // Update the state to reflect the new selection
+  
+    const username = getCookie('username');
+    let changed = false;
+    let case_type = parseInt(selectedValue); // Convert selectedValue to an integer
+    let sortedNotebooks;
+  
+    switch (case_type) {
+      case 0: // Newest Edited
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(b.last_modified) - new Date(a.last_modified));
+        break;
+      case 1: // Oldest Edited
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(a.last_modified) - new Date(b.last_modified));
+        break;
+      case 2: // Newest Created
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(b.time_created) - new Date(a.time_created));
+        break;
+      case 3: // Oldest Created
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(a.time_created) - new Date(b.time_created));
+        break;
+      case 4: // Alphabetical A-Z
+        sortedNotebooks = [...notebooks].sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 5: // Alphabetical Z-A
+        sortedNotebooks = [...notebooks].sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      default:
+        sortedNotebooks = notebooks; // Fallback to the original order
+    }
+  
+    fetch('backend/setSortType.php', {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        username: username,
+        sort_type: case_type
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => console.error('Error fetching notebooks:', error));
+  
+    setNotebooks(sortedNotebooks); // Update notebooks to sorted list
+  };
+
   return(
       <>
           <Top_bar_simple_notes/>
           <GhostaContainer />
           <div className="mainBody">
             <div>
-              <div className="notebooks_list spacing" >
-                <ul>
-                  <li className="label">Notebooks</li>
+            <div className="notebooks_list spacing" >
+              <div id='sort_bar'>
+                <label for="notebook_sort">Sort:</label>
+                <select id='notebook_sort' onChange={handleSortChange} value={sort_typing}>
+                  <option value="0">Newest Edited</option>
+                  <option value="1">Oldest Edited</option>
+                  <option value="2">Newest Created</option>
+                  <option value="3">Oldest Created</option>
+                  <option value="4">Alphabetical A-Z</option>
+                  <option value="5">Alphabetical Z-A</option>
+                </select>
+              </div>
+            
+              <ul>
+                <li className="label">Notebooks</li>
 
-                  {notebooks.map( (notebook, index) => (
-                    <li key = {index} className="spacing">
-                      <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
-                        <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-      
-                        <div className="notebook-content">
-                          <div className="notebook-title">{notebook.title}</div>
-                          <div className="notebook-description">{notebook.description}</div>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
+                {notebooks.map( (notebook, index) => (
+                  <li key = {index} className="spacing">
+                    <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                      <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
+    
+                      <div className="notebook-content">
+                        <div className="notebook-title">{notebook.title}</div>
+                        <div className="notebook-description">{notebook.description}</div>
+                        <div className="notebook-description">Created: {notebook.time_created}</div>
+                        <div className="notebook-description">Modified: {notebook.last_modified}</div>
+                      </div>
+                    </button>
+                  </li>
+                ))}
 
                 </ul>
               </div>

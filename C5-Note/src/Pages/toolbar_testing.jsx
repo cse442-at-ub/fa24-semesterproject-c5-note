@@ -10,6 +10,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Modal, Button } from 'react-bootstrap';
 
 
+let unsavedChanges = 0;
+let testcontent = ""
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
@@ -24,7 +26,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                     {group.pages.map((page, pageIndex) => (
                         <li key={pageIndex}>
                             <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
-                                Page {page.page_number}: {page.page_content || "Untitled Page"}
+                                Page {page.page_number}: {page.page_name || "Untitled Page"}
                             </Link>
                         </li>
                     ))}
@@ -35,7 +37,6 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
 }
 
 export function ToolTest(){
-    //will be used later
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
     const { notebook, group, page } = location.state;  // Access state passed during navigation
@@ -46,11 +47,8 @@ export function ToolTest(){
     const [groups, setGroups] = useState([]); // Store the groups of the current notebook
     const [notebookId, setNotebookId] = useState(null); // To store notebook ID
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
-
-
-    //considering validation with user and current notebook content
-
-    const placeholder = 'Start typing...'
+    
+    const [placeholder, setPlace] = useState('Start typing...');
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
@@ -72,8 +70,15 @@ export function ToolTest(){
     };
 
     const config = useMemo(() => ({
+        cleanHTML: {
+            denyTags: {
+              script: true,
+              button: true,
+            }
+          },
+        
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
-            placeholder: placeholder || 'Start typings...',
+            placeholder: placeholder,
             theme: 'light',
             controls: {
                 font: {
@@ -236,6 +241,95 @@ export function ToolTest(){
         }
     };
 
+    //This is where code from the testpagewrite.jsx starts
+
+    const [title, setTitle] = useState('Loading. . .');
+
+    const savePage = () => {
+        console.log(editor.current.value)
+
+        // What to send in the PHP query
+        //  > Test page is hardcoded to load page with page_id = 1
+        var jsonData = {
+            "pageid":  pageNum,
+            "groupid": groupID,
+            "updatetext" : editor.current.value,
+        };
+        fetch("backend/saveNotebook.php", {method: "POST", body:JSON.stringify(jsonData)});
+
+        testcontent = editor.current.value; 
+        unsavedChanges = 0;
+        
+    };
+
+    const updateTitle = () => {
+
+        setTitle(document.getElementById("loadPageTitle").value);
+        unsavedChanges = 1;
+    };
+
+    const updateContents = (content) => {
+        console.log(content)
+        setContent(content);
+        unsavedChanges = 1;
+    };
+
+
+    const fetchPageContent = async () => {
+        var jsonDataLoad = {
+            "pageid": pageNum,
+            "groupid": groupID
+        };
+        
+        const response = await fetch("backend/getPageContent.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jsonDataLoad)
+        });
+        
+        const data = await response.json();
+        console.log(data)
+        if (data['content']) {
+            setContent(data['content']);
+            testcontent = data['content'];
+        } else {
+            setContent('');
+            testcontent = '';
+        }
+    };
+
+    // Fetch page content whenever pageNum or groupID changes
+    useEffect(() => {
+        fetchPageContent();
+    }, [pageNum, groupID]); // Run when pageNum or groupID changes
+
+    const stripTags = (stuff) => {
+        const plainText = stuff.replace(/<[^>]+>/g, ''); // Regular expression to strip tags
+        return plainText
+    };
+
+    // Generic "are you sure" dialog prompt
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            // Perform actions before the component unloads
+            console.log(testcontent)
+            console.log(editor.current.value)
+            if((unsavedChanges == 1 && stripTags(testcontent) != stripTags(editor.current.value)) || (stripTags(testcontent) != stripTags(editor.current.value))){
+                event.preventDefault();
+            }
+            event.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+    
+
+
     // Fetch existing users who have access to this notebook
     const fetchSharedUsers = async () => {
         try {
@@ -301,7 +395,7 @@ export function ToolTest(){
                 {/* Header */}
                 <div className="nbpHeader">
                     <div className="nbpHeaderLeft">
-                        <Link to="/"><img src={logo} className="nbpLogo"/></Link>
+                        <Link to="/note"><img src={logo} className="nbpLogo"/></Link>
                         <span>C5-Note</span>
                     </div>
                     <div className="nbpHeaderRight">
@@ -317,6 +411,7 @@ export function ToolTest(){
 
                     <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
+                    <button className="tpwButton" onClick={ savePage }>Save</button>
                 </div>
 
                 <article className="nbpMain">
@@ -328,7 +423,7 @@ export function ToolTest(){
                         value={content}
                         config={config}
                         tabIndex={1} // tabIndex of textarea
-                        onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
+                        onBlur={newContent => updateContents(newContent)} // preferred to use only this option to update the content for performance reasons
                         onChange={newContent => {}}
                     />
                 </div>
