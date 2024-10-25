@@ -3,12 +3,11 @@ import { Link } from "react-router-dom";
 import './notebooks.css';   
 import logo from '../C5.png';
 import './toolbar.css';
-
-
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import JoditEditor from 'jodit-react';
-
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+import { Modal, Button } from 'react-bootstrap';
 
 
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
@@ -43,6 +42,7 @@ export function ToolTest(){
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [groups, setGroups] = useState([]); // Store the groups of the current notebook
+    const [notebookId, setNotebookId] = useState(null); // To store notebook ID
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
 
     //considering validation with user and current notebook content
@@ -51,6 +51,22 @@ export function ToolTest(){
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
+
+    //modal
+    const [showAccessModal, setShowAccessModal] = useState(false); // State for showing modal
+    const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
+    const [newUsername, setNewUsername] = useState(''); // Input field for new username
+    const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
+
+    const handleClose = () => {
+        setShowAccessModal(false);
+        setNewUsername('');
+        setErrorMessage('');
+    };
+    const handleShow = () => {
+        fetchSharedUsers(); // fetch shared users when modal opens
+        setShowAccessModal(true);
+    };
 
     const config = useMemo(() => ({
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
@@ -84,6 +100,8 @@ export function ToolTest(){
         })
         return cookie[name];
     }
+
+    const currentUsername = getCookie('username');
 
     // Handle drag end for reordering
     const handleDragEnd = async (result) => {
@@ -154,6 +172,7 @@ export function ToolTest(){
             const data = await response.json();
             if (data.success) {
                 setGroups(data.groups);
+                setNotebookId(data.notebook_id);
             } else {
                 console.error("Failed to fetch groups and pages");
             }
@@ -198,6 +217,60 @@ export function ToolTest(){
         }
     };
 
+    // Fetch existing users who have access to this notebook
+    const fetchSharedUsers = async () => {
+        try {
+            const response = await fetch("backend/getSharedUsers.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ notebook_id: notebookId }) // Send the current notebook ID
+            });
+            const data = await response.json();
+            if (data.success) {
+                setSharedUsers(data.users); // Assuming users is an array of usernames
+            } else {
+                console.error("Failed to fetch shared users");
+            }
+        } catch (error) {
+            console.error("Error fetching shared users:", error);
+        }
+    };
+
+    // Handle Give Access button click
+    const handleGiveAccess = async () => {
+        setErrorMessage(''); 
+        
+        
+        if (newUsername.trim() === '') { // Check if the input field is empty
+            setErrorMessage("You can't leave this field empty.");
+            return;
+        }
+        else if (newUsername === currentUsername) { // check if the user is trying to add themselves
+            setErrorMessage("You can't give yourself access.");
+            return;
+        }
+
+        try {
+            const response = await fetch("backend/addSharedUser.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    notebook_id: notebookId,
+                    username: newUsername
+                })     
+            });
+            const data = await response.json();
+            if (data.success) {
+                setSharedUsers([...sharedUsers, newUsername]); // update the list with the new user
+                setNewUsername(''); // clear the input field after successful update
+            } else {
+                setErrorMessage(data.message);
+            }
+        } catch (error) {
+            console.error("Error adding user access:", error);
+        }
+    };
+
     return(
         <>
             {/* Formatting the Note-Taking App via Flexbox
@@ -220,10 +293,13 @@ export function ToolTest(){
                 {/* Toolbar */}
                 <div className="nbpToolbar">
                     <Link to="/"><button className="nbpButtonHome">Download</button></Link>
-                    <Link to="/"><button className="nbpButtonHome">Access</button></Link>
+
+                    <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
+
                     <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
                 </div>
+
                 <article className="nbpMain">
                     <div className="Editor_Area">
                     {/* Lorem Ipsum for filler until note pages implemented */}
@@ -241,7 +317,9 @@ export function ToolTest(){
                 </article>
 
                 <aside className="aside nbpSidebarNotebooks">
-                    <h1 className="clickableNotebookTitle" onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook } })}> {notebook.title} </h1>
+                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook } })}> 
+                        {notebook.title} 
+                    </h1>
                     <h3>Other Notebooks</h3>
                     <ul>
                         {notebooks
@@ -288,11 +366,43 @@ export function ToolTest(){
 
             </div>
 
+            {/* access buttom modal/popup */}
+            <Modal show={showAccessModal} onHide={handleClose} centered>
+                <Modal.Header className="modal-header-custom">
+                    <Modal.Title className="modal-title-wrapper">
+                        <span className="modal-title">{notebook.title}</span>
+                        <p className="modal-created-by">Created by: {getCookie('username')}</p>
+                    </Modal.Title>
+                    <Button 
+                        onClick={handleClose} 
+                        className="modal-close-button"
+                    >
+                        &times;
+                    </Button>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <ul>
+                        {sharedUsers.map((user, index) => (
+                            <li key={index}>{user}</li> // Display each shared user
+                        ))}
+                    </ul>
+
+                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <input
+                            type="text"
+                            placeholder="Enter username"
+                            value={newUsername}
+                            onChange={(e) => setNewUsername(e.target.value)} // Update state with input
+                        />
+                        <Button variant="primary" onClick={handleGiveAccess}>
+                            Give Access
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </>
     );
-
-
-
-
-
 }

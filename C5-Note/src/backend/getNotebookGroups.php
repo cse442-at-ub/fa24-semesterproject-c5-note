@@ -61,6 +61,7 @@ try {
 
         echo json_encode([
             "success" => true,
+            "notebook_id" => $notebookId, // Add notebook ID to the response
             "groups" => $groups
         ]);
 
@@ -109,4 +110,6 @@ try {
         "message" => "Error: " . $e->getMessage()
     ]);
 }
+
+$connection->close();
 ?>
