@@ -41,9 +41,12 @@ export function ToolTest(){
     const { notebook, group, page } = location.state;  // Access state passed during navigation
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
+    const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
+
     const [groups, setGroups] = useState([]); // Store the groups of the current notebook
     const [notebookId, setNotebookId] = useState(null); // To store notebook ID
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
+
 
     //considering validation with user and current notebook content
 
@@ -181,14 +184,32 @@ export function ToolTest(){
         fetchGroups();
     }, [notebook.title]);
     
+    // Fetch shared notebooks
+    useEffect(() => {
+        const fetchSharedNotebooks = async () => {
+            const response = await fetch("backend/getSharedNotebooks.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: currentUsername })
+            });
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setSharedNotebooks(data);
+            } else {
+                console.error("Failed to fetch shared notebooks");
+            }
+        };
+
+        fetchSharedNotebooks();
+    }, [currentUsername]);
+
     const handleNotebookClick = async (otherNotebook) => {
-        const username = getCookie('username');
     
         // Fetch groups for the clicked notebook
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, title: otherNotebook.title }),
+            body: JSON.stringify({ currentUsername, title: otherNotebook.title }),
         });
     
         const data = await response.json();
@@ -332,6 +353,24 @@ export function ToolTest(){
                                 </li>
                             ))}
                     </ul>
+
+                    <h3>Shared Notebooks</h3>
+                    <ul>
+                        {sharedNotebooks.length === 0 ? (
+                            <p>No shared notebooks available.</p>
+                        ) : (
+                            sharedNotebooks
+                                .filter((sharedNotebook) => sharedNotebook.title !== notebook.title)
+                                .map((sharedNotebook, index) => (
+                                    <li key={index}>
+                                        <button onClick={() => handleNotebookClick(sharedNotebook)}>
+                                            {sharedNotebook.title}
+                                        </button>
+                                    </li>
+                                ))
+                        )}
+                    </ul>
+
                 </aside>
 
                 <aside className="aside nbpSidebarPages">
