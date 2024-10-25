@@ -314,6 +314,25 @@ export function ToolTest(){
         return newArray;
     }
 
+    async function makePage() {
+        const username = getCookie('username');
+
+        const response = await fetch("backend/addPages.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,  // The logged-in user
+                title: notebook.title,  // The notebook title
+                group_id: groupID,  // The ID of the group where the page will be added
+                page_content: ""  // Page content can be an empty string
+            }),
+        });
+
+        return response;
+    }
+
     // Fetch page content whenever pageNum or groupID changes
     useEffect(() => {
         fetchPageContent();
@@ -399,7 +418,6 @@ export function ToolTest(){
                                     }
                                     allContents = allContents.replaceAll("<p>","");
                                     var pTags = allContents.split("</p>");
-                                    console.log(pTags);
                                     var counter = 0;
                                     var tempContents = ["",""];
                                     while(counter < pTags.length) {
@@ -409,13 +427,24 @@ export function ToolTest(){
                                         tempContents[Math.floor(counter / 21) + 1] += "<p>" + pTags[counter] + "</p>";
                                         counter++;
                                     }
+                                    console.log(con);
                                     console.log(tempContents);
+
+
+                                    var pageCount = con.length;
+                                    console.log(pageCount);
+                                    console.log(tempContents.length);
+                                    while(pageCount < tempContents.length) {
+                                        makePage();
+                                        pageCount++;
+                                    }
                                     for(var i in tempContents) {
                                         if(i != 0) {
                                             savePageNum(i, tempContents[i]);
                                         }
                                     }
                                     setContent(tempContents[pageNum]);
+
                                 });
                             }
                         }}
