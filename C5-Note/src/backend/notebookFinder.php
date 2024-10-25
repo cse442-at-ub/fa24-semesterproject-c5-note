@@ -13,50 +13,95 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
-//reading input data
+// Reading input data
 $input = json_decode(file_get_contents("php://input"), true);
-$loggedInUsername = $input['username']; // This is the username sent from the frontend
+$loggedInUsername = $input['username'];
 
 try {
-    
+    // Query to get notebooks for the specific logged in user
+    $stmt = $connection->prepare("SELECT id, title, description, color FROM notebooks WHERE username = ?");
+    $stmt->bind_param("s", $loggedInUsername); // Inputs loggedInUser for ?
+    $stmt->execute();
 
-    //query to get notebooks for the specific logged in user
-    $stmt = $connection->prepare("SELECT title, description, color FROM notebooks WHERE username = ?");
-    $stmt->bind_param("s", $loggedInUsername); //inputs loggedInUser for ? ;protecting from poissible sql injection
-    $stmt->execute(); //query sent to db
-    
     $result = $stmt->get_result();
     
-    if ($result->num_rows > 0) { //if query has notebooks, go thru all of them to send to frontend
-        $notebooks = []; //for the json array
+    if ($result->num_rows > 0) {
+        $notebooks = [];
 
         while($row = $result->fetch_assoc()) {
+            $notebookId = $row['id'];
+
+            // Fetch groups and pages for each notebook
+            $stmtGroups = $connection->prepare("SELECT id as group_id, group_name FROM notebook_groups WHERE notebook_id = ? ORDER BY group_order ASC");
+            $stmtGroups->bind_param("i", $notebookId);
+            $stmtGroups->execute();
+            $resultGroups = $stmtGroups->get_result();
             
+            $groups = [];
+            while($group = $resultGroups->fetch_assoc()) {
+                $groupId = $group['group_id'];
+
+                // Fetch pages for each group
+                $stmtPages = $connection->prepare("SELECT page_number, page_content FROM pages WHERE group_id = ? ORDER BY page_number ASC LIMIT 1");
+                $stmtPages->bind_param("i", $groupId);
+                $stmtPages->execute();
+                $resultPages = $stmtPages->get_result();
+
+                if ($resultPages->num_rows > 0) {
+                    $page = $resultPages->fetch_assoc();
+                    $group['first_page'] = $page;
+                }
+
+                $groups[] = $group;
+            }
+
+            $row['groups'] = $groups;
             $notebooks[] = $row;
         }
 
-        /* SAMPLE RESPONSE JSON; example below has 3 rows
+        /* EXAMPLE JSON RESPONSE
         [
             {
+                "id": 1,
                 "title": "Chemistry",
                 "description": "Chemistry notes for class",
-                "color": "#cccccc"
+                "color": "#cccccc",
+                "groups": [
+                    {
+                        "group_id": 101,
+                        "group_name": "Chapter 1",
+                        "first_page": null
+                    },
+                    {
+                        "group_id": 102,
+                        "group_name": "Chapter 2",
+                        "first_page": {
+                            "page_number": 1,
+                            "page_content": "Introduction to Molecular Structures"
+                        }
+                    }
+                ]
             },
             {
+                "id": 2,
                 "title": "Geography",
                 "description": "Geography notes on Europe",
-                "color": "#cccccc"
-            },
-            {
-                "title": "CSE 442",
-                "description": "Notes on CSE 442 programming",
-                "color": "#cccccc"
+                "color": "#cccccc",
+                "groups": [
+                    {
+                        "group_id": 201,
+                        "group_name": "Chapter 1",
+                        "first_page": null
+                    }
+                ]
             }
         ]
+
         */
 
         echo json_encode($notebooks);
-    } else { //no notebooks for current user
+
+    } else {
         echo json_encode([]);
     }
 
@@ -67,3 +112,7 @@ try {
         "message" => "Database query failed"
     ]);
 }
+
+$connection->close();
+
+?>

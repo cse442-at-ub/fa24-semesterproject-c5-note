@@ -292,9 +292,28 @@ export function Simple_notebook(){
     }, 100);  // Small delay to ensure the button is rendered
   };
 
+  const handleGroupPageClick = (notebook, group, page) => {
+    navigate(`/notebooks/${group.group_id}/${page.page_number}`, {
+        state: { 
+            notebook: notebook,  // Pass current notebook info
+            group: group,               // Pass the clicked group info
+            page: page                  // Pass the clicked page info
+        }
+    });
+};
   const handleNotebookClick = (notebook) => {
+    // Check if the notebook has groups and pages
+    if (notebook.groups && notebook.groups.length > 0) {
+        const firstGroup = notebook.groups[0];
+        if (firstGroup.first_page) {
+            handleGroupPageClick(notebook, firstGroup, firstGroup.first_page);
+            return;
+        }
+    }
+
+    // Default: Navigate to notebook overview
     navigate(`/notebooks/${notebook.title}`, { state: { notebook } });
-  };
+};
 
   return(
       <>

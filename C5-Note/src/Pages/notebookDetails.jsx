@@ -245,6 +245,8 @@ export function NotebookDetail() {
         }
     };
 
+
+    
     const handleGroupPageClick = (group, page) => {
         navigate(`/notebooks/${group.group_id}/${page.page_number}`, { //thinking after the group id there should be the page
             state: { 
