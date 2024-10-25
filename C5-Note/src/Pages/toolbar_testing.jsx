@@ -225,6 +225,22 @@ export function ToolTest(){
         
     };
 
+    const savePageNum = (pageNumber, content) => {
+
+        // What to send in the PHP query
+        //  > Test page is hardcoded to load page with page_id = 1
+        var jsonData = {
+            "pageid":  pageNumber,
+            "groupid": groupID,
+            "updatetext" : content,
+        };
+        fetch("backend/saveNotebook.php", {method: "POST", body:JSON.stringify(jsonData)});
+
+        testcontent = editor.current.value; 
+        unsavedChanges = 0;
+        
+    };
+
     const updateTitle = () => {
 
         setTitle(document.getElementById("loadPageTitle").value);
@@ -387,13 +403,19 @@ export function ToolTest(){
                                     var counter = 0;
                                     var tempContents = ["",""];
                                     while(counter < pTags.length) {
-                                        if(counter % 20 == 0) {
-                                            tempContents[Math.floor(counter / 20) + 1] = "";
+                                        if(counter % 21 == 0) {
+                                            tempContents[Math.floor(counter / 21) + 1] = "";
                                         }
-                                        tempContents[Math.floor(counter / 20) + 1] += "<p>" + pTags[counter] + "</p>";
+                                        tempContents[Math.floor(counter / 21) + 1] += "<p>" + pTags[counter] + "</p>";
                                         counter++;
                                     }
                                     console.log(tempContents);
+                                    for(var i in tempContents) {
+                                        if(i != 0) {
+                                            savePageNum(i, tempContents[i]);
+                                        }
+                                    }
+                                    setContent(tempContents[pageNum]);
                                 });
                             }
                         }}
