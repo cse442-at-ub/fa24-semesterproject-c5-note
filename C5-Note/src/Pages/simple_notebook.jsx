@@ -42,8 +42,8 @@ function Top_bar_simple_notes(){
 export function Simple_notebook(){
   const navigate = useNavigate();
   const [notebooks, setNotebooks] = useState([]);
+  const [sharedNotebooks, setSharedNotebooks] = useState([]); // For shared notebooks
 
-  const [color, setColor] = useState('#000000');
 
   const clear_cookies = ()=>{
     cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
@@ -88,6 +88,8 @@ export function Simple_notebook(){
   //useEffect will run when page first loads and in this case will fetch all notebooks for specific user
   useEffect(() => {
     const username = getCookie('username');
+
+    //fetches current user notebooks
     fetch('backend/notebookFinder.php', { //should be 'backend/notebookCreation.php'
       method: "POST",
       headers: {
@@ -100,6 +102,20 @@ export function Simple_notebook(){
       .then(response => response.json())
       .then(data => setNotebooks(data)) //data = response.json(), also sets what this users availble notebooks are
       .catch(error => console.error('Error fetching notebooks:', error));
+
+
+      //fetches shared notebooks
+      fetch('backend/getSharedNotebooks.php', {
+        method: "POST",
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify({ 
+          username // ?
+        })
+      })
+      .then(response => response.json())
+      .then(data => setSharedNotebooks(data))
+      .catch(error => console.error('Error fetching shared notebooks:', error));
+
   }, []);
 
   //---
@@ -321,29 +337,54 @@ export function Simple_notebook(){
           <GhostaContainer />
           <div className="mainBody">
             <div>
-            <div className="notebooks_list spacing" >
-              <ul>
-                <li className="label">Notebooks</li>
+              <div className="notebooks_list spacing" >
+                <ul>
+                  <li className="label">Notebooks</li>
 
-                {notebooks.map( (notebook, index) => (
-                  <li key = {index} className="spacing">
-                    <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
-                      <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-    
-                      <div className="notebook-content">
-                        <div className="notebook-title">{notebook.title}</div>
-                        <div className="notebook-description">{notebook.description}</div>
-                      </div>
-                    </button>
-                  </li>
-                ))}
+                  {notebooks.map( (notebook, index) => (
+                    <li key = {index} className="spacing">
+                      <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                        <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
+      
+                        <div className="notebook-content">
+                          <div className="notebook-title">{notebook.title}</div>
+                          <div className="notebook-description">{notebook.description}</div>
+                        </div>
+                      </button>
+                    </li>
+                  ))}
 
-              </ul>
+                </ul>
+              </div>
+
+              <br></br>
+
+              <div className="notebooks_list spacing" >
+                <ul>
+                  <li className="label">Shared Notebooks</li>
+
+
+                  {sharedNotebooks.length === 0 ? (
+                    <p>No shared notebooks available.</p>
+                  ) : (
+                    sharedNotebooks.map((notebook, index) => (
+                      <li key={index} className="spacing">
+                        <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                          <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
+
+                          <div className="notebook-content">
+                            <div className="notebook-title">{notebook.title}</div>
+                            <div className="notebook-description">{notebook.description}</div>
+                          </div>
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
+
             </div>
 
-            <br></br>
-
-            </div>
             <div className="spacing">
               <div className="control_buttons">
                 <ul>
@@ -355,7 +396,7 @@ export function Simple_notebook(){
                 <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
                 <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                 </ul>
-                </div>
+              </div>
             </div>
           </div>
       </>
