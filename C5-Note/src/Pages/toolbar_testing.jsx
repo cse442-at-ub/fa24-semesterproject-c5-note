@@ -375,7 +375,13 @@ export function ToolTest(){
                                 }
                                 processPromisesArray(pagesContent).then(con => {
                                     con[pageNum] = document.getElementById("editor").value;
-                                    console.log(con);
+                                    var allContents = "";
+                                    for(let i = 1; i < con.length; i++) {
+                                        allContents += con[i];
+                                    }
+                                    allContents = allContents.replaceAll("<p>","");
+                                    var pTags = allContents.split("</p>");
+                                    console.log(pTags);
                                 });
                             }
                         }}
