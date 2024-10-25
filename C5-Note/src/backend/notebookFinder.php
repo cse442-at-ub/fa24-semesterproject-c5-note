@@ -18,11 +18,16 @@ $input = json_decode(file_get_contents("php://input"), true);
 $loggedInUsername = $input['username']; // This is the username sent from the frontend
 
 try {
-    
+    $st = $connection->prepare("SELECT sort FROM users WHERE username = ?");
+    $st->bind_param("s", $loggedInUsername);
+    $st->execute();
+    $st->bind_result($sort_type);
+    $st->fetch();
+    $st->close(); // Close the statement
 
     //query to get notebooks for the specific logged in user
-    $stmt = $connection->prepare("SELECT title, description, color FROM notebooks WHERE username = ?");
-    $stmt->bind_param("s", $loggedInUsername); //inputs loggedInUser for ? ;protecting from poissible sql injection
+    $stmt = $connection->prepare("SELECT title, description, color, time_created, last_modified FROM notebooks WHERE username = ?");
+    $stmt->bind_param("s", $loggedInUsername); //protecting from possible SQL injection
     $stmt->execute(); //query sent to db
     
     $result = $stmt->get_result();
@@ -31,29 +36,52 @@ try {
         $notebooks = []; //for the json array
 
         while($row = $result->fetch_assoc()) {
-            
-            $notebooks[] = $row;
+            // Convert string to DateTime object for formatting
+            $timeCreated = new DateTime($row['time_created']);
+            $lastModified = new DateTime($row['last_modified']);
+        
+            $notebooks[] = [
+                'title' => $row['title'],
+                'description' => $row['description'],
+                'color' => $row['color'],
+                'time_created' => $timeCreated->format('Y-m-d H:i:s'), // Format as needed
+                'last_modified' => $lastModified->format('Y-m-d H:i:s') // Format as needed
+            ];
         }
 
-        /* SAMPLE RESPONSE JSON; example below has 3 rows
-        [
-            {
-                "title": "Chemistry",
-                "description": "Chemistry notes for class",
-                "color": "#cccccc"
-            },
-            {
-                "title": "Geography",
-                "description": "Geography notes on Europe",
-                "color": "#cccccc"
-            },
-            {
-                "title": "CSE 442",
-                "description": "Notes on CSE 442 programming",
-                "color": "#cccccc"
-            }
-        ]
-        */
+        // Sorting based on the provided sort_type
+        switch ($sort_type) {
+            case 0: // Newest Edited
+                usort($notebooks, function($a, $b) {
+                    return strtotime($b['last_modified']) - strtotime($a['last_modified']);
+                });
+                break;
+            case 1: // Oldest Edited
+                usort($notebooks, function($a, $b) {
+                    return strtotime($a['last_modified']) - strtotime($b['last_modified']);
+                });
+                break;
+            case 2: // Newest Created
+                usort($notebooks, function($a, $b) {
+                    return strtotime($b['time_created']) - strtotime($a['time_created']);
+                });
+                break;
+            case 3: // Oldest Created
+                usort($notebooks, function($a, $b) {
+                    return strtotime($a['time_created']) - strtotime($b['time_created']);
+                });
+                break;
+            case 4: // Alphabetical A-Z
+                usort($notebooks, function($a, $b) {
+                    return strcmp($a['title'], $b['title']);
+                });
+                break;
+            case 5: // Alphabetical Z-A
+                usort($notebooks, function($a, $b) {
+                    return strcmp($b['title'], $a['title']);
+                });
+                break;
+        }
 
         echo json_encode($notebooks);
     } else { //no notebooks for current user
