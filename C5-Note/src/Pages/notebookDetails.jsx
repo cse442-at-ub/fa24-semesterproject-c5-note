@@ -37,23 +37,17 @@ function Top_bar_simple_notes(){
       )
   }
 
-//might need some security checks that current logged in user has access to current notebook
 export function NotebookDetail() {
-
     const location = useLocation();
     const navigate = useNavigate();
     const { notebook } = location.state; // Access the notebook data from state
-
-
-    const [groups, setGroups] = useState(null); // Store the groups JSON
+    const [groups, setGroups] = useState(null);
     const [groupsEmpty, setGroupsEmpty] = useState(false);
-
-    const [editingGroupId, setEditingGroupId] = useState(null);  // Track which group is being edited
-    const [newGroupName, setNewGroupName] = useState("");  // Store the new group name
-
-
+    const [editingGroupId, setEditingGroupId] = useState(null);
+    const [newGroupName, setNewGroupName] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [groupToDelete, setGroupToDelete] = useState(null);
+
 
     /* Example of what groups would like life after useEffect()
     [
@@ -85,8 +79,6 @@ export function NotebookDetail() {
         })
         return cookie[name];
     }
-
-    const username = getCookie('username');
 
     // Fetch groups JSON for the notebook
     useEffect(() => {
