@@ -48,6 +48,9 @@ export function NotebookDetail() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [groupToDelete, setGroupToDelete] = useState(null);
 
+    const [noPages, setNoPages] = useState(false);
+
+
 
     /* Example of what groups would like life after useEffect()
     [
@@ -105,6 +108,10 @@ export function NotebookDetail() {
                 setGroups(groupsData);
 
                 setGroupsEmpty(groupsData.length === 0);
+
+                // Check if there are no pages in any group
+                const hasPages = data.groups.some(group => group.pages && group.pages.length > 0);
+                setNoPages(!hasPages);
             }
         };
 
@@ -236,8 +243,6 @@ export function NotebookDetail() {
             console.error("Failed to add page");
         }
     };
-
-
     
     const handleGroupPageClick = (group, page) => {
         navigate(`/notebooks/${group.group_id}/${page.page_number}`, { //thinking after the group id there should be the page
@@ -247,6 +252,15 @@ export function NotebookDetail() {
                 page: page           // Pass the clicked page info (page_number, page_content)
             }
         });
+    };
+
+    const handleGoBack = () => {
+        // If there are no groups or groups exist but have no pages
+        if (groups.length === 0 || noPages) {
+            navigate('/note');  // Redirect to /note if no groups or no pages
+        } else {
+            navigate(-1);  // Go back to the previous page if groups and pages exist
+        }
     };
 
     return (
@@ -333,7 +347,7 @@ export function NotebookDetail() {
             </div>
         </div>
 
-        <button onClick={() => navigate(-1)}>Go Back</button> {/* fix css */}
+        <button onClick={handleGoBack}>Go Back</button> {/* fix css */}
 
     </>    
     );

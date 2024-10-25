@@ -204,20 +204,18 @@ export function ToolTest(){
     }, [currentUsername]);
 
     const handleNotebookClick = async (otherNotebook) => {
-    
-        // Fetch groups for the clicked notebook
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ currentUsername, title: otherNotebook.title }),
+            body: JSON.stringify({ username: currentUsername, title: otherNotebook.title }), // Corrected parameter name
         });
     
         const data = await response.json();
     
-        if (data.success && data.groups.length > 0) {
-            // If groups exist, navigate to the first page of the first group
+        if (data.success && Array.isArray(data.groups) && data.groups.length > 0) {
+            // Ensure groups and pages exist as expected
             const firstGroup = data.groups[0];
-            const firstPage = firstGroup.pages.length > 0 ? firstGroup.pages[0] : null;
+            const firstPage = firstGroup.pages && firstGroup.pages.length > 0 ? firstGroup.pages[0] : null;
     
             if (firstPage) {
                 // Navigate to the first page of the first group
@@ -225,7 +223,7 @@ export function ToolTest(){
                     state: { notebook: otherNotebook, group: firstGroup, page: firstPage }
                 });
             } else {
-                // If the group has no pages, navigate to the group page
+                // Navigate to the group if no pages exist
                 navigate(`/notebooks/${firstGroup.group_id}`, {
                     state: { notebook: otherNotebook, group: firstGroup }
                 });
