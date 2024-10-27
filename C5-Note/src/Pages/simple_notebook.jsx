@@ -337,7 +337,7 @@ export function Simple_notebook(){
         }
     });
 };
-  const handleNotebookClick = (notebook) => {
+  const handleNotebookClick = (notebook, viewOnlyFlag) => {
     // Check if the notebook has groups and pages
     if (notebook.groups && notebook.groups.length > 0) {
         const firstGroup = notebook.groups[0];
@@ -430,12 +430,19 @@ export function Simple_notebook(){
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
                     <button className="notebook_buttons">
+
+
                       <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-
-
+                      
                       {/* Edit Mode & View Only mode buttons */}
-                      <button className="notebookmode-edit" onClick={() => handleNotebookClick(notebook)}>Edit Mode</button>
-                      <button className="notebookmode-view">View-Only</button>
+                      <button className="notebookmode-edit"
+                        onClick={() => handleNotebookClick(notebook, 0)}>
+                          Edit Mode
+                      </button>
+                      <button className="notebookmode-view"
+                        onClick={() => handleNotebookClick(notebook, 1)}>
+                          View-Only
+                      </button>
 
 
                       <div className="notebook-content">
