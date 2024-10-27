@@ -429,9 +429,15 @@ export function Simple_notebook(){
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
-                    <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                    <button className="notebook_buttons">
                       <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-    
+
+
+                      {/* Edit Mode & View Only mode buttons */}
+                      <button className="notebookmode-edit" onClick={() => handleNotebookClick(notebook)}>Edit Mode</button>
+                      <button className="notebookmode-view">View-Only</button>
+
+
                       <div className="notebook-content">
                         <div className="notebook-title">{notebook.title}</div>
                         <div className="notebook-description">{notebook.description}</div>
