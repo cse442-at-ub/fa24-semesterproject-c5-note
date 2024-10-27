@@ -477,7 +477,7 @@ export function Simple_notebook(){
               <div className="control_buttons">
                 <ul>
                 <li className="label options">Options</li>
-                <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li> */}
 
                 <li className="spacing"><button className="green control_button_single" onClick={createNotebookForm}>Create Notebook</button></li>
 
