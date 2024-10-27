@@ -63,6 +63,14 @@ border: 1px solid white;
 text-align: left;
 min-height: 5rem;
 }
+
+.notebookmode-menu{
+    display:flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+
 .notebook-color-box-pointer {
 width: 1.5rem;
 height: 1.5rem;

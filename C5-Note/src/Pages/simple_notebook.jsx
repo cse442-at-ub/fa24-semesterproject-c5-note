@@ -431,19 +431,22 @@ export function Simple_notebook(){
                   <li key = {index} className="spacing">
                     <button className="notebook_buttons">
 
+                      {/* Sidebar of a Notebook that contains open buttons */}
+                      <div className="notebookmode-menu">
 
-                      <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-                      
-                      {/* Edit Mode & View Only mode buttons */}
-                      <button className="notebookmode-edit"
-                        onClick={() => handleNotebookClick(notebook, 0)}>
-                          Edit Mode
-                      </button>
-                      <button className="notebookmode-view"
-                        onClick={() => handleNotebookClick(notebook, 1)}>
-                          View-Only
-                      </button>
+                        <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
+                        
+                        {/* Edit Mode & View Only mode buttons */}
+                        <button className="notebookmode-edit"
+                          onClick={() => handleNotebookClick(notebook, 0)}>
+                            Edit Mode
+                        </button>
+                        <button className="notebookmode-view"
+                          onClick={() => handleNotebookClick(notebook, 1)}>
+                            View-Only
+                        </button>
 
+                      </div>
 
                       <div className="notebook-content">
                         <div className="notebook-title">{notebook.title}</div>
