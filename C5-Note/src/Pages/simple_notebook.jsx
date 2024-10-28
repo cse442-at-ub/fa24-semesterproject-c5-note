@@ -337,7 +337,7 @@ export function Simple_notebook(){
         }
     });
 };
-  const handleNotebookClick = (notebook, viewOnlyFlag) => {
+  const handleNotebookClick = (notebook, readOnly) => {
     // Check if the notebook has groups and pages
     if (notebook.groups && notebook.groups.length > 0) {
         const firstGroup = notebook.groups[0];
@@ -348,7 +348,7 @@ export function Simple_notebook(){
     }
 
     // Default: Navigate to notebook overview
-    navigate(`/notebooks/${notebook.title}`, { state: { notebook } });
+    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
 };
 
 
@@ -438,11 +438,11 @@ export function Simple_notebook(){
                         
                         {/* Edit Mode & View Only mode buttons */}
                         <button className="notebookmode-edit"
-                          onClick={() => handleNotebookClick(notebook, 0)}>
+                          onClick={() => handleNotebookClick(notebook, false)}>
                             Edit Mode
                         </button>
                         <button className="notebookmode-view"
-                          onClick={() => handleNotebookClick(notebook, 1)}>
+                          onClick={() => handleNotebookClick(notebook, true)}>
                             View-Only
                         </button>
 

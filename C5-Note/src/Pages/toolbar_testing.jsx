@@ -39,7 +39,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
 export function ToolTest(){
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
-    const { notebook, group, page } = location.state;  // Access state passed during navigation
+    const { notebook, group, page, readOnly } = location.state;  // Access state passed during navigation
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
@@ -77,7 +77,7 @@ export function ToolTest(){
             }
           },
         
-            readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+            readonly: readOnly, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder,
             theme: 'light',
             controls: {

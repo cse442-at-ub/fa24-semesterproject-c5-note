@@ -40,7 +40,7 @@ function Top_bar_simple_notes(){
 export function NotebookDetail() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { notebook } = location.state; // Access the notebook data from state
+    const { notebook, readOnly } = location.state; // Access the notebook data from state
     const [groups, setGroups] = useState(null);
     const [groupsEmpty, setGroupsEmpty] = useState(false);
     const [editingGroupId, setEditingGroupId] = useState(null);
@@ -249,7 +249,8 @@ export function NotebookDetail() {
             state: { 
                 notebook: notebook,  // Pass current notebook info
                 group: group,         // Pass the clicked group info (group_id, group_name, and pages)
-                page: page           // Pass the clicked page info (page_number, page_content)
+                page: page,           // Pass the clicked page info (page_number, page_content)
+                readOnly: readOnly      //  
             }
         });
     };

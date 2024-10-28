@@ -64,6 +64,7 @@ text-align: left;
 min-height: 5rem;
 }
 
+/* Flexbox containing colorbox, edit button and view-only button  */
 .notebookmode-menu{
     display:flex;
     flex-flow: column;
