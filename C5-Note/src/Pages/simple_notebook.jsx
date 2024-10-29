@@ -338,6 +338,28 @@ export function Simple_notebook(){
         }
     });
 };
+
+
+  // fostlia:  Function to handle clicking a notebook.
+  //  Fires a ghosta popup to show buttons for Edit/View modes.
+  const handleNotebookClick_TriggerPopup = (notebook) =>{
+
+    const id = ghosta.fire({
+      title: "Create New Notebook",
+      content:  (<div></div>),
+      buttons: [
+        {
+          title: "Create",
+          variant: "primary",
+          onClick: () => {},
+        }
+      ],
+      showCloseButton: true,
+    });
+
+  };
+
+  // fostlia: This function is now called by buttons in a ghosta popup
   const handleNotebookClick = (notebook, readOnly) => {
     // Check if the notebook has groups and pages
     if (notebook.groups && notebook.groups.length > 0) {
