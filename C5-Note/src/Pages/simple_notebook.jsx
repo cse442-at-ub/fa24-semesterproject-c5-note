@@ -345,13 +345,24 @@ export function Simple_notebook(){
   const handleNotebookClick_TriggerPopup = (notebook) =>{
 
     const id = ghosta.fire({
-      title: "Create New Notebook",
-      content:  (<div></div>),
+      title: notebook.title,
+      content:  (
+        <div className="notebook-content">
+          <div className="notebook-title">{notebook.title}</div>
+          <div className="notebook-description">{notebook.description}</div>
+          <div className="notebook-description">Created: {notebook.time_created}</div>
+          <div className="notebook-description">Modified: {notebook.last_modified}</div>
+        </div>),
       buttons: [
         {
-          title: "Create",
+          title: "Edit Mode",
           variant: "primary",
-          onClick: () => {},
+          onClick: () => handleNotebookClick(notebook, false),
+        },
+        {
+          title: "View-Only",
+          variant: "primary",
+          onClick: () => handleNotebookClick(notebook, true),
         }
       ],
       showCloseButton: true,
@@ -452,7 +463,7 @@ export function Simple_notebook(){
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
-                    <button className="notebook_buttons">
+                    <button className="notebook_buttons" onClick={() => handleNotebookClick_TriggerPopup(notebook)}>
 
                       {/* Sidebar of a Notebook that contains open buttons */}
                       <div className="notebookmode-menu">
@@ -460,14 +471,14 @@ export function Simple_notebook(){
                         <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
                         
                         {/* Edit Mode & View Only mode buttons */}
-                        <button className="notebookmode-edit"
-                          onClick={() => handleNotebookClick(notebook, false)}>
+                        {/* <button className="notebookmode-edit"
+                          onClick={() => handleNotebookClick_TriggerPopup(notebook)}>
                             Edit Mode
                         </button>
                         <button className="notebookmode-view"
                           onClick={() => handleNotebookClick(notebook, true)}>
                             View-Only
-                        </button>
+                        </button> */}
 
                       </div>
 
