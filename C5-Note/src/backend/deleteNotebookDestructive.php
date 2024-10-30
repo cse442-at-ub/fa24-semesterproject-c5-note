@@ -28,18 +28,6 @@ if($connection->connect_error) {
 
 $targetid   = $json->notebookid;      // Get the page to write to
 
-// Update the database
-//  > Delete all pages associated with notebook
-$sql = mysqli_prepare($connection, "DELETE FROM pages WHERE group_id IN (SELECT id FROM notebook_groups WHERE notebook_id = ?)");
-$sql->bind_param("i", $targetid);
-
-// Determine if the notebook was deleted
-if ($sql->execute()){
-    echo 'Notebook deleted successfully.<br>\n';
-}
-else {
-    echo 'Error deleting notebook.<br>\n';
-}
 
 // Update the database
 ////////////////////////////////////////////////
@@ -56,16 +44,26 @@ else {echo 'Error deleting pages.<br>\n';}
 ////////////////////////////////////////////////
 // 2.)Delete all groups associated with notebook
 ////////////////////////////////////////////////
-$sql = mysqli_prepare($connection, "");
+$sql = mysqli_prepare($connection, "DELETE FROM notebook_groups WHERE notebook_id = ?");
 $sql->bind_param("i", $targetid);
 
 // Determine if the groups was deleted
 if ($sql->execute()){echo 'Groups deleted successfully.<br>\n';}
 else {echo 'Error deleting groups.<br>\n';}
 
+
 ////////////////////////////////////////////////
 // 3.)Delete the notebook
 ////////////////////////////////////////////////
+$sql = mysqli_prepare($connection, "DELETE FROM notebooks WHERE id = ?");
+$sql->bind_param("i", $targetid);
+
+// Determine if the groups was deleted
+if ($sql->execute()){echo 'Notebook deleted successfully.<br>\n';}
+else {echo 'Error deleting Notebook.<br>\n';}
+
+
+
 
 // Close everything
 $sql->close();
