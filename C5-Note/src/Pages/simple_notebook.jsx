@@ -415,7 +415,15 @@ export function Simple_notebook(){
   // fostlia: This function is now called by buttons in a ghosta popup
   const handleNotebookClickDelete = (notebook) => {
 
-      console.log(notebooks);
+      fetch('backend/deleteNotebookDestructive.php', {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify({
+          notebookid: notebook.id
+        })
+      })
   };
 
 

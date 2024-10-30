@@ -26,7 +26,7 @@ try {
     $st->close(); // Close the statement
 
     //query to get notebooks for the specific logged in user
-    $stmt = $connection->prepare("SELECT title, description, color, time_created, last_modified FROM notebooks WHERE username = ?");
+    $stmt = $connection->prepare("SELECT id, title, description, color, time_created, last_modified FROM notebooks WHERE username = ?");
     $stmt->bind_param("s", $loggedInUsername); //protecting from possible SQL injection
     $stmt->execute(); //query sent to db
     
