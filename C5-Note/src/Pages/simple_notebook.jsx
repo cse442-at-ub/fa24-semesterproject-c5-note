@@ -3,6 +3,7 @@ import { Link,useNavigate  } from "react-router-dom";
 import Profile from '../C5.png';
 import btn_readonly from '../assets/btn_readonly.png';
 import btn_editmode from '../assets/btn_edit.png';
+import btn_delete from '../assets/btn_trash.png';
 import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
@@ -365,6 +366,9 @@ export function Simple_notebook(){
               </button>
               <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
                 <img src={btn_readonly} className="notebook_popup_btnimg"/>View
+              </button>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
+                <img src={btn_delete} className="notebook_popup_btnimg"/>Delete
               </button>
             </div>
           

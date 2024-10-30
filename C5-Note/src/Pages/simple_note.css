@@ -83,12 +83,14 @@ min-height: 5rem;
 .notebook_popup_buttons{
     display:flex;
     flex-flow: column;
-    background: transparent;
+    background-color: transparent;
+    color: black;
+    border: none;
 }
 
 .notebook_popup_btnimg{
-    width: 2rem;
-    height: 2rem;
+    width: 4rem;
+    height: 4rem;
     /*border-radius: 10rem;*/
 }
 
