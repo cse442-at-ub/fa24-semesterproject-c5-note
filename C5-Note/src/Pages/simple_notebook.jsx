@@ -410,10 +410,38 @@ export function Simple_notebook(){
 
     // Default: Navigate to notebook overview
     navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
-};
+  };
 
-  // fostlia: This function is now called by buttons in a ghosta popup
+
+   // fostlia: After the "Are you sure?" prompt, delete that notebook
   const handleNotebookClickDelete = (notebook) => {
+
+
+    const id = ghosta.fire({
+      title: <div>Really delete {notebook.title}?</div>,
+      description: "Are you sure?",
+      buttons: [
+        {
+          title: "Cancel",
+          variant: "success",
+        },
+        {
+          title: "Delete",
+          variant: "danger",
+          onClick: () => handleNotebookFinalizeDelete(notebook),
+        },
+      ],
+      alignment: 'left',
+      showCloseButton: false,
+    });
+
+
+  };
+
+
+
+  // fostlia: After the "Are you sure?" prompt, delete that notebook
+  const handleNotebookFinalizeDelete = (notebook) => {
 
       fetch('backend/deleteNotebookDestructive.php', {
         method: "POST",
@@ -423,6 +451,10 @@ export function Simple_notebook(){
         body: JSON.stringify({
           notebookid: notebook.id
         })
+      }).then(() => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
       })
   };
 
