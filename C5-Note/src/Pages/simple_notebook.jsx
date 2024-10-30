@@ -367,7 +367,7 @@ export function Simple_notebook(){
               <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
                 <img src={btn_readonly} className="notebook_popup_btnimg"/>View
               </button>
-              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClickDelete(notebook)}>
                 <img src={btn_delete} className="notebook_popup_btnimg"/>Delete
               </button>
             </div>
@@ -411,6 +411,12 @@ export function Simple_notebook(){
     // Default: Navigate to notebook overview
     navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
 };
+
+  // fostlia: This function is now called by buttons in a ghosta popup
+  const handleNotebookClickDelete = (notebook) => {
+
+      console.log(notebooks);
+  };
 
 
 

@@ -26,7 +26,7 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
-$targetid   = 33; //$json->notebookid;      // Get the page to write to
+$targetid   = $json->notebookid;      // Get the page to write to
 
 echo $targetid;
 

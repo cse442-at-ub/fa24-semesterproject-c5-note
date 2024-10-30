@@ -72,7 +72,8 @@ try {
                 'description' => $row['description'],
                 'color' => $row['color'],
                 'time_created' => $timeCreated->format('Y-m-d H:i:s'), // Format as needed
-                'last_modified' => $lastModified->format('Y-m-d H:i:s') // Format as needed
+                'last_modified' => $lastModified->format('Y-m-d H:i:s'), // Format as needed
+                'id' => $row['id']
             ];
         }
 
