@@ -225,18 +225,18 @@ export function ToolTest(){
             if (firstPage) {
                 // Navigate to the first page of the first group
                 navigate(`/notebooks/${firstGroup.group_id}/${firstPage.page_number}`, {
-                    state: { notebook: otherNotebook, group: firstGroup, page: firstPage }
+                    state: { notebook: otherNotebook, group: firstGroup, page: firstPage , readOnly: readOnly}
                 });
             } else {
                 // Navigate to the group if no pages exist
                 navigate(`/notebooks/${firstGroup.group_id}`, {
-                    state: { notebook: otherNotebook, group: firstGroup }
+                    state: { notebook: otherNotebook, group: firstGroup , readOnly: readOnly}
                 });
             }
         } else {
             // If no groups exist, navigate to the notebook page to create groups
             navigate(`/notebooks/${otherNotebook.id}`, {
-                state: { notebook: otherNotebook }
+                state: { notebook: otherNotebook, readOnly: readOnly}
             });
         }
     };
@@ -409,9 +409,13 @@ export function ToolTest(){
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
 
-                    <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    {!readOnly && (
+                        <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    )}
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
-                    <button className="tpwButton" onClick={ savePage }>Save</button>
+                    {!readOnly && (
+                        <button className="tpwButton" onClick={ savePage }>Save</button>
+                    )}
                 </div>
 
                 <article className="nbpMain">
