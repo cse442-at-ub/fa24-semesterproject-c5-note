@@ -5,7 +5,7 @@
 // Removes a notebook from a database, after deleting its groups, after deleting its pages.
 
 // Extract info from config.json so that we can access the database
-$config = file_get_contents("../../config.json");
+$config = file_get_contents("../config.json");
 $data = json_decode($config);
 
 $username = $data->username;        // Database username
@@ -26,8 +26,9 @@ if($connection->connect_error) {
     die("Could not connect to the database");
 }
 
-$targetid   = $json->notebookid;      // Get the page to write to
+$targetid   = 33; //$json->notebookid;      // Get the page to write to
 
+echo $targetid;
 
 // Update the database
 ////////////////////////////////////////////////
