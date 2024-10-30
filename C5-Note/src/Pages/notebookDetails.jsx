@@ -291,8 +291,8 @@ export function NotebookDetail() {
                     <div className="notebook-color-indicator" style={{ backgroundColor: notebook.color }}></div>
                 </div>
 
-                {/* If no groups exist, show "Add Group" button */}
-                {groupsEmpty && (
+                {/* If no groups exist, and we are NOT in readOnly mode, show "Add Group" button */}
+                {groupsEmpty && !readOnly && (
                     <div>
                         <button onClick={handleAddGroup}>Add Group</button>
                     </div>
@@ -322,8 +322,14 @@ export function NotebookDetail() {
                                     ) : (
                                         <>
                                             <span>{group.group_name}</span>
-                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
-                                            <button onClick={() => handleAddPages(group)}>Add Page</button>
+
+                                            {/* Render Edit button and Add Page button if NOT readOnly */}
+                                            {!readOnly && (
+                                                <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
+                                            )}
+                                            {!readOnly && (
+                                                <button onClick={() => handleAddPages(group)}>Add Page</button>
+                                            )}
                                         </>
                                     )}
 
@@ -340,7 +346,10 @@ export function NotebookDetail() {
                             ))}
                         </ul>
 
-                        <button onClick={handleAddGroup}>Add Group</button>
+                        {/* Create an "Add Group" button if NOT readOnly */}
+                        {!readOnly && (
+                            <button onClick={handleAddGroup}>Add Group</button>
+                        )}
 
                     </div>
                 )}
