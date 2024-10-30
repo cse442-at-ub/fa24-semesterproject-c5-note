@@ -418,7 +418,7 @@ export function Simple_notebook(){
 
     const id = ghosta.fire({
       title: <div>Really delete {notebook.title}?</div>,
-      description: "Are you sure?",
+      description: "This process cannot be undone!",
       size: "sm",
       buttons: [
         {
@@ -431,7 +431,7 @@ export function Simple_notebook(){
           variant: "success",
         },
       ],
-      alignment: 'left',
+      alignment: 'center',
       showCloseButton: false,
     });
 
