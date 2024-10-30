@@ -347,7 +347,7 @@ export function Simple_notebook(){
   //  Fires a ghosta popup to show buttons for Edit/View modes.
   const handleNotebookClick_TriggerPopup = (notebook) =>{
 
-    const id = ghosta.fire({
+    const popupid = ghosta.fire({
       title: notebook.title,
       description: notebook.description,
       content:  (
@@ -413,22 +413,22 @@ export function Simple_notebook(){
   };
 
 
-   // fostlia: After the "Are you sure?" prompt, delete that notebook
+   // fostlia: "Are you sure" prompt.
   const handleNotebookClickDelete = (notebook) => {
-
 
     const id = ghosta.fire({
       title: <div>Really delete {notebook.title}?</div>,
       description: "Are you sure?",
+      size: "sm",
       buttons: [
-        {
-          title: "Cancel",
-          variant: "success",
-        },
         {
           title: "Delete",
           variant: "danger",
           onClick: () => handleNotebookFinalizeDelete(notebook),
+        },
+        {
+          title: "Cancel",
+          variant: "success",
         },
       ],
       alignment: 'left',
@@ -591,7 +591,7 @@ export function Simple_notebook(){
 
                 <li className="spacing"><button className="green control_button_single" onClick={createNotebookForm}>Create Notebook</button></li>
 
-                <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li> */}
                 <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                 </ul>
               </div>
