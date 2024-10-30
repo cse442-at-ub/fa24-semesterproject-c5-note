@@ -347,7 +347,7 @@ export function Simple_notebook(){
   //  Fires a ghosta popup to show buttons for Edit/View modes.
   const handleNotebookClick_TriggerPopup = (notebook) =>{
 
-    const id = ghosta.fire({
+    const popupid = ghosta.fire({
       title: notebook.title,
       description: notebook.description,
       content:  (
@@ -367,7 +367,7 @@ export function Simple_notebook(){
               <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
                 <img src={btn_readonly} className="notebook_popup_btnimg"/>View
               </button>
-              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClickDelete(notebook)}>
                 <img src={btn_delete} className="notebook_popup_btnimg"/>Delete
               </button>
             </div>
@@ -410,7 +410,53 @@ export function Simple_notebook(){
 
     // Default: Navigate to notebook overview
     navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
-};
+  };
+
+
+   // fostlia: "Are you sure" prompt.
+  const handleNotebookClickDelete = (notebook) => {
+
+    const id = ghosta.fire({
+      title: <div>Really delete {notebook.title}?</div>,
+      description: "This process cannot be undone!",
+      size: "sm",
+      buttons: [
+        {
+          title: "Delete",
+          variant: "danger",
+          onClick: () => handleNotebookFinalizeDelete(notebook),
+        },
+        {
+          title: "Cancel",
+          variant: "success",
+        },
+      ],
+      alignment: 'center',
+      showCloseButton: false,
+    });
+
+
+  };
+
+
+
+  // fostlia: After the "Are you sure?" prompt, delete that notebook
+  const handleNotebookFinalizeDelete = (notebook) => {
+
+      fetch('backend/deleteNotebookDestructive.php', {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify({
+          notebookid: notebook.id
+        })
+      }).then(() => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
+      })
+  };
 
 
 
@@ -545,7 +591,7 @@ export function Simple_notebook(){
 
                 <li className="spacing"><button className="green control_button_single" onClick={createNotebookForm}>Create Notebook</button></li>
 
-                <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li> */}
                 <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                 </ul>
               </div>

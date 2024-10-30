@@ -26,7 +26,7 @@ try {
     $st->close(); // Close the statement
 
     //query to get notebooks for the specific logged in user
-    $stmt = $connection->prepare("SELECT title, description, color, time_created, last_modified FROM notebooks WHERE username = ?");
+    $stmt = $connection->prepare("SELECT id, title, description, color, time_created, last_modified FROM notebooks WHERE username = ?");
     $stmt->bind_param("s", $loggedInUsername); //protecting from possible SQL injection
     $stmt->execute(); //query sent to db
     
@@ -72,7 +72,8 @@ try {
                 'description' => $row['description'],
                 'color' => $row['color'],
                 'time_created' => $timeCreated->format('Y-m-d H:i:s'), // Format as needed
-                'last_modified' => $lastModified->format('Y-m-d H:i:s') // Format as needed
+                'last_modified' => $lastModified->format('Y-m-d H:i:s'), // Format as needed
+                'id' => $row['id']
             ];
         }
 
