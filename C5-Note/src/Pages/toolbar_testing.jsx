@@ -12,7 +12,7 @@ import { Modal, Button } from 'react-bootstrap';
 
 let unsavedChanges = 0;
 let testcontent = ""
-function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
+function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
             {/* Group name acts as a dropdown button */}
@@ -25,7 +25,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                 <ul>
                     {group.pages.map((page, pageIndex) => (
                         <li key={pageIndex}>
-                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
+                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page, readOnly }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
                                 Page {page.page_number}: {page.page_name || "Untitled Page"}
                             </Link>
                         </li>
@@ -39,7 +39,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
 export function ToolTest(){
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
-    const { notebook, group, page } = location.state;  // Access state passed during navigation
+    const { notebook, group, page, readOnly } = location.state;  // Access state passed during navigation
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
@@ -77,7 +77,7 @@ export function ToolTest(){
             }
           },
         
-            readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+            readonly: readOnly, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder,
             theme: 'light',
             controls: {
@@ -225,18 +225,18 @@ export function ToolTest(){
             if (firstPage) {
                 // Navigate to the first page of the first group
                 navigate(`/notebooks/${firstGroup.group_id}/${firstPage.page_number}`, {
-                    state: { notebook: otherNotebook, group: firstGroup, page: firstPage }
+                    state: { notebook: otherNotebook, group: firstGroup, page: firstPage , readOnly: readOnly}
                 });
             } else {
                 // Navigate to the group if no pages exist
                 navigate(`/notebooks/${firstGroup.group_id}`, {
-                    state: { notebook: otherNotebook, group: firstGroup }
+                    state: { notebook: otherNotebook, group: firstGroup , readOnly: readOnly}
                 });
             }
         } else {
             // If no groups exist, navigate to the notebook page to create groups
             navigate(`/notebooks/${otherNotebook.id}`, {
-                state: { notebook: otherNotebook }
+                state: { notebook: otherNotebook, readOnly: readOnly}
             });
         }
     };
@@ -409,9 +409,13 @@ export function ToolTest(){
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
 
-                    <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    {!readOnly && (
+                        <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    )}
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
-                    <button className="tpwButton" onClick={ savePage }>Save</button>
+                    {!readOnly && (
+                        <button className="tpwButton" onClick={ savePage }>Save</button>
+                    )}
                 </div>
 
                 <article className="nbpMain">
@@ -431,7 +435,7 @@ export function ToolTest(){
                 </article>
 
                 <aside className="aside nbpSidebarNotebooks">
-                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook } })}> 
+                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } })}> 
                         {notebook.title} 
                     </h1>
                     <h3>Other Notebooks</h3>
@@ -482,6 +486,7 @@ export function ToolTest(){
                                                         toggleGroup={() => toggleGroup(index)}
                                                         isSelectedGroup={group.group_id === parseInt(groupID)}
                                                         selectedPage={parseInt(pageNum)}
+                                                        readOnly={readOnly}
                                                     />
                                                 </div>
                                             )}
