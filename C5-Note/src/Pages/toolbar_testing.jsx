@@ -12,7 +12,7 @@ import { Modal, Button } from 'react-bootstrap';
 
 let unsavedChanges = 0;
 let testcontent = ""
-function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
+function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
             {/* Group name acts as a dropdown button */}
@@ -25,7 +25,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                 <ul>
                     {group.pages.map((page, pageIndex) => (
                         <li key={pageIndex}>
-                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
+                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page, readOnly }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
                                 Page {page.page_number}: {page.page_name || "Untitled Page"}
                             </Link>
                         </li>
@@ -486,6 +486,7 @@ export function ToolTest(){
                                                         toggleGroup={() => toggleGroup(index)}
                                                         isSelectedGroup={group.group_id === parseInt(groupID)}
                                                         selectedPage={parseInt(pageNum)}
+                                                        readOnly={readOnly}
                                                     />
                                                 </div>
                                             )}
