@@ -356,12 +356,12 @@ export function Simple_notebook(){
         </div>),
       buttons: [
         {
-          title: "Edit Mode",
+          title: "✒️ Edit",
           variant: "primary",
           onClick: () => handleNotebookClick(notebook, false),
         },
         {
-          title: "View-Only",
+          title: "👁️ View",
           variant: "primary",
           onClick: () => handleNotebookClick(notebook, true),
         },
