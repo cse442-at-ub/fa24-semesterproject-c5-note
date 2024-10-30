@@ -348,29 +348,43 @@ export function Simple_notebook(){
       title: notebook.title,
       description: notebook.description,
       content:  (
-        <div className="notebook-content">
-          <div className="notebook-title">{notebook.title}</div>
-          {/* <div className="notebook-description">{notebook.description}</div> */}
-          <div className="notebook-description">Created: {notebook.time_created}</div>
-          <div className="notebook-description">Modified: {notebook.last_modified}</div>
-        </div>),
-      buttons: [
-        {
-          title: "✒️ Edit",
-          variant: "primary",
-          onClick: () => handleNotebookClick(notebook, false),
-        },
-        {
-          title: "👁️ View",
-          variant: "primary",
-          onClick: () => handleNotebookClick(notebook, true),
-        },
-        // {
-        //   title: "Delete",
-        //   variant: "primary",
-        //   onClick: () => handleNotebookClick(notebook, true),
-        // }
-      ],
+        <div className="notebook_popup_wrapper">
+          <div className="notebook-content">
+            <div className="notebook-title">{notebook.title}</div>
+            {/* <div className="notebook-description">{notebook.description}</div> */}
+            <div className="notebook-description">Created: {notebook.time_created}</div>
+            <div className="notebook-description">Modified: {notebook.last_modified}</div>
+          </div>
+
+            {/* div element for buttons, ignoring Ghosta's own */}
+            <div className="notebook_popup_buttonrow">
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, false)}>
+                <img src={Profile} className="notebook_popup_btnimg"/>Edit
+              </button>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
+                <img src={Profile} className="notebook_popup_btnimg"/>View
+              </button>
+            </div>
+          
+        </div>
+        ),
+      // buttons: [
+      //   {
+      //     title: <div><img src={Profile} className="notebook_popup_btnimg"/>meow</div>,
+      //     variant: "primary",
+      //     onClick: () => handleNotebookClick(notebook, false),
+      //   },
+      //   {
+      //     title: "👁️ View",
+      //     variant: "success",
+      //     onClick: () => handleNotebookClick(notebook, true),
+      //   },
+      //   // {
+      //   //   title: "Delete",
+      //   //   variant: "primary",
+      //   //   onClick: () => handleNotebookClick(notebook, true),
+      //   // }
+      // ],
       alignment: 'left',
       showCloseButton: true,
     });

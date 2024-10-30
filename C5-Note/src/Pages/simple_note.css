@@ -72,6 +72,25 @@ min-height: 5rem;
 }
 
 
+/* Flexbox containing buttons*/
+.notebook_popup_buttonrow{
+    display:flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.notebook_popup_buttons{
+    display:flex;
+    flex-flow: column;
+}
+
+.notebook_popup_btnimg{
+    width: 2rem;
+    height: 2rem;
+    /*border-radius: 10rem;*/
+}
+
 .notebook-color-box-pointer {
 width: 1.5rem;
 height: 1.5rem;
