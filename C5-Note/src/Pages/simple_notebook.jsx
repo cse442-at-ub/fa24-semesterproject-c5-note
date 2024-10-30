@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link,useNavigate  } from "react-router-dom";
 import Profile from '../C5.png';
+import btn_readonly from '../assets/btn_readonly.png';
+import btn_editmode from '../assets/btn_edit.png';
 import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
@@ -359,10 +361,10 @@ export function Simple_notebook(){
             {/* div element for buttons, ignoring Ghosta's own */}
             <div className="notebook_popup_buttonrow">
               <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, false)}>
-                <img src={Profile} className="notebook_popup_btnimg"/>Edit
+                <img src={btn_editmode} className="notebook_popup_btnimg"/>Edit
               </button>
               <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
-                <img src={Profile} className="notebook_popup_btnimg"/>View
+                <img src={btn_readonly} className="notebook_popup_btnimg"/>View
               </button>
             </div>
           

@@ -77,12 +77,13 @@ min-height: 5rem;
     display:flex;
     flex-flow: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
 }
 
 .notebook_popup_buttons{
     display:flex;
     flex-flow: column;
+    background: transparent;
 }
 
 .notebook_popup_btnimg{
