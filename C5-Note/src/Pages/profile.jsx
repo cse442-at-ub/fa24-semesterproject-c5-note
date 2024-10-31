@@ -71,6 +71,14 @@ export function Profile() {
     name = 'DevModeOnly'
   }
 
+  const upload = () => {
+
+    const formData = new FormData();
+    formData.append("fileToUpload", document.getElementById("fileToUpload").files[0]);
+    formData.append("token", getCookie("token"));
+    fetch("backend/image-upload.php", {method: "POST", body:formData});
+  }
+
   const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
 
   return (
@@ -90,13 +98,13 @@ export function Profile() {
           </div>
           <h1>{name}</h1>
         </div>
-        <form action='backend/image-upload.php' method='POST' encType='multipart/form-data'>
+        
           <p>Select image to upload:</p>
           <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
-          <input type="submit" value="Upload Image" name="Save Image"></input>
+          <input type="submit" value="Upload Image" name="Save Image" onClick={ upload }></input>
           <input type="text" id="username" hidden="true" value={name}></input>
           <input type="text" id="token" hidden="true" value={getCookie("token")}></input>
-        </form>
+        
 
       </div>
 
