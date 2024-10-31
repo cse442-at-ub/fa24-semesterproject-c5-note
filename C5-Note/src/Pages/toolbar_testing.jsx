@@ -321,24 +321,24 @@ export function ToolTest(){
         if (data['content']) {
             // Extract text by removing HTML tags
             const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
-            
+            const current = editor.current.value.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+    
             // Check if the fetched text is different from the current content
-            if (textContent !== editor.current.value) {
-                // Update content
+            if (textContent !== current) {
+                const currentPosition = editor.current.selectionStart;
                 editor.current.value = textContent;
     
-                // Set cursor position to the end of the updated content
-                const length = textContent.length;
-                editor.current.setSelectionRange(length, length);
+                // Update content
+                const newLength = textContent.length;
+                editor.current.setSelectionRange(newLength, newLength);
             }
         } else {
             // Reset content only if the current content is not already empty
             if (content !== '') {
-                editor.current.value = ''; // Clear the editor
+                setContent('');
             }
         }
     };
-    
     
     
     
