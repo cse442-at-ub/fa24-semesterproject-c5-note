@@ -4,6 +4,7 @@ import '../App.css';
 import './home.css';
 import { Link,useNavigate  } from "react-router-dom";
 import { handleShowUsername } from "./home.jsx";
+import ItemGrid from './Grid.jsx';
 
 export function Top_bar() {
   return (
@@ -70,6 +71,8 @@ export function Profile() {
     name = 'DevModeOnly'
   }
 
+  const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+
   return (
     <>
       <Top_bar />
@@ -100,11 +103,8 @@ export function Profile() {
         <Link to="/"><button className="log_out_button" onClick={LoggedOut}>Log Out</button></Link>
       </div>
 
-      <div className='grid_template'>
-        <b>Public Notebooks</b>
-        <p>CSE 123</p>
-        <p>CSE 442:</p>
-      </div>
+      <h1 className="container_text">Public Notebooks</h1>
+      <ItemGrid items={items}/>
     </>
   )
 }
