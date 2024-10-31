@@ -245,22 +245,7 @@ export function ToolTest(){
 
     const [title, setTitle] = useState('Loading. . .');
 
-    const savePage = () => {
-        console.log(editor.current.value)
-
-        // What to send in the PHP query
-        //  > Test page is hardcoded to load page with page_id = 1
-        var jsonData = {
-            "pageid":  pageNum,
-            "groupid": groupID,
-            "updatetext" : editor.current.value,
-        };
-        fetch("backend/saveNotebook.php", {method: "POST", body:JSON.stringify(jsonData)});
-
-        testcontent = editor.current.value; 
-        unsavedChanges = 0;
-        
-    };
+    
 
     const updateTitle = () => {
 
@@ -311,23 +296,7 @@ export function ToolTest(){
         return plainText
     };
 
-    // Generic "are you sure" dialog prompt
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            // Perform actions before the component unloads
-            console.log(testcontent)
-            console.log(editor.current.value)
-            if((unsavedChanges == 1 && stripTags(testcontent) != stripTags(editor.current.value)) || (stripTags(testcontent) != stripTags(editor.current.value))){
-                event.preventDefault();
-            }
-            event.returnValue = '';
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
-    
+
 
 
     // Fetch existing users who have access to this notebook
@@ -383,6 +352,44 @@ export function ToolTest(){
             console.error("Error adding user access:", error);
         }
     };
+
+
+    // Add this state to track if content is being saved
+const [isSaving, setIsSaving] = useState(false);
+
+// Function to save content to the server
+const saveContentToServer = async () => {
+    if (unsavedChanges === 1 && editor.current) {
+        const jsonData = {
+            "pageid": pageNum,
+            "groupid": groupID,
+            "updatetext": editor.current.value,
+        };
+
+        setIsSaving(true);
+        await fetch("backend/saveNotebook.php", {
+            method: "POST",
+            body: JSON.stringify(jsonData),
+        });
+        setIsSaving(false);
+        unsavedChanges = 0; // Reset unsaved changes after saving
+    }
+};
+
+// Use useEffect to set up polling
+useEffect(() => {
+    const intervalId = setInterval(() => {
+        saveContentToServer();
+    }, 500); // Save every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+}, []); // Empty dependency array to run once on mount
+
+// Update savePage function to include real-time saving
+const savePage = () => {
+    saveContentToServer(); // Call the save function directly
+};
+
 
     return(
         <>
