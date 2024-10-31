@@ -246,6 +246,21 @@ export function ToolTest(){
     const [title, setTitle] = useState('Loading. . .');
 
     
+    const saveContentToServer = async () => {
+        if (editor.current) {
+            const jsonData = {
+                "pageid": pageNum,
+                "groupid": groupID,
+                "updatetext": editor.current.value,
+            };
+    
+            await fetch("backend/saveNotebook.php", {
+                method: "POST",
+                body: JSON.stringify(jsonData),
+            });
+            console.log('content saved!')
+        }
+    };
 
     const updateTitle = () => {
 
@@ -256,8 +271,12 @@ export function ToolTest(){
     const updateContents = (content) => {
         console.log(content)
         setContent(content);
-        unsavedChanges = 1;
+        saveContentToServer()
     };
+
+
+    
+
 
 
     const fetchPageContent = async () => {
@@ -290,6 +309,17 @@ export function ToolTest(){
     useEffect(() => {
         fetchPageContent();
     }, [pageNum, groupID]); // Run when pageNum or groupID changes
+
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchPageContent();
+        }, 500); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+
+        // Clean up the interval on component unmount
+        return () => clearInterval(intervalId);
+    }, [pageNum, groupID]); // You might want to include dependencies if needed
+
 
     const stripTags = (stuff) => {
         const plainText = stuff.replace(/<[^>]+>/g, ''); // Regular expression to strip tags
@@ -354,41 +384,8 @@ export function ToolTest(){
     };
 
 
-    // Add this state to track if content is being saved
-const [isSaving, setIsSaving] = useState(false);
 
-// Function to save content to the server
-const saveContentToServer = async () => {
-    if (unsavedChanges === 1 && editor.current) {
-        const jsonData = {
-            "pageid": pageNum,
-            "groupid": groupID,
-            "updatetext": editor.current.value,
-        };
 
-        setIsSaving(true);
-        await fetch("backend/saveNotebook.php", {
-            method: "POST",
-            body: JSON.stringify(jsonData),
-        });
-        setIsSaving(false);
-        unsavedChanges = 0; // Reset unsaved changes after saving
-    }
-};
-
-// Use useEffect to set up polling
-useEffect(() => {
-    const intervalId = setInterval(() => {
-        saveContentToServer();
-    }, 500); // Save every 5 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-}, []); // Empty dependency array to run once on mount
-
-// Update savePage function to include real-time saving
-const savePage = () => {
-    saveContentToServer(); // Call the save function directly
-};
 
 
     return(
@@ -418,7 +415,6 @@ const savePage = () => {
 
                     <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
-                    <button className="tpwButton" onClick={ savePage }>Save</button>
                 </div>
 
                 <article className="nbpMain">
@@ -431,7 +427,7 @@ const savePage = () => {
                         config={config}
                         tabIndex={1} // tabIndex of textarea
                         onBlur={newContent => updateContents(newContent)} // preferred to use only this option to update the content for performance reasons
-                        onChange={newContent => {}}
+                        onChange={newContent => updateContents(newContent)}
                     />
                 </div>
                     </div>
