@@ -5,6 +5,7 @@ import logo from '../C5.png';
 import './toolbar.css';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import JoditEditor, { Jodit } from 'jodit-react';
+
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { Modal, Button } from 'react-bootstrap';
@@ -78,7 +79,7 @@ export function ToolTest(){
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
-
+    var test = useRef(null);
     const handleClose = () => {
         setShowAccessModal(false);
         setNewUsername('');
@@ -97,7 +98,11 @@ export function ToolTest(){
               script: true,
               button: true,
             }
-          },
+          },events: 
+          { 
+           afterInit: (instance) => { test = instance; } 
+
+            },
           
         
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
@@ -292,7 +297,7 @@ export function ToolTest(){
     };
 
     const updateContents = (content) => {
-        console.log(editor.current.selectionStart)
+        console.log(document.getSelection())
         setContent(content);
         saveContentToServer()
     };
@@ -332,7 +337,7 @@ export function ToolTest(){
                 setContent(textContent);
                 editor.current.value = textContent; // Update the textarea directly
                 const length = textContent.length;
-                editor.current.setSelectionRange(length, length);
+                document.getSelection().setPosition(editor.current,length)
             }
         } else {
             // Reset content only if the current content is not already empty
