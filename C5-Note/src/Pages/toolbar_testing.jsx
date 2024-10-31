@@ -4,7 +4,7 @@ import './notebooks.css';
 import logo from '../C5.png';
 import './toolbar.css';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import JoditEditor from 'jodit-react';
+import JoditEditor, { Jodit } from 'jodit-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { Modal, Button } from 'react-bootstrap';
@@ -35,6 +35,26 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
         </div>
     );
 }
+
+
+function setSelectionRange(input, selectionStart, selectionEnd) {
+    if (input.setSelectionRange) {
+        input.focus();
+        input.setSelectionRange(selectionStart, selectionEnd);
+    }
+    else if (input.createTextRange) {
+        var range = input.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', selectionEnd);
+        range.moveStart('character', selectionStart);
+        range.select();
+    }
+}
+
+function setCaretToPos (input, pos) {
+    setSelectionRange(input, pos, pos);
+}
+
 
 export function ToolTest(){
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
@@ -69,6 +89,8 @@ export function ToolTest(){
         setShowAccessModal(true);
     };
 
+    
+
     const config = useMemo(() => ({
         cleanHTML: {
             denyTags: {
@@ -76,6 +98,7 @@ export function ToolTest(){
               button: true,
             }
           },
+          
         
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder,
@@ -269,13 +292,13 @@ export function ToolTest(){
     };
 
     const updateContents = (content) => {
-        //console.log(content)
+        console.log(editor.current.selectionStart)
         setContent(content);
         saveContentToServer()
     };
 
 
-
+    
 
 
     const fetchPageContent = async () => {
@@ -298,23 +321,25 @@ export function ToolTest(){
         if (data['content']) {
             // Extract text by removing HTML tags
             const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
-            const current = editor.current.value.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
-    
+            
             // Check if the fetched text is different from the current content
-            if (textContent != current) {
-                console.log(textContent)
-                console.log(current)
-                setContent(textContent);
-                testcontent = textContent;
+            if (textContent !== editor.current.value) {
+                // Update content
+                editor.current.value = textContent;
+    
+                // Set cursor position to the end of the updated content
+                const length = textContent.length;
+                editor.current.setSelectionRange(length, length);
             }
         } else {
             // Reset content only if the current content is not already empty
             if (content !== '') {
-                setContent('');
-                testcontent = '';
+                editor.current.value = ''; // Clear the editor
             }
         }
     };
+    
+    
     
     
 
@@ -327,7 +352,7 @@ export function ToolTest(){
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPageContent();
-        }, 1000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+        }, 2000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
