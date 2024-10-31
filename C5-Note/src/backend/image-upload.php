@@ -12,14 +12,20 @@ if (isset($_COOKIE["token"])) {
 }
 else {
   http_response_code(400);
-  die("No token present.");
+  die(json_encode([
+    "status" => "failed",
+    "message" => "No token present."
+  ]));
 }
 
 $connection = new mysqli("localhost:3306", $username, $password, $db_name);
 
 if($connection->connect_error) {
     http_response_code(500);
-    die("Could not connect to the database");
+    die(json_encode([
+      "status" => "failed",
+      "message" => "Could not connect to the database"
+    ]));
 }
 
 $statement = $connection->prepare("SELECT * FROM active_users WHERE token = ?");
@@ -34,7 +40,11 @@ if($result->num_rows == 1) {
 }
 else {
   http_response_code(401);
-  die("Invalid token.");
+  die(json_encode([
+    "status" => "failed",
+    "message" => "Invalid token."
+  ]));
+  
 }
 
 $target_dir = "uploads/";
@@ -47,27 +57,39 @@ $target_file = $target_dir . $id . "." . $imageFileType;
 $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
   if($check == false) {
     http_response_code(400);
-    die("File is not an image.");
+    die(json_encode([
+      "status" => "failed",
+      "message" => "File is not an image."
+    ]));
   }
 
 
 // Check file size less than 2MB
 if ($_FILES["fileToUpload"]["size"] > 2000000) {
   http_response_code(413);
-  die("Sorry, your file is too large.");
+  die(json_encode([
+    "status" => "failed",
+    "message" => "File is too large."
+  ]));
 }
 
 // Check file size less than 2MB
 if ($_FILES["fileToUpload"]["size"] == 0) {
   http_response_code(400);
-  die("Sorry, your file is too small.");
+  die(json_encode([
+    "status" => "failed",
+    "message" => "File is empty."
+  ]));
 }
 
 // Allow certain file formats
 if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
 && $imageFileType != "gif" ) {
   http_response_code(400);
-  die("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+  die(json_encode([
+    "status" => "failed",
+    "message" => "Only JPG, JPEG, PNG, GIF allowed."
+  ]));
 }
 
 $files = glob("uploads/$id.*");
@@ -79,8 +101,14 @@ foreach ($files as $file) {
 
   if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
     http_response_code(200);
-    die("File successfully uploaded.");
+    die(json_encode([
+      "status" => "success",
+      "message" => "File successfully uploaded."
+    ]));
   } else {
     http_response_code(500);
-    die("Sorry, there was an error uploading your file.");
+    die(json_encode([
+      "status" => "failed",
+      "message" => "There was an error uploading your file."
+    ]));
   }
