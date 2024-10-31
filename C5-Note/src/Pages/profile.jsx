@@ -94,6 +94,8 @@ export function Profile() {
           <p>Select image to upload:</p>
           <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
           <input type="submit" value="Upload Image" name="Save Image"></input>
+          <input type="text" id="username" hidden="true" value={name}></input>
+          <input type="text" id="token" hidden="true" value={getCookie("token")}></input>
         </form>
 
       </div>
