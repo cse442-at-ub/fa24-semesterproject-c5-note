@@ -113,11 +113,12 @@ export function Profile() {
             </div>
             <h1>{name}</h1>
           </div>
-
           <p>Select image to upload:</p>
-          <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
-          <input type="submit" value="Upload Image" name="Save Image" onClick={upload}></input>
-
+          <div className="upload">
+            
+            <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
+            <input type="submit" value="Upload Image" name="Save Image" onClick={upload}></input>
+          </div>
 
         </div>
 

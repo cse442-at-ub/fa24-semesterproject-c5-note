@@ -120,3 +120,8 @@ body{
     padding-left: 6rem;
     padding-right: 6rem;
 }
+
+.upload{
+    display: flex;
+    flex-direction: row;
+}
