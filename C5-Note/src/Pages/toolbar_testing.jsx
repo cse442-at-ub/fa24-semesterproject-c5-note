@@ -258,7 +258,7 @@ export function ToolTest(){
                 method: "POST",
                 body: JSON.stringify(jsonData),
             });
-            console.log('content saved!')
+            //console.log('content saved!')
         }
     };
 
@@ -269,7 +269,7 @@ export function ToolTest(){
     };
 
     const updateContents = (content) => {
-        console.log(content)
+        //console.log(content)
         setContent(content);
         saveContentToServer()
     };
@@ -294,15 +294,16 @@ export function ToolTest(){
         });
     
         const data = await response.json();
-        console.log(data);
     
         if (data['content']) {
             // Extract text by removing HTML tags
-            const textContent = data['content'].replace(/<[^>]*>/g, '');
-            const current = editor.current.value.replace(/<[^>]*>/g, '');
+            const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+            const current = editor.current.value.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
     
             // Check if the fetched text is different from the current content
-            if (textContent !== current) {
+            if (textContent != current) {
+                console.log(textContent)
+                console.log(current)
                 setContent(textContent);
                 testcontent = textContent;
             }
@@ -326,7 +327,7 @@ export function ToolTest(){
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPageContent();
-        }, 500); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+        }, 1000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
