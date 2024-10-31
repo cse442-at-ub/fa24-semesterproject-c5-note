@@ -5,6 +5,7 @@ import './home.css';
 import { Link, useNavigate } from "react-router-dom";
 import { handleShowUsername } from "./home.jsx";
 import ItemGrid from './Grid.jsx';
+import { GhostaContainer, ghosta } from 'react-ghosta';
 
 export function Top_bar() {
   return (
@@ -91,7 +92,13 @@ export function Profile() {
 
       const formData = new FormData();
       formData.append("fileToUpload", document.getElementById("fileToUpload").files[0]);
-      fetch("backend/image-upload.php", { method: "POST", body: formData });
+      fetch("backend/image-upload.php", { method: "POST", body: formData }).then(response => {
+        response.json().then( data => {
+          if(data.status === "failed") {
+            ghosta.fire({ headerTitle: 'Error', description:data.message, showCloseButton:true });
+          }
+        })
+      });
     }
 
     const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
@@ -99,6 +106,7 @@ export function Profile() {
     return (
       <>
         <Top_bar />
+        <GhostaContainer />
         <br></br>
         <div id="Profile_Info" className='container_text'>
           <div className='Colour'>

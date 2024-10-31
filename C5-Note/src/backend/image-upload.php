@@ -14,7 +14,7 @@ else {
   http_response_code(400);
   die(json_encode([
     "status" => "failed",
-    "message" => "No token present."
+    "message" => "You aren't signed in."
   ]));
 }
 
