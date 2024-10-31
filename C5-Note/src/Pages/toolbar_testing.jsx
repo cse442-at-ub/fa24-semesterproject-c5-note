@@ -329,8 +329,10 @@ export function ToolTest(){
                 editor.current.value = textContent;
     
                 // Update content
-                const newLength = textContent.length;
-                editor.current.setSelectionRange(newLength, newLength);
+                setContent(textContent);
+                editor.current.value = textContent; // Update the textarea directly
+                const length = textContent.length;
+                editor.current.setSelectionRange(length, length);
             }
         } else {
             // Reset content only if the current content is not already empty
