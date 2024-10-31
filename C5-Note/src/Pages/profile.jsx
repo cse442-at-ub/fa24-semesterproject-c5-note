@@ -93,14 +93,9 @@ export function Profile() {
           <input type="submit" value="Upload Image" name="Save Image"></input>
         </form>
 
-
-
-
-
-
       </div>
 
-      <div className='container_text Profile_Buttons'>
+      <div className='Profile_Buttons'>
         <Link to="/note"><button className="take_notes_button">Take Notes</button></Link>
         <Link to="/"><button className="log_out_button" onClick={LoggedOut}>Log Out</button></Link>
       </div>

@@ -49,8 +49,16 @@ body{
     
 }
 
+.Profile_Buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    
+}
+
 .take_notes_button{
-    margin-top: 4vmin;
+    margin-top: 6vmin;
     background-color: #3DAE56;
     height: 5rem;
     width: 10rem;
