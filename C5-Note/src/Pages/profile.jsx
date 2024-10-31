@@ -2,7 +2,7 @@ import './profile.css';
 import logo from '../C5.png';
 import '../App.css';
 import './home.css';
-import { Link,useNavigate  } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { handleShowUsername } from "./home.jsx";
 import ItemGrid from './Grid.jsx';
 
@@ -18,100 +18,116 @@ export function Top_bar() {
 
 
 
-
-
 export function Profile() {
-  
+
   const navigate = useNavigate();
-  var preview = () => {
-    frame.src = URL.createObjectURL(event.target.files[0]);
-  }
-  const getCookie = (name) => {
-    let cookie = {};
-    document.cookie.split(';').forEach(function (el) {
-      let split = el.split('=');
-      cookie[split[0].trim()] = split.slice(1).join("=");
+
+  //const [src, setSrc] = useState(logo);
+
+
+  fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+
+    response.json().then( data => {
+
+      console.log(data);
+      console.log(data.message);
+      if (data.status != "failed") {
+        //setSrc(response.blob);
+        frame.src = "backend/" + data.message;
+      }
     })
-    return cookie[name];
-  }
+    
+  });
 
-  const clear_cookies = () => {
-    cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
-      console.log('Cookie deleted:', cookie);
-      cookieStore.delete(cookie);
-    }));
-    navigate('/')
-    location.reload();
-  }
-
-  const LoggedOut = () => {
-    var usaname = getCookie('username')
-    if (usaname != '' || typeof (myVariable) != "undefined") {
-      clear_cookies()
-      fetch("backend/logout.php", {
-        method: "POST",
-        body: JSON.stringify({
-          username: usaname,
-        }),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          console.log(json)
-        }
-        );
+    var preview = () => {
+      frame.src = URL.createObjectURL(event.target.files[0]);
     }
-    clear_cookies()
-  }
+    const getCookie = (name) => {
+      let cookie = {};
+      document.cookie.split(';').forEach(function (el) {
+        let split = el.split('=');
+        cookie[split[0].trim()] = split.slice(1).join("=");
+      })
+      return cookie[name];
+    }
 
-  var name = getCookie('username')
-  if (name == '' || typeof (name) == "undefined") {
-    name = 'DevModeOnly'
-  }
+    const clear_cookies = () => {
+      cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
+        console.log('Cookie deleted:', cookie);
+        cookieStore.delete(cookie);
+      }));
+      navigate('/')
+      location.reload();
+    }
 
-  const upload = () => {
+    const LoggedOut = () => {
+      var usaname = getCookie('username')
+      if (usaname != '' || typeof (myVariable) != "undefined") {
+        clear_cookies()
+        fetch("backend/logout.php", {
+          method: "POST",
+          body: JSON.stringify({
+            username: usaname,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8"
+          }
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json)
+          }
+          );
+      }
+      clear_cookies()
+    }
 
-    const formData = new FormData();
-    formData.append("fileToUpload", document.getElementById("fileToUpload").files[0]);
-    fetch("backend/image-upload.php", {method: "POST", body:formData});
-  }
+    var name = getCookie('username')
+    if (name == '' || typeof (name) == "undefined") {
+      name = 'DevModeOnly'
+    }
 
-  const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+    const upload = () => {
 
-  return (
-    <>
-      <Top_bar />
-      <br></br>
-      <div id="Profile_Info" className='container_text'>
-        <div className='Colour'>
-          <div className='container_text'>
-            <article className="profile_info">
-              <img id="frame" src={logo} className="circle" alt="logo" />
-              <div className="">
-                <p className="text"></p>
+      const formData = new FormData();
+      formData.append("fileToUpload", document.getElementById("fileToUpload").files[0]);
+      fetch("backend/image-upload.php", { method: "POST", body: formData });
+    }
 
-              </div>
-            </article>
+    const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+
+    return (
+      <>
+        <Top_bar />
+        <br></br>
+        <div id="Profile_Info" className='container_text'>
+          <div className='Colour'>
+            <div className='container_text'>
+              <article className="profile_info">
+                <img id="frame" src={logo} className="circle" alt="logo" />
+                <div className="">
+                  <p className="text"></p>
+
+                </div>
+              </article>
+            </div>
+            <h1>{name}</h1>
           </div>
-          <h1>{name}</h1>
-        </div>
-        
+
           <p>Select image to upload:</p>
           <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
-          <input type="submit" value="Upload Image" name="Save Image" onClick={ upload }></input>
-        
+          <input type="submit" value="Upload Image" name="Save Image" onClick={upload}></input>
 
-      </div>
 
-      <div className='Profile_Buttons'>
-        <Link to="/note"><button className="take_notes_button">Take Notes</button></Link>
-        <Link to="/"><button className="log_out_button" onClick={LoggedOut}>Log Out</button></Link>
-      </div>
+        </div>
 
-      <h1 className="container_text">Public Notebooks</h1>
-      <ItemGrid items={items}/>
-    </>
-  )
-}
+        <div className='Profile_Buttons'>
+          <Link to="/note"><button className="take_notes_button">Take Notes</button></Link>
+          <Link to="/"><button className="log_out_button" onClick={LoggedOut}>Log Out</button></Link>
+        </div>
+
+        <h1 className="container_text">Public Notebooks</h1>
+        <ItemGrid items={items} />
+      </>
+    )
+  }
