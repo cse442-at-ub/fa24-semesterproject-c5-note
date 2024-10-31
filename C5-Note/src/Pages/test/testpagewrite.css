@@ -1,0 +1,199 @@
+/* Override all padding in #root from App.css */
+#root{
+    margin: 0;
+    padding: 0;
+    max-width: none;
+}
+
+/* Remove all automatic padding */
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.nbpLogo{
+    /* Force the image to be 3em/3em so it'll take up its space
+     *  even when not loaded in. */
+    height: 3em;
+    width: 3em;
+}
+
+.nbpLogo:hover{
+    filter:brightness(50%);
+}
+
+.nbpButtonHome{
+    background-color: rgb(142, 142, 142);
+    height: 3em;
+    width: 10em;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+}
+
+.nbpButtonHome:hover{
+    background-color: rgb(115, 115, 115);
+}
+
+
+.tpwButton{
+    background-color: rgb(142, 142, 142);
+    height: 3em;
+    width: 10em;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+}
+
+.tpwButton:hover{
+    background-color: rgb(115, 115, 115);
+}
+
+
+
+.tpwWrapper{
+    display:        flex;
+    flex-flow:      row wrap;
+    font-weight:    bold;
+    text-align:     center;
+}
+
+.tpwWrapper > * {
+    padding:    10px;
+    flex:       1 100%;
+}
+
+.nbpHeader{
+    display: flex;
+    justify-content: space-between;
+    padding:0;
+    margin:0;
+    background: rgb(56, 56, 56);
+}
+
+/* nbpHeader Flex Container*/
+.nbpHeaderLeft{
+    display: flex;              /* Flex container */
+    flex-flow: row;             /* Flex container is only a single row */
+    align-items: center;        /* Items in Flex row are aligned vertically in the middle */
+    justify-content: flex-start;/* Items in Flex row are left-justified*/
+
+    padding: 0px;
+    margin:  0px;
+    
+}
+
+.nbpHeaderRight{
+    display: flex;              /* Flex container */
+    flex-flow: row;             /* Flex container is only a single row */
+    align-items: center;        /* Items in Flex row are aligned vertically in the middle */
+    justify-content: flex-end;/* Items in Flex row are left-justified*/
+
+    padding: 0px;
+    margin:  0px;
+    
+}
+
+
+/* Items within the nbpHeader */
+.nbpHeaderLeft > * {
+    flex: 0 1 auto;             /* Items do not grow, shrink, basis is automatic */
+}
+.nbpHeaderRight > * {
+    flex: 0 1 auto;             /* Items do not grow, shrink, basis is automatic */
+}
+
+/* nbpToolbar Flex Container*/
+.nbpToolbar{
+    display:flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Items within nbpToolbar */
+.nbpToolbar > * {
+    flex: 0 1 auto;
+}
+
+.nbpMain{
+    background: rgb(38, 38, 38);
+    min-height: 1000px;
+    padding: 0;
+    margin:0;
+}
+
+/* Format the text area so that it looks less like a default web
+ *  page, and more like a proper application. */
+.tpwInputArea{
+    width: 100%;
+    height: 90%;
+    border-color: transparent;
+    border: 0;
+    padding: 1em;
+    resize: none;
+    background-color: transparent;
+
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+}
+
+.tpwInputArea:focus{
+    /* Remove the border that appears when you click a text area */
+    outline: none;
+
+}
+
+/* Format the title text area so that it looks less like a default web
+ *  page, and more like a proper application. */
+ .tpwPageTitle{
+    width: 100%;
+    height: 1em;
+    border-color: transparent;
+    border: 0;
+    padding: 0.5em;
+    resize: none;
+    background-color: transparent;
+
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 24pt;
+}
+
+.tpwPageTitle:focus{
+    /* Remove the border that appears when you click a text area */
+    outline: none;
+
+}
+
+
+.nbpSidebarNotebooks{
+    background: rgb(68, 68, 68);
+}
+
+.nbpSidebarPages{
+    background: rgb(68, 68, 68);
+}
+
+.nbpFooter{
+    background: rgb(200, 0, 255);
+}
+
+/* Mobile Layout is Default */
+
+/* Narrow Layout */
+@media all and (min-width: 600px){
+    /* Make the asides share the same row */
+    .aside { flex: 1 0 0; }
+
+}
+
+/* Desktop Layout */
+@media all and (min-width: 800px){
+
+    .nbpMain                    { flex: 3 0px;}
+    .nbpSidebarNotebooks        { order: 1; }
+    .nbpMain                    { order: 2; }
+    .nbpSidebarPages            { order: 3; }
+    .nbpFooter                  { order: 4; }
+
+}

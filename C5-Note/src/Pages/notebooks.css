@@ -11,6 +11,11 @@ body{
     padding: 0;
 }
 
+.clickableNotebookTitle {
+    cursor: pointer; /* Shows the pointer to indicate it's clickable */
+    transition: color 0.3s ease; /* Optional: smooth transition for color change */
+}
+
 .nbpLogo{
     /* Force the image to be 3em/3em so it'll take up its space
      *  even when not loaded in. */
@@ -18,13 +23,21 @@ body{
     width: 3em;
 }
 
+.nbpLogo:hover{
+    filter:brightness(50%);
+}
+
 .nbpButtonHome{
-    background-color: rgb(100, 237, 109);
+    background-color: rgb(142, 142, 142);
     height: 3em;
     width: 10em;
     border-radius: 1em;
     color: white;
     font-family: monofonto;
+}
+
+.nbpButtonHome:hover{
+    background-color: rgb(115, 115, 115);
 }
 
 
@@ -46,7 +59,7 @@ body{
     justify-content: space-between;
     padding:0;
     margin:0;
-    background: rgb(200, 0, 255);
+    background: rgb(56, 56, 56);
 }
 
 /* nbpHeader Flex Container*/
@@ -101,11 +114,11 @@ body{
 }
 
 .nbpSidebarNotebooks{
-    background: rgb(83, 83, 83);
+    background: rgb(68, 68, 68);
 }
 
 .nbpSidebarPages{
-    background: rgb(83, 83, 83);
+    background: rgb(68, 68, 68);
 }
 
 .nbpFooter{

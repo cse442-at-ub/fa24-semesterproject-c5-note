@@ -1,0 +1,42 @@
+.mainBody{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding-top: 3rem;
+    flex-direction: row;
+    padding-left: 2rem;
+}.notebooks_list{
+    background-color: #848484;
+    align-content: center;
+    padding-right: 2rem;
+}
+.spacing{
+    padding-bottom: 2rem;
+}
+.label{
+    text-align: center;
+    font-size: 3rem;
+    font-family: monofonto;
+}
+
+.note-pages-header {
+    display: flex;
+    align-items: center;
+}
+.notebook-color-indicator {
+width: 20px;
+height: 20px;
+border: 1px solid #000;
+margin-left: 10px;
+display: inline-block;
+}
+
+.modal-content {
+    background-color: white !important;  
+    color: black !important;            
+}.modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
