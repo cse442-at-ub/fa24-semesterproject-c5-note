@@ -70,6 +70,12 @@ if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg
   die("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
 }
 
+$files = glob("uploads/$id.*");
+
+foreach ($files as $file) {
+    unlink(realpath($file));
+}
+
 
   if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
     http_response_code(200);
