@@ -1,82 +1,73 @@
 <?php
 
+$config = file_get_contents("../config.json");
+$data = json_decode($config);
+
+$username = $data->username;
+$password = $data->password;
+$db_name = $data->db_name;
+
+if (isset($_COOKIE["token"])) {
+  $token = $_COOKIE["token"];
+}
+else {
+  http_response_code(400);
+  die("No token present.");
+}
+
+$connection = new mysqli("localhost:3306", $username, $password, $db_name);
+
+if($connection->connect_error) {
+    die("Could not connect to the database");
+}
+
+$statement = $connection->prepare("SELECT * FROM active_users WHERE token = ?");
+
+$statement->bind_param("s", hash("sha256", $token));
+
+$statement->execute();
+$result = $statement->get_result();
+
+if($result->num_rows == 1) {
+  $id = $result->fetch_assoc()["user_id"];
+}
+else {
+  http_response_code(400);
+  die("Invalid token.");
+}
+
 $target_dir = "uploads/";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
 $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+$target_file = $target_dir . $id . "." . $imageFileType;
 
 // Check if image file is a actual image or fake image
-if(isset($_POST["submit"])) {
-  $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-  if($check !== false) {
-    echo "File is an image - " . $check["mime"] . ".";
-    $uploadOk = 1;
-  } else {
-    echo "File is not an image.";
-    $uploadOk = 0;
+$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+  if($check == false) {
+    die("File is not an image.");
   }
-}
 
-// Check if file already exists
-if (file_exists($target_file)) {
-  echo "Sorry, file already exists.";
-  $uploadOk = 0;
-}
 
 // Check file size less than 2MB
 if ($_FILES["fileToUpload"]["size"] > 2000000) {
-  echo "Sorry, your file is too large.";
-  $message = "Sorry, your file is too large.";
-  echo "<script type='text/javascript'>alert('$message');</script>";
-  $uploadOk = 0;
+  die("Sorry, your file is too large.");
+}
+
+// Check file size less than 2MB
+if ($_FILES["fileToUpload"]["size"] == 0) {
+  die("Sorry, your file is too small.");
 }
 
 // Allow certain file formats
 if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
 && $imageFileType != "gif" ) {
-  echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-  $uploadOk = 0;
+  die("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
 }
 
-// Check if $uploadOk is set to 0 by an error
-if ($uploadOk == 0) {
-  echo "Sorry, your file was not uploaded.";
-// if everything is ok, try to upload file
-} else {
+
   if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-    echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
+    die("File successfully uploaded.");
   } else {
-    echo "Sorry, there was an error uploading your file.";
+    die("Sorry, there was an error uploading your file.");
   }
-}
-
-//header("Location: https://se-prod.cse.buffalo.edu/CSE442/2024-Fall/cse-442al/#/profile");
- 
-exit;
-
-
-$config = file_get_contents("../config.json");
-$data = json_decode($config);
-
-$servername = "localhost:3306";
-$username = $data->username;
-$db_name = $data->db_name;
-
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-// Check connection
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
-
-$sql = "INSERT INTO users (image) VALUES ('$filename')";
-
-if (mysqli_query($conn, $sql)) {
-  echo "New record created successfully";
-} else {
-  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-}
-
-mysqli_close($conn);
-
-?>
