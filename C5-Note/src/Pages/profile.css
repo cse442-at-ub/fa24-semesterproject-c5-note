@@ -1,0 +1,114 @@
+
+body{
+    margin: 0;
+}
+.Top_bar{
+    background-color: #2F2F2F;
+    overflow: hidden;
+}
+
+.Top_bar_text{
+    padding-top: 2vmin;
+    font-size: 8vmin;
+    padding-left: 8vmin;
+}
+
+.logo{
+    height: 20vmin;
+    width: 20vmin;
+}
+
+.Top_bar_elms{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.home_page{
+    min-height: 100vh
+}
+
+.circle {
+    display: flex;
+    width: 100px;
+    height: 100px;
+    background-color: black;
+    border-radius: 50%;
+  }
+  
+.profile_info_button{
+    margin-top: 4vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    
+}
+
+.take_notes_button{
+    margin-top: 4vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+    
+}
+
+.log_out_button{
+    margin-top: 6vmin;
+    background-color: #AE3D3F;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+}
+
+.App_Buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.grid_template{
+    text-align: center;
+    display: grid;
+    grid-template-columns: 10rem;
+    grid-template-rows: 10rem 10rem 10rem;
+    grid-gap: 1rem;
+    height: 8rem;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 10rem;
+    grid-template-rows: 10rem 10rem 10rem;
+    grid-gap: 1rem;
+}
+
+/* Narrow Layout */
+@media all and (min-width: 600px){
+    /* Make the asides share the same row */
+    .aside { flex: 1 0 0; }
+
+}
+
+.Colour{
+    background-color: white;
+    color: black;
+    border-radius: 8%;
+    padding: 2rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+}
