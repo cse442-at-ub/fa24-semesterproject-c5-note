@@ -275,16 +275,15 @@ export function ToolTest(){
     };
 
 
-    
 
 
 
     const fetchPageContent = async () => {
-        var jsonDataLoad = {
+        const jsonDataLoad = {
             "pageid": pageNum,
             "groupid": groupID
         };
-        
+    
         const response = await fetch("backend/getPageContent.php", {
             method: "POST",
             headers: {
@@ -293,17 +292,30 @@ export function ToolTest(){
             },
             body: JSON.stringify(jsonDataLoad)
         });
-        
+    
         const data = await response.json();
-        console.log(data)
+        console.log(data);
+    
         if (data['content']) {
-            setContent(data['content']);
-            testcontent = data['content'];
+            // Extract text by removing HTML tags
+            const textContent = data['content'].replace(/<[^>]*>/g, '');
+            const current = editor.current.value.replace(/<[^>]*>/g, '');
+    
+            // Check if the fetched text is different from the current content
+            if (textContent !== current) {
+                setContent(textContent);
+                testcontent = textContent;
+            }
         } else {
-            setContent('');
-            testcontent = '';
+            // Reset content only if the current content is not already empty
+            if (content !== '') {
+                setContent('');
+                testcontent = '';
+            }
         }
     };
+    
+    
 
     // Fetch page content whenever pageNum or groupID changes
     useEffect(() => {
