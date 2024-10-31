@@ -75,7 +75,6 @@ export function Profile() {
 
     const formData = new FormData();
     formData.append("fileToUpload", document.getElementById("fileToUpload").files[0]);
-    formData.append("token", getCookie("token"));
     fetch("backend/image-upload.php", {method: "POST", body:formData});
   }
 
@@ -102,8 +101,6 @@ export function Profile() {
           <p>Select image to upload:</p>
           <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
           <input type="submit" value="Upload Image" name="Save Image" onClick={ upload }></input>
-          <input type="text" id="username" hidden="true" value={name}></input>
-          <input type="text" id="token" hidden="true" value={getCookie("token")}></input>
         
 
       </div>
