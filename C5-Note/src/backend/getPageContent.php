@@ -22,7 +22,7 @@ $loadpageid = $json->pageid;
 $groupid = $json->groupid;
 
 // Prepare the SQL statement
-$sql = $connection->prepare("SELECT page_content FROM pages WHERE page_number = ? AND group_id = ?");
+$sql = $connection->prepare("SELECT page_content,last_user FROM pages WHERE page_number = ? AND group_id = ?");
 $sql->bind_param("ii", $loadpageid, $groupid); // Fixed parameter binding
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -33,7 +33,9 @@ $outp = $result->fetch_assoc(); // Fetch the result correctly
 
 $clean_html = $purifier->purify($outp['page_content']);
 
-echo json_encode(["content" => $clean_html]); // Fixed JSON encoding
+echo json_encode(["content" => $clean_html,
+'last_user' => $outp['last_user']
+]); // Fixed JSON encoding
 
 $sql->close(); // Close the statement
 $connection->close(); // Close the connection

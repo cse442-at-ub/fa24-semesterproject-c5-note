@@ -2,7 +2,7 @@
 
 // TPW Write Page
 
-// Extract info from config.json so that we can access the database
+// Extract info from config.json for database access
 $config = file_get_contents("../config.json");
 $data = json_decode($config);
 $username = $data->username;
@@ -22,14 +22,44 @@ if ($connection->connect_error) {
     die("Could not connect to the database: " . $connection->connect_error);
 }
 
-require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
+// Check for the "token" cookie
+if (isset($_COOKIE['token'])) {
+    $token = $_COOKIE['token'];
+} else {
+    die("Token cookie is not set.");
+}
 
+// Prepare statement to get user_id based on the token
+$smto = $connection->prepare("SELECT user_id FROM active_users WHERE token = ?");
+$smto->bind_param("s", $token);
+$smto->execute();
+$resulto = $smto->get_result();
+
+if ($resulto->num_rows === 0) {
+    die("Invalid token.");
+}
+
+$user = $resulto->fetch_assoc();
+$user_id = $user['user_id'];
+$smto->close();
+
+// Prepare statement to get username based on user_id
+$smto = $connection->prepare("SELECT username FROM users WHERE user_id = ?");
+$smto->bind_param("i", $user_id);
+$smto->execute();
+$username_found = $smto->get_result()->fetch_assoc()['username'];
+$smto->close();
+
+// Include HTML Purifier
+require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
 $purifier = new HTMLPurifier();
 
-$sourceid = $json->pageid;      // Get the page to write to
+// Get parameters from the JSON request
+$sourceid = $json->pageid;      // Page to write to
 $GroupID = $json->groupid;      // Group ID for notebook
-$text = $json->updatetext;      // What to update the page contents to
+$text = $json->updatetext;      // Content to update the page with
 
+// Purify the input text
 $clean_html = $purifier->purify($text);
 
 // Get the notebook ID from the group ID
@@ -37,23 +67,21 @@ $smt = $connection->prepare("SELECT notebook_id FROM notebook_groups WHERE id = 
 $smt->bind_param("i", $GroupID);
 $smt->execute();
 $result = $smt->get_result();
-$notebook_id = $result->fetch_assoc()['notebook_id']; // Fetch the notebook ID
+$notebook_id = $result->fetch_assoc()['notebook_id'];
 $smt->close();
 
 // Get the current datetime in the desired format
 $currentDateTime = date('Y-m-d H:i:s'); // Format: 'YYYY-MM-DD HH:MM:SS'
 
-// Prepare the SQL statement to update the last modified date
+// Update the last modified date
 $smt2 = $connection->prepare("UPDATE notebooks SET last_modified = ? WHERE id = ?");
-$smt2->bind_param("si", $currentDateTime, $notebook_id); // Use notebook_id here
-
-// Execute the statement
+$smt2->bind_param("si", $currentDateTime, $notebook_id);
 $smt2->execute();
 $smt2->close();
 
 // Update the database for page content
-$sql = $connection->prepare("UPDATE pages SET page_content = ? WHERE page_number = ? AND group_id = ?");
-$sql->bind_param("sii", $clean_html, $sourceid, $GroupID);
+$sql = $connection->prepare("UPDATE pages SET page_content = ?, last_user = ? WHERE page_number = ? AND group_id = ?");
+$sql->bind_param("ssii", $clean_html, $username_found, $sourceid, $GroupID);
 
 // Determine if the page was saved
 if ($sql->execute()) {

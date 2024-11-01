@@ -78,6 +78,7 @@ export function ToolTest(){
     const [showAccessModal, setShowAccessModal] = useState(false); // State for showing modal
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
+    const [yourUsername,setyourUsername] = useState('')
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
     var test = useRef(null);
     const handleClose = () => {
@@ -136,6 +137,8 @@ export function ToolTest(){
         })
         return cookie[name];
     }
+
+    
 
     const currentUsername = getCookie('username');
 
@@ -327,6 +330,7 @@ export function ToolTest(){
         const data = await response.json();
     
         if (data['content']) {
+            console.log(data['last_user'])
             const textContent = data['content']
                 .replace(/&nbsp;/g, ' ')
                 .replace(/<[^>]*>/g, '')
@@ -360,23 +364,35 @@ export function ToolTest(){
     
                         // Identify the target paragraph and character position
                         const paragraphs = firstElement.getElementsByTagName('p');
-                        const targetParagraphIndex = 0; // Replace with your logic to find the correct index
                         const targetCharacterIndex = cursorPosition; // Adjust this based on your needs
     
-                        if (paragraphs.length > targetParagraphIndex) {
-                            const targetParagraph = paragraphs[targetParagraphIndex];
+                        if (paragraphs.length) {
+                            // Find the paragraph that contains the cursor
+                            let targetParagraph = null;
+                            for (let i = 0; i < paragraphs.length; i++) {
+                                const range = document.createRange();
+                                range.selectNodeContents(paragraphs[i]);
+                                if (range.compareBoundaryPoints(Range.START_TO_END, selection.getRangeAt(0)) === 1) {
+                                    targetParagraph = paragraphs[i];
+                                    break;
+                                }
+                            }
     
-                            // Print statement indicating the paragraph
-                            console.log('Cursor is in paragraph:', targetParagraph.innerHTML);
+                            if (targetParagraph) {
+                                const newRange = document.createRange();
+                                newRange.setStart(targetParagraph, Math.min(targetCharacterIndex, targetParagraph.childNodes.length));
+                                newRange.collapse(true); // Collapse the range to that point
     
-                            const newRange = document.createRange();
-                            newRange.setStart(targetParagraph, Math.min(targetCharacterIndex, targetParagraph.childNodes.length));
-                            newRange.collapse(true); // Collapse the range to that point
+                                selection.removeAllRanges(); // Clear existing selections
+                                selection.addRange(newRange); // Add the new range
     
-                            selection.removeAllRanges(); // Clear existing selections
-                            selection.addRange(newRange); // Add the new range
+                                // Print statement indicating the paragraph
+                                console.log('Cursor is in paragraph:', targetParagraph.innerHTML);
+                            }
                         }
                     }
+                } else {
+                    // Optional: If the content is the same, you might want to do something else here
                 }
     
                 console.log('Cursor Position:', cursorPosition);
@@ -394,6 +410,8 @@ export function ToolTest(){
             }
         }
     };
+    
+    
     
     
     
