@@ -33,19 +33,20 @@ export function Profile() {
   //const [src, setSrc] = useState(logo);
 
 
-  fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+  useEffect(() => {
+    fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
 
-    response.json().then(data => {
+      response.json().then(data => {
 
-      console.log(data);
-      console.log(data.message);
-      if (data.status != "failed") {
-        //setSrc(response.blob);
-        frame.src = "backend/" + data.message;
-      }
-    })
+        if (data.status != "failed") {
+          //setSrc(response.blob);
+          frame.src = "backend/" + data.message;
+        }
+      })
 
-  });
+    });
+  }, []);
+
 
   var preview = () => {
     frame.src = URL.createObjectURL(event.target.files[0]);

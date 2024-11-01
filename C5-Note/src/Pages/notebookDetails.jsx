@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import Profile from '../C5.png';
 import './notebookDetails.css';
@@ -27,9 +27,11 @@ function Top_bar_simple_notes(){
               {/*switch the image to be agnostic to database images*/}
               <div className="profile_div">
                 <div className="profile_div_color">
-                  <img src={Profile} className="profile_image" alt="logo" />
-                  <p>{ name }</p>
-                  </div>
+                <Link to="/profile">
+                    <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                    <p>{ name }</p>
+                </Link>
+                </div>
               </div>
           </div>
             
@@ -49,6 +51,21 @@ export function NotebookDetail() {
     const [groupToDelete, setGroupToDelete] = useState(null);
 
     const [noPages, setNoPages] = useState(false);
+
+    
+    useEffect(() => {
+        fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+
+            response.json().then(data => {
+
+                if (data.status != "failed") {
+                    //setSrc(response.blob);
+                    frame.src = "backend/" + data.message;
+                }
+            })
+
+        });
+    }, []);
 
 
 
