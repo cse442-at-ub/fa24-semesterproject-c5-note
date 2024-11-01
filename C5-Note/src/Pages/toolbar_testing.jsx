@@ -438,77 +438,91 @@ export function ToolTest(){
 
 
 
-    const fetchPageContent = async (isInitialFetch = false) => {
-        fetchGroups();
-        const jsonDataLoad = {
-            "pageid": pageNum,
-            "groupid": groupID,
-            "isInitialFetch": isInitialFetch // Include the parameter
-        };
-    
-        try {
-            const response = await fetch("backend/getPageContent.php", {
-                method: "POST",
-                headers: {
-                    Accept: 'application/json',
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(jsonDataLoad)
-            });
-    
-            const data = await response.json();
-    
-            if (data['content']) {
-                const elements = document.getElementsByClassName('jodit-wysiwyg');
-                if (elements.length > 0) {
-                    const firstElement = elements[0];
-                    const currentContent = replaceBrTags(firstElement.innerHTML);
-                    const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
-                    console.log(cursorPosition);
-    
-                    // Check if content is different before updating
-                    if (yourUsername !== data['last_user'] || loaded < 4) {
-                        console.log(data['last_user']);
-                        if (currentContent !== replaceBrTags(data['content'])) {
-                            console.log('Updating content');
-    
-                            // Update the content
-                            firstElement.innerHTML = data['content'];
-                            console.log('Updating position: ' + cursorPosition);
-    
-                            // Restore caret position after updating content
-                            setTimeout(() => {
-                                setCaretPosition(firstElement, cursorPosition);
-                            }, 0);
-    
-                            loaded += 1; // Update loaded status
-                        }
-                    }
-                }
-            } else {
-                // Clear content if needed
-                if (content !== '') {
-                    setContent('');
-                    const elements = document.getElementsByClassName('jodit-wysiwyg');
-                    if (elements.length > 0) {
-                        elements[0].innerHTML = ''; // Clear the editor
+    let isFetch = false; // New flag to manage fetching state
+
+const fetchPageContent = async (isInitialFetch = false) => {
+    // Set the fetching state
+    isFetch = true;
+
+    // Immediately fetch the groups when polling starts
+    fetchGroups();
+
+    const jsonDataLoad = {
+        "pageid": pageNum,
+        "groupid": groupID,
+        "isInitialFetch": isInitialFetch // Include the parameter
+    };
+
+    try {
+        const response = await fetch("backend/getPageContent.php", {
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jsonDataLoad)
+        });
+
+        const data = await response.json();
+
+        if (data['content']) {
+            const elements = document.getElementsByClassName('jodit-wysiwyg');
+            if (elements.length > 0) {
+                const firstElement = elements[0];
+                const currentContent = replaceBrTags(firstElement.innerHTML);
+                const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
+                console.log(cursorPosition);
+
+                // Check if content is different before updating
+                if (yourUsername !== data['last_user'] || isInitialFetch) {
+                    console.log(data['last_user']);
+                    if (currentContent !== replaceBrTags(data['content'])) {
+                        console.log('Updating content');
+
+                        // Update the content
+                        firstElement.innerHTML = data['content'];
+                        console.log('Updating position: ' + cursorPosition);
+
+                        // Restore caret position after updating content
+                        setTimeout(() => {
+                            setCaretPosition(firstElement, cursorPosition);
+                        }, 0);
                     }
                 }
             }
-            loaded += 1; // Ensure loaded status is set
-    
-        } catch (error) {
-            console.error('Error fetching page content:', error);
-        } finally {
-            // Fetch again after the current request is complete, set isInitialFetch to false
-            fetchPageContent(false);
+        } else {
+            // Clear content if needed
+            if (content !== '') {
+                setContent('');
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    elements[0].innerHTML = ''; // Clear the editor
+                }
+            }
         }
-    };
-    
-    // Start long polling when pageNum or groupID changes
-    useEffect(() => {
-        fetchPageContent(true); // Pass true for the initial fetch
-    }, [pageNum, groupID]); // Run when pageNum or groupID changes
+
+    } catch (error) {
+        console.error('Error fetching page content:', error);
+    } finally {
+        // Reset the fetching state
+        isFetch = false;
+
+        // Poll for new content only if not an initial fetch
+        if (!isInitialFetch) {
+            setTimeout(() => {
+                fetchPageContent(false);
+            }, pollingInterval); // Define pollingInterval as needed
+        }
+    }
+};
+
+// Start long polling when pageNum or groupID changes
+useEffect(() => {
+    // Reset fetching state
+    isFetch = false;
+    fetchPageContent(true); // Pass true for the initial fetch
+}, [pageNum, groupID]); // Run when pageNum or groupID changes
+
     
 
 
