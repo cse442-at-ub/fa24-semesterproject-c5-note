@@ -361,87 +361,101 @@ export function ToolTest(){
         const data = await response.json();
     
         if (data['content']) {
-            //console.log(data['last_user'])
-            const textContent = data['content']
-                .replace(/&nbsp;/g, ' ')
-                .replace(/<[^>]*>/g, '')
-                .replace(/\u00A0/g, ' ');
-            
             const elements = document.getElementsByClassName('jodit-wysiwyg');
-    
             if (elements.length > 0) {
                 const firstElement = elements[0];
-    
-                // Get the current selection and cursor position
                 const selection = window.getSelection();
                 let cursorPosition = 0;
+                let targetParagraphIndex = 0;
     
+                // Save current selection and cursor position
                 if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0);
-                    cursorPosition = range.startOffset; // Get the cursor's starting position
-                }
+                    cursorPosition = range.startOffset;
     
-                // Clean the current content from firstElement
-                const current = firstElement.innerHTML
-                    .replace(/&nbsp;/g, ' ')
-                    .replace(/<[^>]*>/g, '')
-                    .replace(/\u00A0/g, ' ');
-    
-                // Check if the fetched content is different from the current content
-                    if (yourUsername != data['last_user'] || loaded == 0) {
-                        console.log(yourUsername)
-                        console.log(data['last_user'])
-                        firstElement.innerHTML = data['content']; // Update firstElement
-                        firstElement.focus();
-    
-                        // Identify the target paragraph and character position
-                        const paragraphs = firstElement.getElementsByTagName('p');
-                        const targetCharacterIndex = cursorPosition; // Adjust this based on your needs
-    
-                        if (paragraphs.length) {
-                            // Find the paragraph that contains the cursor
-                            let targetParagraph = null;
-                            for (let i = 0; i < paragraphs.length; i++) {
-                                const range = document.createRange();
-                                range.selectNodeContents(paragraphs[i]);
-                                if (range.compareBoundaryPoints(Range.START_TO_END, selection.getRangeAt(0)) === 1) {
-                                    targetParagraph = paragraphs[i];
-                                    break;
-                                }
-                            }
-    
-                            if (targetParagraph) {
-                                const newRange = document.createRange();
-                                newRange.setStart(targetParagraph, Math.min(targetCharacterIndex, targetParagraph.childNodes.length));
-                                newRange.collapse(true); // Collapse the range to that point
-    
-                                selection.removeAllRanges(); // Clear existing selections
-                                selection.addRange(newRange); // Add the new range
-    
-                                // Print statement indicating the paragraph
-                                console.log('Cursor is in paragraph:', targetParagraph.innerHTML);
-                            }
+                    // Find the index of the paragraph containing the cursor
+                    const paragraphs = firstElement.getElementsByTagName('p');
+                    for (let i = 0; i < paragraphs.length; i++) {
+                        const paragraphRange = document.createRange();
+                        paragraphRange.selectNodeContents(paragraphs[i]);
+                        if (range.compareBoundaryPoints(Range.START_TO_END, paragraphRange) === 1) {
+                            targetParagraphIndex = i;
                         }
                     }
-
+                }
     
-                console.log('Cursor Position:', cursorPosition);
-                console.log(firstElement);
-                loaded = 1
+                // Update content if necessary
+                if (yourUsername !== data['last_user'] || loaded === 0) {
+                    console.log(yourUsername)
+                    console.log(data['last_user'])
+                    firstElement.innerHTML = data['content'];
+                    firstElement.focus();
+    
+                    const newParagraphs = firstElement.getElementsByTagName('p');
+                    if (newParagraphs.length > 0 && targetParagraphIndex < newParagraphs.length) {
+                        const targetParagraph = newParagraphs[targetParagraphIndex];
+    
+                        // Log the target paragraph and its child nodes
+    
+                        const newRange = document.createRange();
+                        let totalOffset = 0;
+                        let found = false;
+    
+                        // Helper function to recursively traverse child nodes
+                        const findTextNode = (node) => {
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                const nodeLength = node.textContent.length;
+                                if (totalOffset + nodeLength >= cursorPosition) {
+                                    const positionToSet = cursorPosition - totalOffset;
+                                    if (positionToSet <= nodeLength) {
+                                        newRange.setStart(node, positionToSet);
+                                        found = true;
+                                        return true; // Stop recursion
+                                    }
+                                }
+                                totalOffset += nodeLength;
+                            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                                for (const child of node.childNodes) {
+                                    if (findTextNode(child)) return true; // Continue searching
+                                }
+                            }
+                            return false; // Not found
+                        };
+    
+                        // Start searching from the target paragraph
+                        findTextNode(targetParagraph);
+    
+                        // If found, collapse the range and set the selection
+                        if (found) {
+                            newRange.collapse(true); // Collapse to set the cursor position
+                            selection.removeAllRanges(); // Clear existing selections
+                            selection.addRange(newRange); // Add the new range
+                        } else {
+                            console.warn("Cursor position out of bounds.");
+                        }
+                    }
+                }
+    
+                loaded = 1; // Update loaded status
             }
         } else {
-            // Reset content only if the current content is not already empty
+            // Clear content if needed
             if (content !== '') {
                 setContent('');
                 const elements = document.getElementsByClassName('jodit-wysiwyg');
                 if (elements.length > 0) {
-                    const firstElement = elements[0];
-                    firstElement.innerHTML = ''; // Clear the editor if needed
+                    elements[0].innerHTML = ''; // Clear the editor
                 }
             }
         }
-        loaded = 1
+        loaded = 1; // Ensure loaded status is set
     };
+    
+    
+    
+    
+    
+    
     
     
     
