@@ -440,75 +440,70 @@ export function ToolTest(){
             "groupid": groupID
         };
     
-        const response = await fetch("backend/getPageContent.php", {
-            method: "POST",
-            headers: {
-                Accept: 'application/json',
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonDataLoad)
-        });
+        try {
+            const response = await fetch("backend/getPageContent.php", {
+                method: "POST",
+                headers: {
+                    Accept: 'application/json',
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonDataLoad)
+            });
     
-        const data = await response.json();
+            const data = await response.json();
     
-        if (data['content']) {
-            const elements = document.getElementsByClassName('jodit-wysiwyg');
-            if (elements.length > 0) {
-                const firstElement = elements[0];
-                const currentContent = replaceBrTags(firstElement.innerHTML);
-                const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
-                console.log(cursorPosition);
+            if (data['content']) {
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    const firstElement = elements[0];
+                    const currentContent = replaceBrTags(firstElement.innerHTML);
+                    const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
+                    console.log(cursorPosition);
     
-                // Check if content is different before updating
-                if (yourUsername !== data['last_user'] || loaded < 4) {
-                    console.log(data['last_user']);
-                    if (currentContent !== replaceBrTags(data['content'])) {
-                        console.log('Updating content');
+                    // Check if content is different before updating
+                    if (yourUsername !== data['last_user'] || loaded < 4) {
+                        console.log(data['last_user']);
+                        if (currentContent !== replaceBrTags(data['content'])) {
+                            console.log('Updating content');
     
-                        // Update the content
-                        firstElement.innerHTML = data['content'];
-                        console.log('Updating position: ' + cursorPosition);
+                            // Update the content
+                            firstElement.innerHTML = data['content'];
+                            console.log('Updating position: ' + cursorPosition);
     
-                        // Restore caret position after updating content
-                        setTimeout(() => {
-                            setCaretPosition(firstElement, cursorPosition);
-                        }, 0);
+                            // Restore caret position after updating content
+                            setTimeout(() => {
+                                setCaretPosition(firstElement, cursorPosition);
+                            }, 0);
     
-                        loaded += 1; // Update loaded status
+                            loaded += 1; // Update loaded status
+                        }
+                    }
+                }
+            } else {
+                // Clear content if needed
+                if (content !== '') {
+                    setContent('');
+                    const elements = document.getElementsByClassName('jodit-wysiwyg');
+                    if (elements.length > 0) {
+                        elements[0].innerHTML = ''; // Clear the editor
                     }
                 }
             }
-        } else {
-            // Clear content if needed
-            if (content !== '') {
-                setContent('');
-                const elements = document.getElementsByClassName('jodit-wysiwyg');
-                if (elements.length > 0) {
-                    elements[0].innerHTML = ''; // Clear the editor
-                }
-            }
+            loaded += 1; // Ensure loaded status is set
+    
+        } catch (error) {
+            console.error('Error fetching page content:', error);
+        } finally {
+            // Fetch again after the current request is complete
+            fetchPageContent();
         }
-        loaded += 1; // Ensure loaded status is set
     };
     
-    
-    
-
-
-    // Fetch page content whenever pageNum or groupID changes
+    // Start long polling when pageNum or groupID changes
     useEffect(() => {
         fetchPageContent();
     }, [pageNum, groupID]); // Run when pageNum or groupID changes
-
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            fetchPageContent();
-        }, 1000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
-
-        // Clean up the interval on component unmount
-        return () => clearInterval(intervalId);
-    }, [pageNum, groupID]); // You might want to include dependencies if needed
+    
 
 
     const stripTags = (stuff) => {
