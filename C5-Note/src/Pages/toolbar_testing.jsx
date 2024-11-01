@@ -324,28 +324,43 @@ export function ToolTest(){
         const data = await response.json();
     
         if (data['content']) {
-            // Extract text by removing HTML tags
-            const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
-            const current = editor.current.value.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+            // Assume data.content contains multiple <p> elements
+            const contentHTML = data['content'];
+            
+            const currentHTML = editor.current.innerHTML; // For contenteditable div
     
-            // Check if the fetched text is different from the current content
-            if (textContent !== current) {
-                const currentPosition = editor.current.selectionStart;
-                editor.current.value = textContent;
+            // Check if the fetched content is different from the current content
+            if (contentHTML !== currentHTML) {
+                editor.current.innerHTML = contentHTML; // Update the div directly
+                
+                // Focus the contenteditable div
+                editor.current.focus();
     
-                // Update content
-                setContent(textContent);
-                editor.current.value = textContent; // Update the textarea directly
-                const length = textContent.length;
-                document.getSelection().setPosition(editor.current,length)
+                // Create a range and set the cursor at the end of the last <p>
+                const range = document.createRange();
+                const selection = window.getSelection();
+    
+                // Select the last <p> element
+                const lastParagraph = editor.current.querySelector('p:last-child');
+                if (lastParagraph) {
+                    // Set the range to the end of the last <p> element
+                    range.setStart(lastParagraph, lastParagraph.childNodes.length); // Start after the last child
+                    range.collapse(true); // Collapse to the end
+                    selection.removeAllRanges(); // Clear any existing selections
+                    selection.addRange(range); // Add the new range
+                }
             }
         } else {
             // Reset content only if the current content is not already empty
             if (content !== '') {
                 setContent('');
+                editor.current.innerHTML = ''; // Clear the editor if needed
             }
         }
     };
+    
+    
+    
     
     
     
