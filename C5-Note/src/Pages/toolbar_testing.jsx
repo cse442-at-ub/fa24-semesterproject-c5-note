@@ -16,6 +16,7 @@ let testcontent = ""
 let yourUsername = ""
 
 let loaded = 0;
+let groups = []
 
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
@@ -69,7 +70,6 @@ export function ToolTest(){
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
 
-    const [groups, setGroups] = useState([]); // Store the groups of the current notebook
     const [notebookId, setNotebookId] = useState(null); // To store notebook ID
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
     
@@ -168,7 +168,7 @@ export function ToolTest(){
     }, []); // Empty dependency array means this runs once after the initial render
 
 
-    const currentUsername = getCookie('username');
+    const currentUsername = yourUsername;
 
     // Handle drag end for reordering
     const handleDragEnd = async (result) => {
@@ -181,13 +181,13 @@ export function ToolTest(){
         reorderedGroups.splice(destination.index, 0, movedGroup);
 
         // Update state and persist the new order
-        setGroups(reorderedGroups);
+        groups=reorderedGroups;
 
         console.log(reorderedGroups);
         console.log(reorderedGroups.map(group => group.group_id));
 
         // Send new order to backend to persist it
-        const username = getCookie('username');
+        const username = yourUsername
         await fetch("backend/updateGroupOrder.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -206,7 +206,7 @@ export function ToolTest(){
     // Fetch the user's notebooks
     useEffect(() => {
         const fetchNotebooks = async () => {
-            const username = getCookie('username');
+            const username = yourUsername
             const response = await fetch("backend/notebookFinder.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -224,23 +224,42 @@ export function ToolTest(){
     }, []);
     
 
+    const arraysAreEqual = (arr1, arr2) => {
+        if (arr1.length !== arr2.length) return false;
+    
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i].group_id !== arr2[i].group_id) {
+                return false;
+            }
+        }
+        return true;
+    };
+    
     const fetchGroups = async () => {
-        const username = getCookie('username');
+        const username = yourUsername;
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, title: notebook.title })
         });
         const data = await response.json();
+        
         if (data.success) {
-            setGroups(data.groups);
-            setNotebookId(data.notebook_id);
-            // Reset expanded state based on new groups length
-            setExpanded(data.groups.reduce((acc, _, index) => ({ ...acc, [index]: false }), {}));
+            const fetchedGroups = data.groups;
+            // Compare fetchedGroups with current groups
+            if (!arraysAreEqual(groups, fetchedGroups)) {
+                groups = fetchedGroups;
+                setNotebookId(data.notebook_id);
+    
+                // Reset expanded state based on new groups length
+                setExpanded(fetchedGroups.reduce((acc, _, index) => ({ ...acc, [index]: false }), {}));
+            }
         } else {
             console.error("Failed to fetch groups and pages");
         }
     };
+    
+    
 
     // Fetch groups and pages for the current notebook
     useEffect(() => {
@@ -369,12 +388,12 @@ export function ToolTest(){
                 const selection = window.getSelection();
                 let cursorPosition = 0;
                 let targetParagraphIndex = 0;
-    
+        
                 // Save current selection and cursor position
                 if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0);
                     cursorPosition = range.startOffset;
-    
+        
                     // Find the index of the paragraph containing the cursor
                     const paragraphs = firstElement.getElementsByTagName('p');
                     for (let i = 0; i < paragraphs.length; i++) {
@@ -385,24 +404,21 @@ export function ToolTest(){
                         }
                     }
                 }
-    
+        
                 // Update content if necessary
                 if (yourUsername !== data['last_user'] || loaded === 0) {
                     console.log(yourUsername)
                     console.log(data['last_user'])
                     firstElement.innerHTML = data['content'];
                     firstElement.focus();
-    
+        
                     const newParagraphs = firstElement.getElementsByTagName('p');
                     if (newParagraphs.length > 0 && targetParagraphIndex < newParagraphs.length) {
                         const targetParagraph = newParagraphs[targetParagraphIndex];
-    
-                        // Log the target paragraph and its child nodes
-    
                         const newRange = document.createRange();
                         let totalOffset = 0;
                         let found = false;
-    
+        
                         // Helper function to recursively traverse child nodes
                         const findTextNode = (node) => {
                             if (node.nodeType === Node.TEXT_NODE) {
@@ -423,23 +439,40 @@ export function ToolTest(){
                             }
                             return false; // Not found
                         };
-    
+        
                         // Start searching from the target paragraph
                         findTextNode(targetParagraph);
-    
+        
                         // If found, collapse the range and set the selection
                         if (found) {
                             newRange.collapse(true); // Collapse to set the cursor position
                             selection.removeAllRanges(); // Clear existing selections
                             selection.addRange(newRange); // Add the new range
                         } else {
-                            console.warn("Cursor position out of bounds.");
+                            // Cursor position is out of bounds, set to end of the target paragraph
+                            if (targetParagraph) {
+                                newRange.selectNodeContents(targetParagraph);
+                                newRange.collapse(false); // Move to the end
+                                selection.removeAllRanges();
+                                selection.addRange(newRange);
+                            } else {
+                                // Fallback to the end of the last paragraph if the target doesn't exist
+                                const lastParagraph = newParagraphs[newParagraphs.length - 1];
+                                if (lastParagraph) {
+                                    newRange.selectNodeContents(lastParagraph);
+                                    newRange.collapse(false); // Move to the end
+                                    selection.removeAllRanges();
+                                    selection.addRange(newRange);
+                                }
+                            }
                         }
                     }
+        
+                    loaded = 1; // Update loaded status
                 }
-    
-                loaded = 1; // Update loaded status
             }
+        
+        
         } else {
             // Clear content if needed
             if (content !== '') {
@@ -454,22 +487,7 @@ export function ToolTest(){
     };
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
     // Fetch page content whenever pageNum or groupID changes
     useEffect(() => {
