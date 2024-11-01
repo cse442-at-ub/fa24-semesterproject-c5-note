@@ -20,75 +20,6 @@ let groups = []
 
 
 
-function mergeContent(currentContent, newContent) {
-    const fragment = document.createDocumentFragment();
-    const uniqueElements = new Set();
-
-    // Parse the contents into DOM nodes
-    const currentNodes = Array.from(new DOMParser().parseFromString(currentContent, 'text/html').body.childNodes);
-    const newNodes = Array.from(new DOMParser().parseFromString(newContent, 'text/html').body.childNodes);
-
-    let currentIndex = 0;
-    let newIndex = 0;
-
-    // Flag to check if "cc" has been added
-    let ccAdded = false;
-
-    // Process newNodes first to potentially add "cc"
-    while (newIndex < newNodes.length) {
-        const newNode = newNodes[newIndex];
-
-        if (newNode.nodeType === Node.ELEMENT_NODE) {
-            fragment.appendChild(newNode.cloneNode(true));
-        } else if (newNode.nodeType === Node.TEXT_NODE) {
-            const text = newNode.textContent.trim();
-            if (text) {
-                fragment.appendChild(document.createTextNode(text));
-            }
-        }
-
-        // Check for <br> and add "cc" before it
-        if (newNode.nodeName.toLowerCase() === 'br' && !ccAdded) {
-            fragment.appendChild(document.createTextNode("cc")); // Add "cc" before <br>
-            ccAdded = true; // Mark "cc" as added
-        }
-
-        newIndex++;
-    }
-
-    // Now process currentNodes
-    while (currentIndex < currentNodes.length) {
-        const currentNode = currentNodes[currentIndex];
-
-        // Check for <br> before adding to fragment
-        if (currentNode.nodeName.toLowerCase() === 'br' && !ccAdded) {
-            fragment.appendChild(document.createTextNode("cc")); // Add "cc" before <br>
-            ccAdded = true; // Mark "cc" as added
-        }
-
-        if (currentNode.nodeType === Node.ELEMENT_NODE) {
-            const tagName = currentNode.tagName.toLowerCase();
-            const identifier = tagName + currentNode.innerHTML;
-            if (!uniqueElements.has(identifier)) {
-                uniqueElements.add(identifier);
-                fragment.appendChild(currentNode.cloneNode(true));
-            }
-        } else if (currentNode.nodeType === Node.TEXT_NODE) {
-            const text = currentNode.textContent.trim();
-            if (text && !uniqueElements.has(text)) {
-                uniqueElements.add(text);
-                fragment.appendChild(document.createTextNode(text));
-            }
-        }
-
-        currentIndex++;
-    }
-
-    // Return the merged HTML
-    return fragment.innerHTML;
-}
-
-
 
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
@@ -163,43 +94,7 @@ function node_walk(node, func) {
   // getCaretPosition: return [start, end] as offsets to elem.textContent that
   //   correspond to the selected portion of text
   //   (if start == end, caret is at given position and no text is selected)
-  function getCaretPosition(elem) {
-    var sel = window.getSelection();
-    var cum_length = [0, 0];
   
-    if(sel.anchorNode == elem)
-      cum_length = [sel.anchorOffset, sel.extentOffset];
-    else {
-      var nodes_to_find = [sel.anchorNode, sel.extentNode];
-      if(!elem.contains(sel.anchorNode) || !elem.contains(sel.extentNode))
-        return undefined;
-      else {
-        var found = [0,0];
-        var i;
-        node_walk(elem, function(node) {
-          for(i = 0; i < 2; i++) {
-            if(node == nodes_to_find[i]) {
-              found[i] = true;
-              if(found[i == 0 ? 1 : 0])
-                return false; // all done
-            }
-          }
-  
-          if(node.textContent && !node.firstChild) {
-            for(i = 0; i < 2; i++) {
-              if(!found[i])
-                cum_length[i] += node.textContent.length;
-            }
-          }
-        });
-        cum_length[0] += sel.anchorOffset;
-        cum_length[1] += sel.extentOffset;
-      }
-    }
-    if(cum_length[0] <= cum_length[1])
-      return cum_length;
-    return [cum_length[1], cum_length[0]];
-  }
 
 
 
