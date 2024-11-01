@@ -46,23 +46,115 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
 }
 
 
+function setCaretPosition(elem, caretPos) {
+    elem.focus(); // Ensure the element is focused
+    const range = document.createRange();
+    const selection = window.getSelection();
 
-function setSelectionRange(input, selectionStart, selectionEnd) {
-    if (input.setSelectionRange) {
-        input.focus();
-        input.setSelectionRange(selectionStart, selectionEnd);
+    // Clear current selection
+    selection.removeAllRanges();
+
+    // Use TreeWalker to find the correct text node
+    const walker = document.createTreeWalker(elem, NodeFilter.SHOW_TEXT, null, false);
+    let charCount = 0;
+    let found = false;
+
+    while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const nextCharCount = charCount + node.length;
+
+        if (nextCharCount >= caretPos) {
+            range.setStart(node, caretPos - charCount);
+            range.setEnd(node, caretPos - charCount);
+            found = true;
+            break;
+        }
+
+        charCount = nextCharCount;
     }
-    else if (input.createTextRange) {
-        var range = input.createTextRange();
-        range.collapse(true);
-        range.moveEnd('character', selectionEnd);
-        range.moveStart('character', selectionStart);
-        range.select();
+
+    if (found) {
+        selection.addRange(range);
     }
 }
 
-function setCaretToPos (input, pos) {
-    setSelectionRange(input, pos, pos);
+
+
+// node_walk: walk the element tree, stop when func(node) returns false
+function node_walk(node, func) {
+    var result = func(node);
+    for(node = node.firstChild; result !== false && node; node = node.nextSibling)
+      result = node_walk(node, func);
+    return result;
+  };
+  
+  // getCaretPosition: return [start, end] as offsets to elem.textContent that
+  //   correspond to the selected portion of text
+  //   (if start == end, caret is at given position and no text is selected)
+  function getCaretPosition(elem) {
+    var sel = window.getSelection();
+    var cum_length = [0, 0];
+  
+    if(sel.anchorNode == elem)
+      cum_length = [sel.anchorOffset, sel.extentOffset];
+    else {
+      var nodes_to_find = [sel.anchorNode, sel.extentNode];
+      if(!elem.contains(sel.anchorNode) || !elem.contains(sel.extentNode))
+        return undefined;
+      else {
+        var found = [0,0];
+        var i;
+        node_walk(elem, function(node) {
+          for(i = 0; i < 2; i++) {
+            if(node == nodes_to_find[i]) {
+              found[i] = true;
+              if(found[i == 0 ? 1 : 0])
+                return false; // all done
+            }
+          }
+  
+          if(node.textContent && !node.firstChild) {
+            for(i = 0; i < 2; i++) {
+              if(!found[i])
+                cum_length[i] += node.textContent.length;
+            }
+          }
+        });
+        cum_length[0] += sel.anchorOffset;
+        cum_length[1] += sel.extentOffset;
+      }
+    }
+    if(cum_length[0] <= cum_length[1])
+      return cum_length;
+    return [cum_length[1], cum_length[0]];
+  }
+
+
+
+
+
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var range = win.getSelection().getRangeAt(0);
+            var preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(element);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            caretOffset = preCaretRange.toString().length;
+        }
+    } else if ( (sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
 }
 
 
@@ -106,7 +198,8 @@ export function ToolTest(){
               script: true,
               button: true,
             }
-          },events: 
+          },"enter": "BR",
+          events: 
           { 
            afterInit: (instance) => { test = instance; } 
 
@@ -243,7 +336,7 @@ export function ToolTest(){
     
     const fetchGroups = async () => {
         const username = yourUsername;
-        console.log(yourUsername)
+        //console.log(yourUsername)
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -366,11 +459,15 @@ export function ToolTest(){
     }
 
 
-    
+
+    function replaceBrTags(htmlString) {
+        return htmlString.replace(/<br\s*\/?>/gi, '<br/>');
+    }
+
 
 
     const fetchPageContent = async () => {
-        fetchGroups()
+        fetchGroups();
         const jsonDataLoad = {
             "pageid": pageNum,
             "groupid": groupID
@@ -391,100 +488,30 @@ export function ToolTest(){
             const elements = document.getElementsByClassName('jodit-wysiwyg');
             if (elements.length > 0) {
                 const firstElement = elements[0];
-                const selection = window.getSelection();
-                let cursorPosition = 0;
-                let targetParagraphIndex = 0;
-        
-                // Save current selection and cursor position
-                if (selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    cursorPosition = range.startOffset;
-        
-                    // Find the index of the paragraph containing the cursor
-                    const paragraphs = firstElement.getElementsByTagName('p');
-                    for (let i = 0; i < paragraphs.length; i++) {
-                        const paragraphRange = document.createRange();
-                        paragraphRange.selectNodeContents(paragraphs[i]);
-                        if (range.compareBoundaryPoints(Range.START_TO_END, paragraphRange) === 1) {
-                            targetParagraphIndex = i;
-                        }
-                    }
-                }
-        
+                const currentContent = replaceBrTags(firstElement.innerHTML);
+                const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
+                console.log(cursorPosition);
+    
                 // Check if content is different before updating
-                const currentContent = firstElement.innerHTML;
                 if (yourUsername !== data['last_user'] || loaded < 4) {
-                    if (currentContent !== data['content']) {
+                    console.log(data['last_user']);
+                    if (currentContent !== replaceBrTags(data['content'])) {
                         console.log('Updating content');
-        
+    
                         // Update the content
                         firstElement.innerHTML = data['content'];
-                        firstElement.focus();
-        
-                        const newParagraphs = firstElement.getElementsByTagName('p');
-                        if (newParagraphs.length > 0 && targetParagraphIndex < newParagraphs.length) {
-                            const targetParagraph = newParagraphs[targetParagraphIndex];
-                            const newRange = document.createRange();
-                            let totalOffset = 0;
-                            let found = false;
-        
-                            // Adjust cursor position based on the new content
-                            cursorPosition = Math.min(cursorPosition, data['content'].length);
-        
-                            const findTextNode = (node) => {
-                                if (node.nodeType === Node.TEXT_NODE) {
-                                    const nodeLength = node.textContent.length;
-                                    if (totalOffset + nodeLength >= cursorPosition) {
-                                        const positionToSet = cursorPosition - totalOffset;
-                                        if (positionToSet <= nodeLength) {
-                                            newRange.setStart(node, positionToSet);
-                                            found = true;
-                                            return true; // Stop recursion
-                                        }
-                                    }
-                                    totalOffset += nodeLength;
-                                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                                    for (const child of node.childNodes) {
-                                        if (findTextNode(child)) return true; // Continue searching
-                                    }
-                                }
-                                return false; // Not found
-                            };
-        
-                            // Start searching from the target paragraph
-                            findTextNode(targetParagraph);
-        
-                            // If found, collapse the range and set the selection
-                            if (found) {
-                                newRange.collapse(true); // Collapse to set the cursor position
-                            } else {
-                                // Fallback to the end of the target paragraph or last paragraph
-                                if (targetParagraph) {
-                                    newRange.selectNodeContents(targetParagraph);
-                                    newRange.collapse(false); // Move to the end
-                                } else {
-                                    const lastParagraph = newParagraphs[newParagraphs.length - 1];
-                                    if (lastParagraph) {
-                                        newRange.selectNodeContents(lastParagraph);
-                                        newRange.collapse(false); // Move to the end
-                                    }
-                                }
-                            }
-        
-                            // Clear existing selections and add the new range
-                            selection.removeAllRanges();
-                            selection.addRange(newRange);
-                        }
-        
+                        console.log('Updating position: ' + cursorPosition);
+    
+                        // Restore caret position after updating content
+                        setTimeout(() => {
+                            setCaretPosition(firstElement, cursorPosition);
+                        }, 0);
+    
                         loaded += 1; // Update loaded status
-                        console.log(cursorPosition);
                     }
                 }
             }
-        }
-        
-        
-         else {
+        } else {
             // Clear content if needed
             if (content !== '') {
                 setContent('');
@@ -498,6 +525,7 @@ export function ToolTest(){
     };
     
     
+    
 
 
     // Fetch page content whenever pageNum or groupID changes
@@ -509,7 +537,7 @@ export function ToolTest(){
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPageContent();
-        }, 250); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+        }, 1000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
