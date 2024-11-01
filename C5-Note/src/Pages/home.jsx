@@ -5,7 +5,6 @@ import { Link,useNavigate  } from "react-router-dom";
 import { GhostaContainer, ghosta } from 'react-ghosta';
 import 'react-ghosta/dist/ghosta.css';
 
-
 export function Top_bar(){
   return(
     <div className='Top_bar'>
