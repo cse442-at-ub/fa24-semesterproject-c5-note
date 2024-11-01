@@ -297,13 +297,11 @@ export function ToolTest(){
     };
 
     const updateContents = (content) => {
-        console.log(document.getSelection())
         setContent(content);
         saveContentToServer()
     };
 
     const save_on = (content) =>{
-        console.log('saving')
         saveContentToServer()
     }
 
@@ -331,37 +329,54 @@ export function ToolTest(){
         if (data['content']) {
             // Assume data.content contains multiple <p> elements
             const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
-            const current = editor.current.value.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+            const elements = document.getElementsByClassName('jodit-wysiwyg');
     
-            // Check if the fetched content is different from the current content
-            if (textContent !== current) {
-                setContent(textContent) // Update the div directly
-                console.log('updating')
-                // Focus the contenteditable div
-                editor.current.focus();
+            // Access the first element (if it exists)
+            if (elements.length > 0) {
+                const firstElement = elements[0];
     
-                // Create a range and set the cursor at the end of the last <p>
-                const range = document.createRange();
-                const selection = window.getSelection();
+                // Clean the current content from firstElement
+                const current = firstElement.innerHTML.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
     
-                // Select the last <p> element
-                const lastParagraph = editor.current.querySelector('p:last-child');
-                if (lastParagraph) {
-                    // Set the range to the end of the last <p> element
-                    range.setStart(lastParagraph, lastParagraph.childNodes.length); // Start after the last child
-                    range.collapse(true); // Collapse to the end
-                    selection.removeAllRanges(); // Clear any existing selections
-                    selection.addRange(range); // Add the new range
+                // Check if the fetched content is different from the current content
+                if (textContent !== current) {
+                    firstElement.innerHTML = data['content']; // Update firstElement
+    
+                    console.log('Updating');
+                    console.log(data['content']);
+                    console.log(firstElement.innerHTML);
+                    
+                    // Focus the contenteditable div
+                    firstElement.focus();
+    
+                    // Create a range and set the cursor at the end of the last <p>
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+    
+                    // Select the last <p> element within firstElement
+                    const lastParagraph = firstElement.querySelector('p:last-child');
+                    if (lastParagraph) {
+                        // Set the range to the end of the last <p> element
+                        range.setStart(lastParagraph, lastParagraph.childNodes.length); // Start after the last child
+                        range.collapse(true); // Collapse to the end
+                        selection.removeAllRanges(); // Clear any existing selections
+                        selection.addRange(range); // Add the new range
+                    }
                 }
             }
         } else {
             // Reset content only if the current content is not already empty
             if (content !== '') {
                 setContent('');
-                editor.current.innerHTML = ''; // Clear the editor if needed
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    const firstElement = elements[0];
+                    firstElement.innerHTML = ''; // Clear the editor if needed
+                }
             }
         }
     };
+    
     
     
     
@@ -378,7 +393,7 @@ export function ToolTest(){
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPageContent();
-        }, 2000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+        }, 250); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
@@ -486,6 +501,7 @@ export function ToolTest(){
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <div className="custom-toolbar-example">
                     <JoditEditor
+                    id='editor'
                         ref={editor}
                         value={content}
                         config={config}
