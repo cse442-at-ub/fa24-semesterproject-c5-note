@@ -40,7 +40,7 @@ function Top_bar_simple_notes(){
 export function NotebookDetail() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { notebook } = location.state; // Access the notebook data from state
+    const { notebook, readOnly } = location.state; // Access the notebook data from state
     const [groups, setGroups] = useState(null);
     const [groupsEmpty, setGroupsEmpty] = useState(false);
     const [editingGroupId, setEditingGroupId] = useState(null);
@@ -249,7 +249,8 @@ export function NotebookDetail() {
             state: { 
                 notebook: notebook,  // Pass current notebook info
                 group: group,         // Pass the clicked group info (group_id, group_name, and pages)
-                page: page           // Pass the clicked page info (page_number, page_content)
+                page: page,           // Pass the clicked page info (page_number, page_content)
+                readOnly: readOnly      //  
             }
         });
     };
@@ -290,8 +291,8 @@ export function NotebookDetail() {
                     <div className="notebook-color-indicator" style={{ backgroundColor: notebook.color }}></div>
                 </div>
 
-                {/* If no groups exist, show "Add Group" button */}
-                {groupsEmpty && (
+                {/* If no groups exist, and we are NOT in readOnly mode, show "Add Group" button */}
+                {groupsEmpty && !readOnly && (
                     <div>
                         <button onClick={handleAddGroup}>Add Group</button>
                     </div>
@@ -321,8 +322,14 @@ export function NotebookDetail() {
                                     ) : (
                                         <>
                                             <span>{group.group_name}</span>
-                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
-                                            <button onClick={() => handleAddPages(group)}>Add Page</button>
+
+                                            {/* Render Edit button and Add Page button if NOT readOnly */}
+                                            {!readOnly && (
+                                                <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
+                                            )}
+                                            {!readOnly && (
+                                                <button onClick={() => handleAddPages(group)}>Add Page</button>
+                                            )}
                                         </>
                                     )}
 
@@ -339,7 +346,10 @@ export function NotebookDetail() {
                             ))}
                         </ul>
 
-                        <button onClick={handleAddGroup}>Add Group</button>
+                        {/* Create an "Add Group" button if NOT readOnly */}
+                        {!readOnly && (
+                            <button onClick={handleAddGroup}>Add Group</button>
+                        )}
 
                     </div>
                 )}
