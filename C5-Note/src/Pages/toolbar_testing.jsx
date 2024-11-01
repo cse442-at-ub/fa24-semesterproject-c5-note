@@ -21,17 +21,20 @@ let groups = []
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
-            {/* Group name acts as a dropdown button */}
             <h1 className="clickableGroupName" onClick={toggleGroup}>
                 {group.group_name}
             </h1>
 
-            {/* Show pages only if the group is expanded */}
             {isExpanded && (
                 <ul>
                     {group.pages.map((page, pageIndex) => (
                         <li key={pageIndex}>
-                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
+                            <Link
+                                to={`/notebooks/${group.group_id}/${page.page_number}`}
+                                state={{ notebook, group, page }}
+                                className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
+                                onClick={() => loaded = 0}
+                            >
                                 Page {page.page_number}: {page.page_name || "Untitled Page"}
                             </Link>
                         </li>
@@ -41,6 +44,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
         </div>
     );
 }
+
 
 
 function setSelectionRange(input, selectionStart, selectionEnd) {
@@ -73,7 +77,7 @@ export function ToolTest(){
     const [notebookId, setNotebookId] = useState(null); // To store notebook ID
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
     
-    const [placeholder, setPlace] = useState('Start typing...');
+    const [placeholder, setPlace] = useState('');
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
@@ -407,75 +411,80 @@ export function ToolTest(){
                     }
                 }
         
-                // Update content if necessary
-                if (yourUsername !== data['last_user'] || loaded === 0) {
-                    console.log(yourUsername)
-                    console.log(data['last_user'])
-                    firstElement.innerHTML = data['content'];
-                    firstElement.focus();
+                // Check if content is different before updating
+                const currentContent = firstElement.innerHTML;
+                if (yourUsername !== data['last_user'] || loaded < 4) {
+                    if (currentContent !== data['content']) {
+                        console.log('Updating content');
         
-                    const newParagraphs = firstElement.getElementsByTagName('p');
-                    if (newParagraphs.length > 0 && targetParagraphIndex < newParagraphs.length) {
-                        const targetParagraph = newParagraphs[targetParagraphIndex];
-                        const newRange = document.createRange();
-                        let totalOffset = 0;
-                        let found = false;
+                        // Update the content
+                        firstElement.innerHTML = data['content'];
+                        firstElement.focus();
         
-                        // Helper function to recursively traverse child nodes
-                        const findTextNode = (node) => {
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                const nodeLength = node.textContent.length;
-                                if (totalOffset + nodeLength >= cursorPosition) {
-                                    const positionToSet = cursorPosition - totalOffset;
-                                    if (positionToSet <= nodeLength) {
-                                        newRange.setStart(node, positionToSet);
-                                        found = true;
-                                        return true; // Stop recursion
+                        const newParagraphs = firstElement.getElementsByTagName('p');
+                        if (newParagraphs.length > 0 && targetParagraphIndex < newParagraphs.length) {
+                            const targetParagraph = newParagraphs[targetParagraphIndex];
+                            const newRange = document.createRange();
+                            let totalOffset = 0;
+                            let found = false;
+        
+                            // Adjust cursor position based on the new content
+                            cursorPosition = Math.min(cursorPosition, data['content'].length);
+        
+                            const findTextNode = (node) => {
+                                if (node.nodeType === Node.TEXT_NODE) {
+                                    const nodeLength = node.textContent.length;
+                                    if (totalOffset + nodeLength >= cursorPosition) {
+                                        const positionToSet = cursorPosition - totalOffset;
+                                        if (positionToSet <= nodeLength) {
+                                            newRange.setStart(node, positionToSet);
+                                            found = true;
+                                            return true; // Stop recursion
+                                        }
+                                    }
+                                    totalOffset += nodeLength;
+                                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                                    for (const child of node.childNodes) {
+                                        if (findTextNode(child)) return true; // Continue searching
                                     }
                                 }
-                                totalOffset += nodeLength;
-                            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                                for (const child of node.childNodes) {
-                                    if (findTextNode(child)) return true; // Continue searching
-                                }
-                            }
-                            return false; // Not found
-                        };
+                                return false; // Not found
+                            };
         
-                        // Start searching from the target paragraph
-                        findTextNode(targetParagraph);
+                            // Start searching from the target paragraph
+                            findTextNode(targetParagraph);
         
-                        // If found, collapse the range and set the selection
-                        if (found) {
-                            newRange.collapse(true); // Collapse to set the cursor position
-                            selection.removeAllRanges(); // Clear existing selections
-                            selection.addRange(newRange); // Add the new range
-                        } else {
-                            // Cursor position is out of bounds, set to end of the target paragraph
-                            if (targetParagraph) {
-                                newRange.selectNodeContents(targetParagraph);
-                                newRange.collapse(false); // Move to the end
-                                selection.removeAllRanges();
-                                selection.addRange(newRange);
+                            // If found, collapse the range and set the selection
+                            if (found) {
+                                newRange.collapse(true); // Collapse to set the cursor position
                             } else {
-                                // Fallback to the end of the last paragraph if the target doesn't exist
-                                const lastParagraph = newParagraphs[newParagraphs.length - 1];
-                                if (lastParagraph) {
-                                    newRange.selectNodeContents(lastParagraph);
+                                // Fallback to the end of the target paragraph or last paragraph
+                                if (targetParagraph) {
+                                    newRange.selectNodeContents(targetParagraph);
                                     newRange.collapse(false); // Move to the end
-                                    selection.removeAllRanges();
-                                    selection.addRange(newRange);
+                                } else {
+                                    const lastParagraph = newParagraphs[newParagraphs.length - 1];
+                                    if (lastParagraph) {
+                                        newRange.selectNodeContents(lastParagraph);
+                                        newRange.collapse(false); // Move to the end
+                                    }
                                 }
                             }
-                        }
-                    }
         
-                    loaded = 1; // Update loaded status
+                            // Clear existing selections and add the new range
+                            selection.removeAllRanges();
+                            selection.addRange(newRange);
+                        }
+        
+                        loaded += 1; // Update loaded status
+                        console.log(cursorPosition);
+                    }
                 }
             }
+        }
         
         
-        } else {
+         else {
             // Clear content if needed
             if (content !== '') {
                 setContent('');
@@ -485,7 +494,7 @@ export function ToolTest(){
                 }
             }
         }
-        loaded = 1; // Ensure loaded status is set
+        loaded += 1; // Ensure loaded status is set
     };
     
     
