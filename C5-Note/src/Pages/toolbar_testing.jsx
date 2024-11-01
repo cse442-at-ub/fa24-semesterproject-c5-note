@@ -195,7 +195,7 @@ export function ToolTest(){
                     group_id: sourceGroupId,
                     reorderedPages: reorderedPages.map((page, index) => ({
                         page_number: page.page_number,
-                        page_order: index
+                        page_order: index + 1
                     }))
                 })
             });

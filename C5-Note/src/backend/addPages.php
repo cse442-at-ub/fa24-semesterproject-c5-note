@@ -19,6 +19,7 @@ $loggedInUsername = $input['username'];
 $notebookTitle = $input['title'];
 $groupId = $input['group_id'];
 $pageContent = $input['page_content'];
+$pageName = "Untitled Page"; // Default page name
 
 try {
     // Get the notebook ID and owner
@@ -56,11 +57,11 @@ try {
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     $newPageNumber = $row['total_pages'] + 1;
-    $newPageOrder = $row['total_pages']; // Starts at 0 for the first page, then increments
+    $newPageOrder = $row['total_pages'] + 1; // Starts at 1 for the first page, then increments
 
-    // Insert the new page with page_order
-    $stmt = $connection->prepare("INSERT INTO pages (group_id, page_number, page_content, page_order) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("iisi", $groupId, $newPageNumber, $pageContent, $newPageOrder);
+    // Insert the new page with page_order and default page_name
+    $stmt = $connection->prepare("INSERT INTO pages (group_id, page_number, page_content, page_order, page_name) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("iisis", $groupId, $newPageNumber, $pageContent, $newPageOrder, $pageName);
     $stmt->execute();
 
     echo json_encode(["success" => true, "message" => "Page added successfully", "page_number" => $newPageNumber, "page_order" => $newPageOrder]);
@@ -72,4 +73,6 @@ try {
         "error" => $e->getMessage()
     ]);
 }
+
+$connection->close();
 ?>
