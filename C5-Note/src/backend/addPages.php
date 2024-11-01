@@ -49,20 +49,21 @@ try {
         }
     }
 
-    // Get the current number of pages in the group
+    // Get the current number of pages in the group to determine page_number and page_order
     $stmt = $connection->prepare("SELECT COUNT(*) as total_pages FROM pages WHERE group_id = ?");
     $stmt->bind_param("i", $groupId);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     $newPageNumber = $row['total_pages'] + 1;
+    $newPageOrder = $row['total_pages']; // Starts at 0 for the first page, then increments
 
-    // Insert the new page
-    $stmt = $connection->prepare("INSERT INTO pages (group_id, page_number, page_content) VALUES (?, ?, ?)");
-    $stmt->bind_param("iis", $groupId, $newPageNumber, $pageContent);
+    // Insert the new page with page_order
+    $stmt = $connection->prepare("INSERT INTO pages (group_id, page_number, page_content, page_order) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("iisi", $groupId, $newPageNumber, $pageContent, $newPageOrder);
     $stmt->execute();
 
-    echo json_encode(["success" => true, "message" => "Page added successfully", "page_number" => $newPageNumber]);
+    echo json_encode(["success" => true, "message" => "Page added successfully", "page_number" => $newPageNumber, "page_order" => $newPageOrder]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

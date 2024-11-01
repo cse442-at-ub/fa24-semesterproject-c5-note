@@ -245,8 +245,9 @@ export function NotebookDetail() {
         if (data.success) {
             // After successfully adding the page, reload the groups/pages
             const newPage = {
-                page_number: group.pages.length + 1,  // New page number based on existing pages
-                page_content: "Untitled Page"  // Empty content
+                page_number: data.page_number,  // New page number based on existing pages || old -> page_number: group.pages.length + 1
+                page_content: "Untitled Page",  // Empty content
+                page_order: data.page_order
             };
             
             // Update the state with the newly added page
