@@ -358,7 +358,6 @@ export function Simple_notebook(){
     });
 };
 
-
   // fostlia:  Function to handlmeowe clicking a notebook.
   //  Fires a ghosta popup to show buttons for Edit/View modes.
   const handleNotebookClick_TriggerPopup = (notebook) =>{
@@ -454,8 +453,6 @@ export function Simple_notebook(){
 
   };
 
-
-
   // fostlia: After the "Are you sure?" prompt, delete that notebook
   const handleNotebookFinalizeDelete = (notebook) => {
 
@@ -473,9 +470,6 @@ export function Simple_notebook(){
         }, 1000); // 1000 milliseconds = 1 second
       })
   };
-
-
-
 
   const handleSortChange = (event) => {
     const selectedValue = event.target.value;

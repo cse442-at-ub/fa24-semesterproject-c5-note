@@ -12,25 +12,42 @@ import { Modal, Button } from 'react-bootstrap';
 
 let unsavedChanges = 0;
 let testcontent = ""
-function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly }) {
+
+function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly, handlePageDragEnd }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
-            {/* Group name acts as a dropdown button */}
             <h1 className="clickableGroupName" onClick={toggleGroup}>
                 {group.group_name}
             </h1>
 
-            {/* Show pages only if the group is expanded */}
             {isExpanded && (
-                <ul>
-                    {group.pages.map((page, pageIndex) => (
-                        <li key={pageIndex}>
-                            <Link to={`/notebooks/${group.group_id}/${page.page_number}`} state={{ notebook, group, page, readOnly }} className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}>
-                                Page {page.page_number}: {page.page_name || "Untitled Page"}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <DragDropContext onDragEnd={handlePageDragEnd}> {/* Drag context for pages */}
+                    <Droppable droppableId={`group-${group.group_id}`} type="page">
+                        {(provided) => (
+                            <ul ref={provided.innerRef} {...provided.droppableProps}>
+                                {group.pages.map((page, index) => (
+                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index}>
+                                        {(provided) => (
+                                            <li
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                            >
+                                                <Link to={`/notebooks/${group.group_id}/${page.page_number}`} 
+                                                      state={{ notebook, group, page, readOnly }}
+                                                      className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
+                                                >
+                                                    Page {page.page_number}: {page.page_name || "Untitled Page"}
+                                                </Link>
+                                            </li>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </ul>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             )}
         </div>
     );
@@ -39,7 +56,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
 export function ToolTest(){
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
-    const { notebook, group, page, readOnly } = location.state;  // Access state passed during navigation
+    const { notebook, readOnly } = location.state;  // Access state passed during navigation
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
@@ -138,6 +155,59 @@ export function ToolTest(){
                 reorderedGroups: reorderedGroups.map(group => group.group_id)  // Send only group IDs in the new order
             })
         });
+    };
+
+    const handlePageDragEnd = async (result) => {
+        const { source, destination } = result;
+
+        // Check if the item was dropped outside any droppable area
+        if (!destination) return;
+
+        // Parse group IDs from the source and destination droppable IDs
+        const sourceGroupId = parseInt(source.droppableId.split('-')[1]);
+        const destinationGroupId = parseInt(destination.droppableId.split('-')[1]);
+
+        // Only proceed if the item was dropped within the same group
+        if (sourceGroupId !== destinationGroupId) return;
+
+        // Find the index of the group in the current state
+        const groupIndex = groups.findIndex(group => group.group_id === sourceGroupId);
+        const reorderedPages = Array.from(groups[groupIndex].pages);
+
+        // Reorder pages within the group
+        const [movedPage] = reorderedPages.splice(source.index, 1);
+        reorderedPages.splice(destination.index, 0, movedPage);
+
+        // Update the state with the reordered pages in the specific group
+        const updatedGroups = [...groups];
+        updatedGroups[groupIndex] = {
+            ...groups[groupIndex],
+            pages: reorderedPages
+        };
+        setGroups(updatedGroups);
+
+        // Update page order in the backend
+        try {
+            const response = await fetch("backend/updatePageOrder.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    group_id: sourceGroupId,
+                    reorderedPages: reorderedPages.map((page, index) => ({
+                        page_number: page.page_number,
+                        page_order: index
+                    }))
+                })
+            });
+
+            // Optional: Check for successful response
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Failed to update page order on the backend:", data.message);
+            }
+        } catch (error) {
+            console.error("Error updating page order:", error);
+        }
     };
 
     const toggleGroup = (groupIndex) => {
@@ -328,8 +398,6 @@ export function ToolTest(){
         };
     }, []);
     
-
-
     // Fetch existing users who have access to this notebook
     const fetchSharedUsers = async () => {
         try {
@@ -470,13 +538,15 @@ export function ToolTest(){
 
                 </aside>
 
+
+
                 <aside className="aside nbpSidebarPages">
-                    <DragDropContext onDragEnd={handleDragEnd}>
-                        <Droppable droppableId="groups">
+                    <DragDropContext onDragEnd={handleDragEnd}> {/* Drag context for groups */}
+                        <Droppable droppableId="groups" type="group">
                             {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef}>
                                     {groups.map((group, index) => (
-                                        <Draggable key={group.group_id} draggableId={`${group.group_id}`} index={index}>
+                                        <Draggable key={group.group_id} draggableId={`group-${group.group_id}`} index={index}>
                                             {(provided) => (
                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <GroupDropdown
@@ -487,6 +557,7 @@ export function ToolTest(){
                                                         isSelectedGroup={group.group_id === parseInt(groupID)}
                                                         selectedPage={parseInt(pageNum)}
                                                         readOnly={readOnly}
+                                                        handlePageDragEnd={handlePageDragEnd} // Pass handlePageDragEnd as a prop
                                                     />
                                                 </div>
                                             )}
