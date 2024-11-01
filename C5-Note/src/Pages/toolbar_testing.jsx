@@ -327,45 +327,60 @@ export function ToolTest(){
         const data = await response.json();
     
         if (data['content']) {
-            // Assume data.content contains multiple <p> elements
-            const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+            const textContent = data['content']
+                .replace(/&nbsp;/g, ' ')
+                .replace(/<[^>]*>/g, '')
+                .replace(/\u00A0/g, ' ');
+            
             const elements = document.getElementsByClassName('jodit-wysiwyg');
     
-            // Access the first element (if it exists)
             if (elements.length > 0) {
                 const firstElement = elements[0];
     
+                // Get the current selection and cursor position
+                const selection = window.getSelection();
+                let cursorPosition = 0;
+    
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    cursorPosition = range.startOffset; // Get the cursor's starting position
+                }
+    
                 // Clean the current content from firstElement
-                const current = firstElement.innerHTML.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+                const current = firstElement.innerHTML
+                    .replace(/&nbsp;/g, ' ')
+                    .replace(/<[^>]*>/g, '')
+                    .replace(/\u00A0/g, ' ');
     
                 // Check if the fetched content is different from the current content
                 if (textContent !== current) {
-                    if(current.length < textContent.length){
+                    if (current.length < textContent.length) {
                         firstElement.innerHTML = data['content']; // Update firstElement
-                    }
-                    
+                        firstElement.focus();
     
-                    console.log('Updating');
-                    console.log(data['content']);
-                    console.log(firstElement.innerHTML);
-                    
-                    // Focus the contenteditable div
-                    firstElement.focus();
+                        // Identify the target paragraph and character position
+                        const paragraphs = firstElement.getElementsByTagName('p');
+                        const targetParagraphIndex = 0; // Replace with your logic to find the correct index
+                        const targetCharacterIndex = cursorPosition; // Adjust this based on your needs
     
-                    // Create a range and set the cursor at the end of the last <p>
-                    const range = document.createRange();
-                    const selection = window.getSelection();
+                        if (paragraphs.length > targetParagraphIndex) {
+                            const targetParagraph = paragraphs[targetParagraphIndex];
     
-                    // Select the last <p> element within firstElement
-                    const lastParagraph = firstElement.querySelector('p:last-child');
-                    if (lastParagraph) {
-                        // Set the range to the end of the last <p> element
-                        range.setStart(lastParagraph, lastParagraph.childNodes.length); // Start after the last child
-                        range.collapse(true); // Collapse to the end
-                        selection.removeAllRanges(); // Clear any existing selections
-                        selection.addRange(range); // Add the new range
+                            // Print statement indicating the paragraph
+                            console.log('Cursor is in paragraph:', targetParagraph.innerHTML);
+    
+                            const newRange = document.createRange();
+                            newRange.setStart(targetParagraph, Math.min(targetCharacterIndex, targetParagraph.childNodes.length));
+                            newRange.collapse(true); // Collapse the range to that point
+    
+                            selection.removeAllRanges(); // Clear existing selections
+                            selection.addRange(newRange); // Add the new range
+                        }
                     }
                 }
+    
+                console.log('Cursor Position:', cursorPosition);
+                console.log(firstElement);
             }
         } else {
             // Reset content only if the current content is not already empty
@@ -379,6 +394,9 @@ export function ToolTest(){
             }
         }
     };
+    
+    
+    
     
     
     
