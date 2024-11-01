@@ -3,6 +3,7 @@ import logo from '../C5.png';
 import '../App.css';
 import './home.css';
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { handleShowUsername } from "./home.jsx";
 import ItemGrid from './Grid.jsx';
 import { GhostaContainer, ghosta } from 'react-ghosta';
@@ -22,6 +23,12 @@ export function Top_bar() {
 export function Profile() {
 
   const navigate = useNavigate();
+
+  const [items, setItems] = useState([]); // Initialize an empty array
+
+  const addItem = (newItem) => {
+    setItems((prevItems) => [...prevItems, newItem]); // Append the new item
+  };
 
   //const [src, setSrc] = useState(logo);
 
@@ -101,7 +108,20 @@ export function Profile() {
       });
     }
 
-    const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+    useEffect(() => {
+    var jsonData = {"username":getCookie("username")};
+    fetch("backend/getPublicNotebooks.php", {method: "POST", body:JSON.stringify(jsonData)}).then(
+      response => response.json().then( data => {
+        data.forEach(notebook => {
+          addItem(   <button className="notebook_buttons">
+                      <div class="notebook-content">
+                        <div class="notebook-color-box-pointer" style={{backgroundColor: notebook.color}}></div>
+                        <div class="notebook-title">{notebook.title}</div>
+                      </div>
+                    </button>);
+        })
+      } ) ) ;
+    }, []);
 
     return (
       <>
