@@ -207,12 +207,14 @@ export function ToolTest(){
     useEffect(() => {
         const fetchNotebooks = async () => {
             const username = yourUsername
+            console.log('fetch notebook')
             const response = await fetch("backend/notebookFinder.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username })
+                body: JSON.stringify({ yourUsername })
             });
             const data = await response.json();
+            console.log(data)
             if (Array.isArray(data)) {
                 setNotebooks(data);  // Assuming the response is an array of notebooks
             } else {
@@ -237,13 +239,13 @@ export function ToolTest(){
     
     const fetchGroups = async () => {
         const username = yourUsername;
+        console.log(yourUsername)
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, title: notebook.title })
+            body: JSON.stringify({ yourUsername, title: notebook.title })
         });
         const data = await response.json();
-        
         if (data.success) {
             const fetchedGroups = data.groups;
             // Compare fetchedGroups with current groups
