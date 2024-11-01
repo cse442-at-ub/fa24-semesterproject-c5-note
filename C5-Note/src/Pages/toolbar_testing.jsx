@@ -13,6 +13,10 @@ import { Modal, Button } from 'react-bootstrap';
 
 let unsavedChanges = 0;
 let testcontent = ""
+let yourUsername = ""
+
+let loaded = 0;
+
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
@@ -78,7 +82,6 @@ export function ToolTest(){
     const [showAccessModal, setShowAccessModal] = useState(false); // State for showing modal
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
-    const [yourUsername,setyourUsername] = useState('')
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
     var test = useRef(null);
     const handleClose = () => {
@@ -138,7 +141,32 @@ export function ToolTest(){
         return cookie[name];
     }
 
-    
+
+    useEffect(() => {
+        const fetchNotebooks = async () => {
+            try {
+                const response = await fetch("backend/getUsername.php", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                // Check if the response is okay
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log(data)
+               yourUsername = data.username;  // Assuming the response contains a 'username' field
+                //console.log(data)
+            } catch (error) {
+                console.error("Error fetching username:", error);
+            }
+        };
+
+        fetchNotebooks();  // Call the fetch function
+    }, []); // Empty dependency array means this runs once after the initial render
+
 
     const currentUsername = getCookie('username');
 
@@ -306,6 +334,9 @@ export function ToolTest(){
 
     const save_on = (content) =>{
         saveContentToServer()
+        //console.log('username')
+        //console.log(yourUsername)
+        //console.log('username')
     }
 
 
@@ -330,7 +361,7 @@ export function ToolTest(){
         const data = await response.json();
     
         if (data['content']) {
-            console.log(data['last_user'])
+            //console.log(data['last_user'])
             const textContent = data['content']
                 .replace(/&nbsp;/g, ' ')
                 .replace(/<[^>]*>/g, '')
@@ -357,8 +388,9 @@ export function ToolTest(){
                     .replace(/\u00A0/g, ' ');
     
                 // Check if the fetched content is different from the current content
-                if (textContent !== current) {
-                    if (current.length < textContent.length) {
+                    if (yourUsername != data['last_user'] || loaded == 0) {
+                        console.log(yourUsername)
+                        console.log(data['last_user'])
                         firstElement.innerHTML = data['content']; // Update firstElement
                         firstElement.focus();
     
@@ -391,12 +423,11 @@ export function ToolTest(){
                             }
                         }
                     }
-                } else {
-                    // Optional: If the content is the same, you might want to do something else here
-                }
+
     
                 console.log('Cursor Position:', cursorPosition);
                 console.log(firstElement);
+                loaded = 1
             }
         } else {
             // Reset content only if the current content is not already empty
@@ -409,6 +440,7 @@ export function ToolTest(){
                 }
             }
         }
+        loaded = 1
     };
     
     
@@ -432,7 +464,7 @@ export function ToolTest(){
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPageContent();
-        }, 1000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+        }, 250); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
