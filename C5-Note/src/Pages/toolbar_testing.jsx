@@ -340,7 +340,10 @@ export function ToolTest(){
     
                 // Check if the fetched content is different from the current content
                 if (textContent !== current) {
-                    firstElement.innerHTML = data['content']; // Update firstElement
+                    if(current.length < textContent.length){
+                        firstElement.innerHTML = data['content']; // Update firstElement
+                    }
+                    
     
                     console.log('Updating');
                     console.log(data['content']);
@@ -393,7 +396,7 @@ export function ToolTest(){
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPageContent();
-        }, 250); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
+        }, 1000); // Adjust the interval time as needed (e.g., 5000 ms = 5 seconds)
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
