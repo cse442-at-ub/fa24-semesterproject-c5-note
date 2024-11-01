@@ -59,7 +59,7 @@ $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
     http_response_code(400);
     die(json_encode([
       "status" => "failed",
-      "message" => "File is not an image."
+      "message" => "Only JPG, JPEG, PNG, GIF allowed."
     ]));
   }
 
