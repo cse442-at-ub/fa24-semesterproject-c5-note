@@ -302,6 +302,11 @@ export function ToolTest(){
         saveContentToServer()
     };
 
+    const save_on = (content) =>{
+        console.log('saving')
+        saveContentToServer()
+    }
+
 
     
 
@@ -325,14 +330,13 @@ export function ToolTest(){
     
         if (data['content']) {
             // Assume data.content contains multiple <p> elements
-            const contentHTML = data['content'];
-            
-            const currentHTML = editor.current.innerHTML; // For contenteditable div
+            const textContent = data['content'].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
+            const current = editor.current.value.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').replace(/\u00A0/g, ' ');
     
             // Check if the fetched content is different from the current content
-            if (contentHTML !== currentHTML) {
-                editor.current.innerHTML = contentHTML; // Update the div directly
-                
+            if (textContent !== current) {
+                setContent(textContent) // Update the div directly
+                console.log('updating')
                 // Focus the contenteditable div
                 editor.current.focus();
     
@@ -487,7 +491,7 @@ export function ToolTest(){
                         config={config}
                         tabIndex={1} // tabIndex of textarea
                         onBlur={newContent => updateContents(newContent)} // preferred to use only this option to update the content for performance reasons
-                        onChange={newContent => updateContents(newContent)}
+                        onChange={newContent => save_on(newContent)}
                     />
                 </div>
                     </div>
