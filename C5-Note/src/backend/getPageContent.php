@@ -53,6 +53,7 @@ $purifier = new HTMLPurifier();
 $json = json_decode(file_get_contents('php://input')); // Ensure you read input correctly
 $loadpageid = $json->pageid;
 $groupid = $json->groupid;
+$isInitialFetch = $json->isInitialFetch ?? false; // Default to false if not set
 
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -72,7 +73,13 @@ do {
         $lastUser = $outp['last_user'];
         $clean_html = $purifier->purify($outp['page_content']);
         
-        // Check if the last user is not the current user
+        // Check if it's an initial fetch
+        if ($isInitialFetch) {
+            echo json_encode(["content" => $clean_html, 'last_user' => $lastUser]); // Return content if initial fetch
+            exit;
+        }
+
+        // If it's not an initial fetch, check if the last user is not the current user
         if ($lastUser == $current_username) {
             // Wait before checking again
             sleep(1); // Sleep for 1 second

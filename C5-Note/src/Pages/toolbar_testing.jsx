@@ -301,17 +301,20 @@ export function ToolTest(){
         return true;
     };
     
-    const fetchGroups = async () => {
+    const fetchGroups = async (isInitialFetch = false, currentNotebookOrder = []) => {
         const username = yourUsername;
-        //console.log(yourUsername)
+    
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ yourUsername, title: notebook.title })
+            body: JSON.stringify({ yourUsername, title: notebook.title, isInitialFetch, currentNotebookOrder })
         });
+        
         const data = await response.json();
+        
         if (data.success) {
             const fetchedGroups = data.groups;
+    
             // Compare fetchedGroups with current groups
             if (!arraysAreEqual(groups, fetchedGroups)) {
                 groups = fetchedGroups;
@@ -323,16 +326,18 @@ export function ToolTest(){
         } else {
             console.error("Failed to fetch groups and pages");
         }
+    
+        // Continue polling if needed
+        setTimeout(() => {
+            fetchGroups(false, currentNotebookOrder); // Call again, passing false for isInitialFetch
+        }, 1000); // Adjust the interval as needed
     };
     
-    
-
     // Fetch groups and pages for the current notebook
     useEffect(() => {
-        
-
-        fetchGroups();
+        fetchGroups(true, []); // Initial fetch with isInitialFetch set to true
     }, [notebook.title]);
+    
 
     const fetchSharedNotebooks = async () => {
         const response = await fetch("backend/getSharedNotebooks.php", {
@@ -433,11 +438,12 @@ export function ToolTest(){
 
 
 
-    const fetchPageContent = async () => {
+    const fetchPageContent = async (isInitialFetch = false) => {
         fetchGroups();
         const jsonDataLoad = {
             "pageid": pageNum,
-            "groupid": groupID
+            "groupid": groupID,
+            "isInitialFetch": isInitialFetch // Include the parameter
         };
     
         try {
@@ -494,14 +500,14 @@ export function ToolTest(){
         } catch (error) {
             console.error('Error fetching page content:', error);
         } finally {
-            // Fetch again after the current request is complete
-            fetchPageContent();
+            // Fetch again after the current request is complete, set isInitialFetch to false
+            fetchPageContent(false);
         }
     };
     
     // Start long polling when pageNum or groupID changes
     useEffect(() => {
-        fetchPageContent();
+        fetchPageContent(true); // Pass true for the initial fetch
     }, [pageNum, groupID]); // Run when pageNum or groupID changes
     
 
