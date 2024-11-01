@@ -70,11 +70,13 @@ export function ToolTest(){
     const navigate = useNavigate();
     const [content, setContent] = useState('');
 
-    //modal
+    //sharing modal
     const [showAccessModal, setShowAccessModal] = useState(false); // State for showing modal
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
+
+
 
     const handleClose = () => {
         setShowAccessModal(false);
@@ -84,6 +86,82 @@ export function ToolTest(){
     const handleShow = () => {
         fetchSharedUsers(); // fetch shared users when modal opens
         setShowAccessModal(true);
+    };
+
+    //downloading modal
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [selectedFormat, setSelectedFormat] = useState(".pdf");
+
+    const handleDownloadClose = () => {
+        setShowDownloadModal(false);
+        setSelectedFormat(".pdf");
+    };
+    const handleDownloadShow = () => {
+        setShowDownloadModal(true);
+    };
+    const handleFormatChange = (e) => {
+        setSelectedFormat(e.target.value);
+    };
+    const handleDownload = () => {
+        fetchContentForDownload().then((content) => {
+            const filename = notebook.title; // Use the notebook title as the base filename
+    
+            if (selectedFormat === ".txt") {
+                // Handle .txt download directly on the client side
+                const blob = new Blob([content], { type: "text/plain" });
+                const downloadLink = document.createElement("a");
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `${filename}.txt`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            } else {
+                // Handle PDF and DOCX download by sending a request to the backend
+                const url = selectedFormat === ".pdf" ? "backend/generatePDF.php" : "backend/generateDOCX.php";
+    
+                // Send HTML content to backend PHP script for PDF or DOCX generation
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        htmlContent: content,
+                        filename: filename,
+                    }),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Failed to generate the file");
+                        }
+                        return response.blob();
+                    })
+                    .then((blob) => {
+                        // Trigger file download
+                        const downloadLink = document.createElement("a");
+                        downloadLink.href = URL.createObjectURL(blob);
+                        downloadLink.download = `${filename}${selectedFormat}`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    })
+                    .catch((error) => {
+                        console.error("Error downloading file:", error);
+                    });
+            }
+        });
+        handleDownloadClose();
+    };
+    const fetchContentForDownload = async () => {
+        const response = await fetch("backend/getPageContent.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ pageid: pageNum, groupid: groupID })
+        });
+        const data = await response.json();
+        return data.content || ""; // Return the fetched content or empty if not found
     };
 
     const config = useMemo(() => ({
@@ -473,7 +551,7 @@ export function ToolTest(){
 
                 {/* Toolbar */}
                 <div className="nbpToolbar">
-                    <Link to="/"><button className="nbpButtonHome">Download</button></Link>
+                     <button className="nbpButtonHome" onClick={handleDownloadShow}>Download</button>
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
 
@@ -537,8 +615,6 @@ export function ToolTest(){
                     </ul>
 
                 </aside>
-
-
 
                 <aside className="aside nbpSidebarPages">
                     <DragDropContext onDragEnd={handleDragEnd}> {/* Drag context for groups */}
@@ -611,6 +687,58 @@ export function ToolTest(){
                     </div>
                 </Modal.Body>
             </Modal>
+
+            {/* Download Modal */}
+            <Modal show={showDownloadModal} onHide={handleDownloadClose} centered>
+                <Modal.Header>
+                    <Modal.Title>Download Options</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <h5>Select File Format:</h5>
+                        <div>
+                            <input
+                                type="radio"
+                                id="pdf"
+                                name="format"
+                                value=".pdf"
+                                checked={selectedFormat === ".pdf"}
+                                onChange={handleFormatChange}
+                            />
+                            <label htmlFor="pdf">PDF (.pdf)</label>
+                        </div>
+                        <div>
+                            <input
+                                type="radio"
+                                id="docx"
+                                name="format"
+                                value=".docx"
+                                onChange={handleFormatChange}
+                            />
+                            <label htmlFor="docx">Word Document (.docx)</label>
+                        </div>
+                        <div>
+                            <input
+                                type="radio"
+                                id="txt"
+                                name="format"
+                                value=".txt"
+                                onChange={handleFormatChange}
+                            />
+                            <label htmlFor="txt">Text File (.txt)</label>
+                        </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.85em', color: 'grey', marginTop: '10px' }}>
+                        For a customized download location, enable "Ask where to save each file before downloading" in your browser’s settings.
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleDownloadClose}>Cancel</Button>
+                    <Button variant="success" onClick={handleDownload}>Download</Button>
+                </Modal.Footer>
+            </Modal>
+
         </>
     );
 }
