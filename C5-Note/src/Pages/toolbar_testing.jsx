@@ -143,7 +143,7 @@ export function ToolTest(){
 
 
     useEffect(() => {
-        const fetchNotebooks = async () => {
+        const fetchusername = async () => {
             try {
                 const response = await fetch("backend/getUsername.php", {
                     method: "GET",
@@ -164,7 +164,7 @@ export function ToolTest(){
             }
         };
 
-        fetchNotebooks();  // Call the fetch function
+        fetchusername();  // Call the fetch function
     }, []); // Empty dependency array means this runs once after the initial render
 
 
@@ -199,12 +199,8 @@ export function ToolTest(){
         });
     };
 
-    const toggleGroup = (groupIndex) => {
-        setExpanded((prevExpanded) => {
-            const newExpanded = [...prevExpanded];
-            newExpanded[groupIndex] = !newExpanded[groupIndex]; // Toggle visibility for the specific group
-            return newExpanded;
-        });
+    const toggleGroup = (index) => {
+        setExpanded(prev => ({ ...prev, [index]: !prev[index] }));
     };
 
     // Fetch the user's notebooks
@@ -227,43 +223,48 @@ export function ToolTest(){
         fetchNotebooks();
     }, []);
     
+
+    const fetchGroups = async () => {
+        const username = getCookie('username');
+        const response = await fetch("backend/getNotebookGroups.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, title: notebook.title })
+        });
+        const data = await response.json();
+        if (data.success) {
+            setGroups(data.groups);
+            setNotebookId(data.notebook_id);
+            // Reset expanded state based on new groups length
+            setExpanded(data.groups.reduce((acc, _, index) => ({ ...acc, [index]: false }), {}));
+        } else {
+            console.error("Failed to fetch groups and pages");
+        }
+    };
+
     // Fetch groups and pages for the current notebook
     useEffect(() => {
-        const fetchGroups = async () => {
-            const username = getCookie('username');
-            const response = await fetch("backend/getNotebookGroups.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, title: notebook.title })
-            });
-            const data = await response.json();
-            if (data.success) {
-                setGroups(data.groups);
-                setNotebookId(data.notebook_id);
-            } else {
-                console.error("Failed to fetch groups and pages");
-            }
-        };
+        
 
         fetchGroups();
     }, [notebook.title]);
+
+    const fetchSharedNotebooks = async () => {
+        const response = await fetch("backend/getSharedNotebooks.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: currentUsername })
+        });
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            setSharedNotebooks(data);
+        } else {
+            console.error("Failed to fetch shared notebooks");
+        }
+    };
     
     // Fetch shared notebooks
     useEffect(() => {
-        const fetchSharedNotebooks = async () => {
-            const response = await fetch("backend/getSharedNotebooks.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: currentUsername })
-            });
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                setSharedNotebooks(data);
-            } else {
-                console.error("Failed to fetch shared notebooks");
-            }
-        };
-
         fetchSharedNotebooks();
     }, [currentUsername]);
 
@@ -344,6 +345,7 @@ export function ToolTest(){
 
 
     const fetchPageContent = async () => {
+        fetchGroups()
         const jsonDataLoad = {
             "pageid": pageNum,
             "groupid": groupID
