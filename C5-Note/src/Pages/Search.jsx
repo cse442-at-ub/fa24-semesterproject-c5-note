@@ -8,7 +8,7 @@ export function Search() {
     return (
         <>
         <div className = "Search_Div">
-            <input type="text" className="search_bar"></input>
+            <input type="text" className="search_bar" placeholder="User Search"></input>
             <button className="search_button">Search</button>
         </div>
         </>
