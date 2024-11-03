@@ -7,6 +7,7 @@ import btn_delete from '../assets/btn_trash.png';
 import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
+import { Search } from './Search.jsx'
 
 
 
@@ -30,13 +31,16 @@ function Top_bar_simple_notes(){
         <div className='Top_bar_elms'>
           <h1 className='Top_bar_text'>C5-Note</h1>
             {/*switch the image to be agnostic to database images*/}
-            <div className="profile_div">
-              <div className="profile_div_color">
-              <Link to="/profile">
-                <img id="frame" src={Profile} className="profile_image" alt="logo" />
-                <p>{ name }</p>
-                </Link>
+            <div style={{display : "flex", flexDirection : "column"}}>
+              <div className="profile_div">
+                <div className="profile_div_color">
+                <Link to="/profile">
+                  <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                  <p>{ name }</p>
+                  </Link>
                 </div>
+              </div>
+              <Search/>
             </div>
         </div>
           
