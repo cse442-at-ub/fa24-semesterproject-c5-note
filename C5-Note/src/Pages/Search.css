@@ -1,6 +1,7 @@
 .Search_Div{
     display: flex;
     flex-direction: row;
+    width: 9.5rem;
 }
 
 .search_bar{
@@ -24,4 +25,15 @@
     font-size: .85rem;
     text-align: center;
     border: 0;
+}
+
+.results{
+    list-style: disc;
+    position: absolute;
+    margin-top:2.125rem;
+    padding-right: 1rem;
+    background-color: white;
+    font-family: monofonto;
+    color: black;
+    
 }
