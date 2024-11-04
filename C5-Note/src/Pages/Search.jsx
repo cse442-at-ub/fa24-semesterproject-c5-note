@@ -5,7 +5,7 @@ import React from 'react';
 
 export function Search() {
     const [visibleResult, setVisibleResult] = useState(false);
-    const [result, setResult] = useState([]);
+    const [result, setResult] = useState(["mdrum2"]);
     const searchRef = useRef(null);
 
     const addResult = (newItem) => {
@@ -14,7 +14,7 @@ export function Search() {
 
     const getResults = () => {
 
-        var jsonData = { "search":document.getElementById("search_bar").value}
+        var jsonData = { "search": document.getElementById("search_bar").value }
 
         fetch('backend/search.php', {method: "POST", body:JSON.stringify(jsonData)}).then((response) => response.json()).then
         ((data) => {
@@ -56,7 +56,10 @@ function Results(props) {
     
     return (
         <ul className="results">
-            {props.items.map( (item,index) => {return <li key={index}><Link to={"/profile/" + item}>{item}</Link></li>})}
+            {props.items.map( (item,index) => {return <li key={index}>
+                <Link to={'/profile/' + item} >
+                {item}
+                </Link></li>})}
         </ul>
     )
 }

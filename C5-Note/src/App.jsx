@@ -33,7 +33,7 @@ function App() {
 
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
-        <Route path="/profile" element = { <Profile/> }/>
+        <Route path="/profile/:username" element = { <Profile/> }/>
         <Route path="/verify" element = { <VerifyEmail/> }/>
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
         <Route path="/reset_password" element = { <Reset_Password/> }/>

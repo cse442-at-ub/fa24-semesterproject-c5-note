@@ -27,7 +27,7 @@ function Top_bar_simple_notes(){
               {/*switch the image to be agnostic to database images*/}
               <div className="profile_div">
                 <div className="profile_div_color">
-                <Link to="/profile">
+                <Link to={"/profile/" + name}>
                     <img id="frame" src={Profile} className="profile_image" alt="logo" />
                     <p>{ name }</p>
                 </Link>
