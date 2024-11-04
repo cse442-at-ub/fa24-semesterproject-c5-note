@@ -26,7 +26,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                         {(provided) => (
                             <ul ref={provided.innerRef} {...provided.droppableProps}>
                                 {group.pages.map((page, index) => (
-                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index}>
+                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index} isDragDisabled={readOnly}>
                                         {(provided) => (
                                             <li
                                                 ref={provided.innerRef}
