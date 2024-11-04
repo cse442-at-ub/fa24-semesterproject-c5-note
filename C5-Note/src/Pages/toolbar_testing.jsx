@@ -626,7 +626,7 @@ export function ToolTest(){
                                             key={group.group_id} 
                                             draggableId={`group-${group.group_id}`} 
                                             index={index} 
-                                            isDragDisabled={expanded[index]} // Disable dragging if the group is expanded
+                                            isDragDisabled={expanded[index] || readOnly} // Disable dragging if the group is expanded
                                         >
                                             {(provided) => (
                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
