@@ -8,6 +8,22 @@ export function Search() {
     const [result, setResult] = useState([]);
     const searchRef = useRef(null);
 
+    const addResult = (newItem) => {
+        setResult((prevItems) => [...prevItems, newItem]); // Append the new item
+      };
+
+    const getResults = () => {
+
+        var jsonData = { "search":document.getElementById("search_bar").value}
+
+        fetch('backend/search.php', {method: "POST", body:JSON.stringify(jsonData)}).then((response) => response.json()).then
+        ((data) => {
+            setResult([]);
+            data["usernames"].foreach(name => {addResult(name)});
+        });
+        
+    }
+
     const handleClickOutside = (event) => {
         if (searchRef.current && !searchRef.current.contains(event.target)) {
             setVisibleResult(false);
@@ -28,14 +44,9 @@ export function Search() {
     return (
         <>
         <div className = "Search_Div" ref={searchRef}>
-            <input type="text" className="search_bar" placeholder="User Search"></input>
-            <button className="search_button" onClick={ () => {setVisibleResult(true)} }>Search</button>
-            {visibleResult && (
-                <ul className="results">
-                    <li>A</li>
-                    <li>B</li>
-                    <li>C</li>
-                </ul>)}
+            <input type="text" className="search_bar" id="search_bar" placeholder="User Search"></input>
+            <button className="search_button" onClick={ () => {getResults(); setVisibleResult(true)} }>Search</button>
+            {visibleResult && (<Results items={result}/>)}
         </div>
         </>
     )
@@ -45,7 +56,7 @@ function Results(props) {
     
     return (
         <ul className="results">
-            {props.items.map((item) => {<li><Link to={"/profile/" + item}>{item}</Link></li>})}
+            {props.items.map( (item,index) => {return <li key={index}><Link to={"/profile/" + item}>{item}</Link></li>})}
         </ul>
     )
 }
