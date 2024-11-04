@@ -4,7 +4,6 @@ import '../App.css';
 import './home.css';
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { handleShowUsername } from "./home.jsx";
 import ItemGrid from './Grid.jsx';
 import { GhostaContainer, ghosta } from 'react-ghosta';
 
