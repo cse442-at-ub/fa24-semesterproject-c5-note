@@ -2,7 +2,7 @@ import './profile.css';
 import logo from '../C5.png';
 import '../App.css';
 import './home.css';
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ItemGrid from './Grid.jsx';
 import { GhostaContainer, ghosta } from 'react-ghosta';
@@ -22,6 +22,8 @@ export function Top_bar() {
 export function Profile() {
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const name = location.pathname.split("/")[2];
 
   const [items, setItems] = useState([]); // Initialize an empty array
 
@@ -33,7 +35,9 @@ export function Profile() {
 
 
   useEffect(() => {
-    fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+
+    var jsonData = { username: name};
+    fetch("backend/getProfilePicture.php", { method: "POST" , body: JSON.stringify(jsonData)}).then(response => {
 
       response.json().then(data => {
 
@@ -50,6 +54,7 @@ export function Profile() {
   var preview = () => {
     frame.src = URL.createObjectURL(event.target.files[0]);
   }
+
   const getCookie = (name) => {
     let cookie = {};
     document.cookie.split(';').forEach(function (el) {
@@ -90,7 +95,6 @@ export function Profile() {
     clear_cookies()
   }
 
-  var name = getCookie('username')
   if (name == '' || typeof (name) == "undefined") {
     name = 'DevModeOnly'
   }

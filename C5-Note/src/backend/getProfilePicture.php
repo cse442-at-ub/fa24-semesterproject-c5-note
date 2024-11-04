@@ -3,22 +3,15 @@
 $config = file_get_contents("../config.json");
 $data = json_decode($config);
 
-$username = $data->username;
+$input = json_decode(file_get_contents("php://input"), true);
+$username = $input['username'];
+
+$db_username = $data->username;
 $password = $data->password;
 $db_name = $data->db_name;
 
-if (isset($_COOKIE["token"])) {
-  $token = $_COOKIE["token"];
-}
-else {
-  http_response_code(400);
-  die(json_encode([
-    "status" => "failed",
-    "message" => "No token present."
-]));
-}
 
-$connection = new mysqli("localhost:3306", $username, $password, $db_name);
+$connection = new mysqli("localhost:3306", $db_username, $password, $db_name);
 
 if($connection->connect_error) {
     http_response_code(500);
@@ -28,9 +21,9 @@ if($connection->connect_error) {
     ]));
 }
 
-$statement = $connection->prepare("SELECT * FROM active_users WHERE token = ?");
+$statement = $connection->prepare("SELECT * FROM users WHERE username = ?");
 
-$statement->bind_param("s", hash("sha256", $token));
+$statement->bind_param("s", $username);
 
 $statement->execute();
 $result = $statement->get_result();
@@ -42,7 +35,7 @@ else {
   http_response_code(401);
   die(json_encode([
     "status" => "failed",
-    "message" => "Invalid token"
+    "message" => "User not found."
 ]));
 }
 
@@ -64,6 +57,7 @@ if (!empty($exactMatches)) {
         $fileName = $file;
     }
 } else {
+    http_response_code(400);
     die(json_encode([
         "status" => "failed",
         "message" => "Could not find profile picture."
