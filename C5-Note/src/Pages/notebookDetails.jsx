@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import Profile from '../C5.png';
 import './notebookDetails.css';
@@ -27,9 +27,11 @@ function Top_bar_simple_notes(){
               {/*switch the image to be agnostic to database images*/}
               <div className="profile_div">
                 <div className="profile_div_color">
-                  <img src={Profile} className="profile_image" alt="logo" />
-                  <p>{ name }</p>
-                  </div>
+                <Link to="/profile">
+                    <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                    <p>{ name }</p>
+                </Link>
+                </div>
               </div>
           </div>
             
@@ -40,7 +42,7 @@ function Top_bar_simple_notes(){
 export function NotebookDetail() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { notebook } = location.state; // Access the notebook data from state
+    const { notebook, readOnly } = location.state; // Access the notebook data from state
     const [groups, setGroups] = useState(null);
     const [groupsEmpty, setGroupsEmpty] = useState(false);
     const [editingGroupId, setEditingGroupId] = useState(null);
@@ -49,6 +51,21 @@ export function NotebookDetail() {
     const [groupToDelete, setGroupToDelete] = useState(null);
 
     const [noPages, setNoPages] = useState(false);
+
+    
+    useEffect(() => {
+        fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+
+            response.json().then(data => {
+
+                if (data.status != "failed") {
+                    //setSrc(response.blob);
+                    frame.src = "backend/" + data.message;
+                }
+            })
+
+        });
+    }, []);
 
 
 
@@ -228,8 +245,9 @@ export function NotebookDetail() {
         if (data.success) {
             // After successfully adding the page, reload the groups/pages
             const newPage = {
-                page_number: group.pages.length + 1,  // New page number based on existing pages
-                page_content: "Untitled Page"  // Empty content
+                page_number: data.page_number,  // New page number based on existing pages || old -> page_number: group.pages.length + 1
+                page_content: "Untitled Page",  // Empty content
+                page_order: data.page_order
             };
             
             // Update the state with the newly added page
@@ -249,7 +267,8 @@ export function NotebookDetail() {
             state: { 
                 notebook: notebook,  // Pass current notebook info
                 group: group,         // Pass the clicked group info (group_id, group_name, and pages)
-                page: page           // Pass the clicked page info (page_number, page_content)
+                page: page,           // Pass the clicked page info (page_number, page_content)
+                readOnly: readOnly      //  
             }
         });
     };
@@ -290,8 +309,8 @@ export function NotebookDetail() {
                     <div className="notebook-color-indicator" style={{ backgroundColor: notebook.color }}></div>
                 </div>
 
-                {/* If no groups exist, show "Add Group" button */}
-                {groupsEmpty && (
+                {/* If no groups exist, and we are NOT in readOnly mode, show "Add Group" button */}
+                {groupsEmpty && !readOnly && (
                     <div>
                         <button onClick={handleAddGroup}>Add Group</button>
                     </div>
@@ -321,8 +340,14 @@ export function NotebookDetail() {
                                     ) : (
                                         <>
                                             <span>{group.group_name}</span>
-                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
-                                            <button onClick={() => handleAddPages(group)}>Add Page</button>
+
+                                            {/* Render Edit button and Add Page button if NOT readOnly */}
+                                            {!readOnly && (
+                                                <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
+                                            )}
+                                            {!readOnly && (
+                                                <button onClick={() => handleAddPages(group)}>Add Page</button>
+                                            )}
                                         </>
                                     )}
 
@@ -339,7 +364,10 @@ export function NotebookDetail() {
                             ))}
                         </ul>
 
-                        <button onClick={handleAddGroup}>Add Group</button>
+                        {/* Create an "Add Group" button if NOT readOnly */}
+                        {!readOnly && (
+                            <button onClick={handleAddGroup}>Add Group</button>
+                        )}
 
                     </div>
                 )}

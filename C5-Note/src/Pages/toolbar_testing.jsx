@@ -22,7 +22,8 @@ let groups = []
 let abortController = new AbortController();  // Global abort controller
 
 
-function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
+
+function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly, handlePageDragEnd }) {
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
             <h1 className="clickableGroupName" onClick={toggleGroup}>
@@ -30,20 +31,33 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
             </h1>
 
             {isExpanded && (
-                <ul>
-                    {group.pages.map((page, pageIndex) => (
-                        <li key={pageIndex}>
-                            <Link
-                                to={`/notebooks/${group.group_id}/${page.page_number}`}
-                                state={{ notebook, group, page }}
-                                className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
-                                onClick={() => loaded = 0}
-                            >
-                                Page {page.page_number}: {page.page_name || "Untitled Page"}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <DragDropContext onDragEnd={handlePageDragEnd}> {/* Drag context for pages */}
+                    <Droppable droppableId={`group-${group.group_id}`} type="page">
+                        {(provided) => (
+                            <ul ref={provided.innerRef} {...provided.droppableProps}>
+                                {group.pages.map((page, index) => (
+                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index} isDragDisabled={readOnly}>
+                                        {(provided) => (
+                                            <li
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                            >
+                                                <Link to={`/notebooks/${group.group_id}/${page.page_number}`} 
+                                                      state={{ notebook, group, page, readOnly }}
+                                                      className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
+                                                >
+                                                    Page {page.page_number}: {page.page_name || "Untitled Page"}
+                                                </Link>
+                                            </li>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </ul>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             )}
         </div>
     );
@@ -133,7 +147,7 @@ export function ToolTest(){
 
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
-    const { notebook, group, page } = location.state;  // Access state passed during navigation
+    const { notebook, readOnly } = location.state;  // Access state passed during navigation
 
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
@@ -146,7 +160,7 @@ export function ToolTest(){
     const navigate = useNavigate();
     const [content, setContent] = useState('');
 
-    //modal
+    //sharing modal
     const [showAccessModal, setShowAccessModal] = useState(false); // State for showing modal
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
@@ -162,7 +176,81 @@ export function ToolTest(){
         setShowAccessModal(true);
     };
 
+    //downloading modal
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [selectedFormat, setSelectedFormat] = useState(".pdf");
+
+    const handleDownloadClose = () => {
+        setShowDownloadModal(false);
+        setSelectedFormat(".pdf");
+    };
+    const handleDownloadShow = () => {
+        setShowDownloadModal(true);
+    };
+    const handleFormatChange = (e) => {
+        setSelectedFormat(e.target.value);
+    };
+    const handleDownload = () => {
+        fetchContentForDownload().then((content) => {
+            const filename = notebook.title; // Use the notebook title as the base filename
     
+            if (selectedFormat === ".txt") {
+                // Handle .txt download directly on the client side
+                const blob = new Blob([content], { type: "text/plain" });
+                const downloadLink = document.createElement("a");
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `${filename}.txt`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            } else {
+                // Handle PDF and DOCX download by sending a request to the backend
+                const url = selectedFormat === ".pdf" ? "backend/generatePDF.php" : "backend/generateDOCX.php";
+    
+                // Send HTML content to backend PHP script for PDF or DOCX generation
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        htmlContent: content,
+                        filename: filename,
+                    }),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Failed to generate the file");
+                        }
+                        return response.blob();
+                    })
+                    .then((blob) => {
+                        // Trigger file download
+                        const downloadLink = document.createElement("a");
+                        downloadLink.href = URL.createObjectURL(blob);
+                        downloadLink.download = `${filename}${selectedFormat}`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    })
+                    .catch((error) => {
+                        console.error("Error downloading file:", error);
+                    });
+            }
+        });
+        handleDownloadClose();
+    };
+    const fetchContentForDownload = async () => {
+        const response = await fetch("backend/getPageContent.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ pageid: pageNum, groupid: groupID })
+        });
+        const data = await response.json();
+        return data.content || ""; // Return the fetched content or empty if not found
+    };
 
     const config = useMemo(() => ({
         cleanHTML: {
@@ -178,7 +266,7 @@ export function ToolTest(){
             },
           
         
-            readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+            readonly: readOnly, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder,
             theme: 'light',
             controls: {
@@ -268,8 +356,118 @@ export function ToolTest(){
         });
     };
 
+    const handlePageDragEnd = async (result) => {
+        const { source, destination } = result;
+
+        // Check if the item was dropped outside any droppable area
+        if (!destination) return;
+
+        // Parse group IDs from the source and destination droppable IDs
+        const sourceGroupId = parseInt(source.droppableId.split('-')[1]);
+        const destinationGroupId = parseInt(destination.droppableId.split('-')[1]);
+
+        // Only proceed if the item was dropped within the same group
+        if (sourceGroupId !== destinationGroupId) return;
+
+        // Find the index of the group in the current state
+        const groupIndex = groups.findIndex(group => group.group_id === sourceGroupId);
+        const reorderedPages = Array.from(groups[groupIndex].pages);
+
+        // Reorder pages within the group
+        const [movedPage] = reorderedPages.splice(source.index, 1);
+        reorderedPages.splice(destination.index, 0, movedPage);
+
+        // Update the state with the reordered pages in the specific group
+        const updatedGroups = [...groups];
+        updatedGroups[groupIndex] = {
+            ...groups[groupIndex],
+            pages: reorderedPages
+        };
+        setGroups(updatedGroups);
+
+        // Update page order in the backend
+        try {
+            const response = await fetch("backend/updatePageOrder.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    group_id: sourceGroupId,
+                    reorderedPages: reorderedPages.map((page, index) => ({
+                        page_number: page.page_number,
+                        page_order: index + 1
+                    }))
+                })
+            });
+
+            // Optional: Check for successful response
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Failed to update page order on the backend:", data.message);
+            }
+        } catch (error) {
+            console.error("Error updating page order:", error);
+        }
+    };
+
+    const handlePageDragEnd = async (result) => {
+        const { source, destination } = result;
+
+        // Check if the item was dropped outside any droppable area
+        if (!destination) return;
+
+        // Parse group IDs from the source and destination droppable IDs
+        const sourceGroupId = parseInt(source.droppableId.split('-')[1]);
+        const destinationGroupId = parseInt(destination.droppableId.split('-')[1]);
+
+        // Only proceed if the item was dropped within the same group
+        if (sourceGroupId !== destinationGroupId) return;
+
+        // Find the index of the group in the current state
+        const groupIndex = groups.findIndex(group => group.group_id === sourceGroupId);
+        const reorderedPages = Array.from(groups[groupIndex].pages);
+
+        // Reorder pages within the group
+        const [movedPage] = reorderedPages.splice(source.index, 1);
+        reorderedPages.splice(destination.index, 0, movedPage);
+
+        // Update the state with the reordered pages in the specific group
+        const updatedGroups = [...groups];
+        updatedGroups[groupIndex] = {
+            ...groups[groupIndex],
+            pages: reorderedPages
+        };
+        setGroups(updatedGroups);
+
+        // Update page order in the backend
+        try {
+            const response = await fetch("backend/updatePageOrder.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    group_id: sourceGroupId,
+                    reorderedPages: reorderedPages.map((page, index) => ({
+                        page_number: page.page_number,
+                        page_order: index + 1
+                    }))
+                })
+            });
+
+            // Optional: Check for successful response
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Failed to update page order on the backend:", data.message);
+            }
+        } catch (error) {
+            console.error("Error updating page order:", error);
+        }
+    };
+
     const toggleGroup = (index) => {
-        setExpanded(prev => ({ ...prev, [index]: !prev[index] }));
+        setExpanded((prevExpanded) => {
+            const newExpanded = [...prevExpanded];
+            newExpanded[groupIndex] = !newExpanded[groupIndex]; // Toggle visibility for the specific group
+            return newExpanded;
+        });
     };
 
     // Fetch the user's notebooks
@@ -380,18 +578,18 @@ export function ToolTest(){
             if (firstPage) {
                 // Navigate to the first page of the first group
                 navigate(`/notebooks/${firstGroup.group_id}/${firstPage.page_number}`, {
-                    state: { notebook: otherNotebook, group: firstGroup, page: firstPage }
+                    state: { notebook: otherNotebook, group: firstGroup, page: firstPage , readOnly: readOnly}
                 });
             } else {
                 // Navigate to the group if no pages exist
                 navigate(`/notebooks/${firstGroup.group_id}`, {
-                    state: { notebook: otherNotebook, group: firstGroup }
+                    state: { notebook: otherNotebook, group: firstGroup , readOnly: readOnly}
                 });
             }
         } else {
             // If no groups exist, navigate to the notebook page to create groups
             navigate(`/notebooks/${otherNotebook.id}`, {
-                state: { notebook: otherNotebook }
+                state: { notebook: otherNotebook, readOnly: readOnly}
             });
         }
     };
@@ -653,12 +851,17 @@ export function ToolTest(){
 
                 {/* Toolbar */}
                 <div className="nbpToolbar">
-                    <Link to="/"><button className="nbpButtonHome">Download</button></Link>
+                     <button className="nbpButtonHome" onClick={handleDownloadShow}>Download</button>
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
 
-                    <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    {!readOnly && (
+                        <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
+                    )}
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
+                    {!readOnly && (
+                        <button className="tpwButton" onClick={ savePage }>Save</button>
+                    )}
                 </div>
 
                 <article className="nbpMain">
@@ -680,7 +883,7 @@ export function ToolTest(){
                 </article>
 
                 <aside className="aside nbpSidebarNotebooks">
-                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook } })}> 
+                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } })}> 
                         {notebook.title} 
                     </h1>
                     <h3>Other Notebooks</h3>
@@ -716,12 +919,17 @@ export function ToolTest(){
                 </aside>
 
                 <aside className="aside nbpSidebarPages">
-                    <DragDropContext onDragEnd={handleDragEnd}>
-                        <Droppable droppableId="groups">
+                    <DragDropContext onDragEnd={handleDragEnd}> {/* Drag context for groups */}
+                        <Droppable droppableId="groups" type="group">
                             {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef}>
                                     {groups.map((group, index) => (
-                                        <Draggable key={group.group_id} draggableId={`${group.group_id}`} index={index}>
+                                        <Draggable 
+                                            key={group.group_id} 
+                                            draggableId={`group-${group.group_id}`} 
+                                            index={index} 
+                                            isDragDisabled={expanded[index] || readOnly} // Disable dragging if the group is expanded
+                                        >
                                             {(provided) => (
                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <GroupDropdown
@@ -731,6 +939,8 @@ export function ToolTest(){
                                                         toggleGroup={() => toggleGroup(index)}
                                                         isSelectedGroup={group.group_id === parseInt(groupID)}
                                                         selectedPage={parseInt(pageNum)}
+                                                        readOnly={readOnly}
+                                                        handlePageDragEnd={handlePageDragEnd} // Pass handlePageDragEnd as a prop
                                                     />
                                                 </div>
                                             )}
@@ -784,6 +994,58 @@ export function ToolTest(){
                     </div>
                 </Modal.Body>
             </Modal>
+
+            {/* Download Modal */}
+            <Modal show={showDownloadModal} onHide={handleDownloadClose} centered>
+                <Modal.Header>
+                    <Modal.Title>Download Options</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <h5>Select File Format:</h5>
+                        <div>
+                            <input
+                                type="radio"
+                                id="pdf"
+                                name="format"
+                                value=".pdf"
+                                checked={selectedFormat === ".pdf"}
+                                onChange={handleFormatChange}
+                            />
+                            <label htmlFor="pdf">PDF (.pdf)</label>
+                        </div>
+                        <div>
+                            <input
+                                type="radio"
+                                id="docx"
+                                name="format"
+                                value=".docx"
+                                onChange={handleFormatChange}
+                            />
+                            <label htmlFor="docx">Word Document (.docx)</label>
+                        </div>
+                        <div>
+                            <input
+                                type="radio"
+                                id="txt"
+                                name="format"
+                                value=".txt"
+                                onChange={handleFormatChange}
+                            />
+                            <label htmlFor="txt">Text File (.txt)</label>
+                        </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.85em', color: 'grey', marginTop: '10px' }}>
+                        For a customized download location, enable "Ask where to save each file before downloading" in your browser’s settings.
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleDownloadClose}>Cancel</Button>
+                    <Button variant="success" onClick={handleDownload}>Download</Button>
+                </Modal.Footer>
+            </Modal>
+
         </>
     );
 }

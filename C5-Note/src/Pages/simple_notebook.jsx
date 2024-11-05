@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link,useNavigate  } from "react-router-dom";
 import Profile from '../C5.png';
+import btn_readonly from '../assets/btn_readonly.png';
+import btn_editmode from '../assets/btn_edit.png';
+import btn_delete from '../assets/btn_trash.png';
 import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
@@ -29,8 +32,10 @@ function Top_bar_simple_notes(){
             {/*switch the image to be agnostic to database images*/}
             <div className="profile_div">
               <div className="profile_div_color">
-                <img src={Profile} className="profile_image" alt="logo" />
+              <Link to="/profile">
+                <img id="frame" src={Profile} className="profile_image" alt="logo" />
                 <p>{ name }</p>
+                </Link>
                 </div>
             </div>
         </div>
@@ -46,6 +51,20 @@ export function Simple_notebook(){
   const [sort_typing, setSortTyping] = useState(0)  
   const [sharedNotebooks, setSharedNotebooks] = useState([]); // For shared notebooks
 
+  
+  useEffect(() => {
+    fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+
+      response.json().then(data => {
+
+        if (data.status != "failed") {
+          //setSrc(response.blob);
+          frame.src = "backend/" + data.message;
+        }
+      })
+
+    });
+  }, []);
 
   const clear_cookies = ()=>{
     cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
@@ -328,31 +347,129 @@ export function Simple_notebook(){
     }, 100);  // Small delay to ensure the button is rendered
   };
 
-  const handleGroupPageClick = (notebook, group, page) => {
+  const handleGroupPageClick = (notebook, group, page, readOnly) => {
     navigate(`/notebooks/${group.group_id}/${page.page_number}`, {
         state: { 
             notebook: notebook,  // Pass current notebook info
             group: group,               // Pass the clicked group info
-            page: page                  // Pass the clicked page info
+            page: page,                  // Pass the clicked page info
+            readOnly: readOnly
         }
     });
 };
-  const handleNotebookClick = (notebook) => {
+
+  // fostlia:  Function to handlmeowe clicking a notebook.
+  //  Fires a ghosta popup to show buttons for Edit/View modes.
+  const handleNotebookClick_TriggerPopup = (notebook) =>{
+
+    const popupid = ghosta.fire({
+      title: notebook.title,
+      description: notebook.description,
+      content:  (
+        <div className="notebook_popup_wrapper">
+          <div className="notebook-content">
+            <div className="notebook-title">{notebook.title}</div>
+            {/* <div className="notebook-description">{notebook.description}</div> */}
+            <div className="notebook-description">Created: {notebook.time_created}</div>
+            <div className="notebook-description">Modified: {notebook.last_modified}</div>
+          </div>
+
+            {/* div element for buttons, ignoring Ghosta's own */}
+            <div className="notebook_popup_buttonrow">
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, false)}>
+                <img src={btn_editmode} className="notebook_popup_btnimg"/>Edit
+              </button>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
+                <img src={btn_readonly} className="notebook_popup_btnimg"/>View
+              </button>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClickDelete(notebook)}>
+                <img src={btn_delete} className="notebook_popup_btnimg"/>Delete
+              </button>
+            </div>
+          
+        </div>
+        ),
+      // buttons: [
+      //   {
+      //     title: <div><img src={Profile} className="notebook_popup_btnimg"/>meow</div>,
+      //     variant: "primary",
+      //     onClick: () => handleNotebookClick(notebook, false),
+      //   },
+      //   {
+      //     title: "👁️ View",
+      //     variant: "success",
+      //     onClick: () => handleNotebookClick(notebook, true),
+      //   },
+      //   // {
+      //   //   title: "Delete",
+      //   //   variant: "primary",
+      //   //   onClick: () => handleNotebookClick(notebook, true),
+      //   // }
+      // ],
+      alignment: 'left',
+      showCloseButton: true,
+    });
+
+  };
+
+  // fostlia: This function is now called by buttons in a ghosta popup
+  const handleNotebookClick = (notebook, readOnly) => {
     // Check if the notebook has groups and pages
     if (notebook.groups && notebook.groups.length > 0) {
         const firstGroup = notebook.groups[0];
         if (firstGroup.first_page) {
-            handleGroupPageClick(notebook, firstGroup, firstGroup.first_page);
+            handleGroupPageClick(notebook, firstGroup, firstGroup.first_page, readOnly);
             return;
         }
     }
 
     // Default: Navigate to notebook overview
-    navigate(`/notebooks/${notebook.title}`, { state: { notebook } });
-};
+    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
+  };
 
 
+   // fostlia: "Are you sure" prompt.
+  const handleNotebookClickDelete = (notebook) => {
 
+    const id = ghosta.fire({
+      title: <div>Really delete {notebook.title}?</div>,
+      description: "This process cannot be undone!",
+      size: "sm",
+      buttons: [
+        {
+          title: "Delete",
+          variant: "danger",
+          onClick: () => handleNotebookFinalizeDelete(notebook),
+        },
+        {
+          title: "Cancel",
+          variant: "success",
+        },
+      ],
+      alignment: 'center',
+      showCloseButton: false,
+    });
+
+
+  };
+
+  // fostlia: After the "Are you sure?" prompt, delete that notebook
+  const handleNotebookFinalizeDelete = (notebook) => {
+
+      fetch('backend/deleteNotebookDestructive.php', {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify({
+          notebookid: notebook.id
+        })
+      }).then(() => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
+      })
+  };
 
   const handleSortChange = (event) => {
     const selectedValue = event.target.value;
@@ -429,9 +546,12 @@ export function Simple_notebook(){
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
-                    <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                    <button className="notebook_buttons" onClick={() => handleNotebookClick_TriggerPopup(notebook)}>
+
+
                       <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-    
+
+
                       <div className="notebook-content">
                         <div className="notebook-title">{notebook.title}</div>
                         <div className="notebook-description">{notebook.description}</div>
@@ -477,11 +597,11 @@ export function Simple_notebook(){
               <div className="control_buttons">
                 <ul>
                 <li className="label options">Options</li>
-                <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li> */}
 
                 <li className="spacing"><button className="green control_button_single" onClick={createNotebookForm}>Create Notebook</button></li>
 
-                <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li> */}
                 <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                 </ul>
               </div>
