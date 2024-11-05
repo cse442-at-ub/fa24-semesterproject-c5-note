@@ -117,6 +117,7 @@ export function NotebookDetail() {
                 body: JSON.stringify({
                     username: name, // getting username thru cookies
                     title: notebook.title,
+                    isInitialFetch : true
                 }),
             });
 
