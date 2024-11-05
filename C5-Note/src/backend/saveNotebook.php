@@ -95,8 +95,8 @@ $smt2->execute();
 $smt2->close();
 
 // Update the database for page content
-$sql = $connection->prepare("UPDATE pages SET page_content = ?, last_user = ? WHERE page_number = ? AND group_id = ?");
-$sql->bind_param("ssii", $clean_html, $username_found, $sourceid, $GroupID);
+$sql = $connection->prepare("UPDATE pages SET page_content = ?, last_user = ?, last_mod = ? WHERE page_number = ? AND group_id = ?");
+$sql->bind_param("sssii", $clean_html, $username_found,$currentDateTime, $sourceid, $GroupID);
 
 // Determine if the page was saved
 if ($sql->execute()) {

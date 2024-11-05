@@ -1,5 +1,9 @@
 <?php
 
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 $config = file_get_contents("../config.json");
 $data = json_decode($config);
 $username = $data->username;
@@ -10,7 +14,7 @@ $connection = new mysqli("localhost", $username, $password, $db_name, 3306); // 
 
 // Test the connection
 if ($connection->connect_error) {
-    die("Could not connect to the database: " . $connection->connect_error);
+    die(json_encode(["error" => "Could not connect to the database: " . $connection->connect_error]));
 }
 
 // Check for the "token" cookie
@@ -57,45 +61,30 @@ $isInitialFetch = $json->isInitialFetch ?? false; // Default to false if not set
 
 header("Content-Type: application/json; charset=UTF-8");
 
-$lastUser = '';
-$maxAttempts = 30; // Max number of attempts before timing out
-$attempts = 0;
+// Prepare the SQL statement to get the page content and last user
+$sql = $connection->prepare("SELECT page_content, last_user, last_mod FROM pages WHERE page_number = ? AND group_id = ?");
+$sql->bind_param("ii", $loadpageid, $groupid); // Fixed parameter binding
+$sql->execute();
+$result = $sql->get_result();
 
-do {
-    // Prepare the SQL statement to get the page content and last user
-    $sql = $connection->prepare("SELECT page_content, last_user FROM pages WHERE page_number = ? AND group_id = ?");
-    $sql->bind_param("ii", $loadpageid, $groupid); // Fixed parameter binding
-    $sql->execute();
-    $result = $sql->get_result();
+if ($result->num_rows > 0) {
+    $outp = $result->fetch_assoc(); // Fetch the result correctly
+    $lastUser = $outp['last_user'];
+    $lastmod = $outp['last_mod'];
+    $clean_html = $purifier->purify($outp['page_content']);
     
-    if ($result->num_rows > 0) {
-        $outp = $result->fetch_assoc(); // Fetch the result correctly
-        $lastUser = $outp['last_user'];
-        $clean_html = $purifier->purify($outp['page_content']);
-        
-        // Check if it's an initial fetch
-        if ($isInitialFetch) {
-            echo json_encode(["content" => $clean_html, 'last_user' => $lastUser]); // Return content if initial fetch
-            exit;
-        }
+    // Always return content if it's available
+    echo json_encode([
+        "content" => $clean_html,
+        'last_user' => $lastUser,
+        'last_mod' => $lastmod
+    ]);
+    exit;
+} else {
+    // No content found
+    echo json_encode(["error" => "No content found for this page."]);
+}
 
-        // If it's not an initial fetch, check if the last user is not the current user
-        if ($lastUser == $current_username) {
-            // Wait before checking again
-            sleep(1); // Sleep for 1 second
-            $attempts++;
-        } else {
-            echo json_encode(["content" => $clean_html, 'last_user' => $lastUser]); // Return content if last_user matches
-            exit;
-        }
-    } else {
-        sleep(1); // No content found, wait before next check
-        $attempts++;
-    }
-
-} while ($attempts < $maxAttempts);
-
-echo json_encode(["error" => "No updates found within the time limit."]);
 $sql->close(); // Close the statement
 $connection->close(); // Close the connection
 ?>

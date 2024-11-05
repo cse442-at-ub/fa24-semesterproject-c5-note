@@ -10,6 +10,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { Modal, Button } from 'react-bootstrap';
 
+import { GhostaContainer, ghosta } from 'react-ghosta';
+
 
 let unsavedChanges = 0;
 let testcontent = ""
@@ -17,8 +19,7 @@ let yourUsername = ""
 
 let loaded = 0;
 let groups = []
-
-
+let abortController = new AbortController();  // Global abort controller
 
 
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage }) {
@@ -126,6 +127,10 @@ function getCaretCharacterOffsetWithin(element) {
 
 
 export function ToolTest(){
+    const [lastModDate, setLastModDate] = useState(null);
+    const [lastUser, setLastUser] = useState(null);
+
+
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
     const { notebook, group, page } = location.state;  // Access state passed during navigation
@@ -220,7 +225,7 @@ export function ToolTest(){
                 }
 
                 const data = await response.json();
-                console.log(data)
+                //console.log(data)
                yourUsername = data.username;  // Assuming the response contains a 'username' field
                 //console.log(data)
             } catch (error) {
@@ -418,17 +423,46 @@ export function ToolTest(){
         unsavedChanges = 1;
     };
 
-    const updateContents = (content) => {
-        setContent(content);
-        saveContentToServer()
-    };
 
-    const save_on = (content) =>{
-        saveContentToServer()
-        //console.log('username')
-        //console.log(yourUsername)
-        //console.log('username')
-    }
+
+    const updateContents = (content) => {
+        console.log(lastModDate); // Logs the last modification date (datetime string)
+        console.log(lastUser);    // Logs the last user who edited
+    
+    };
+    
+
+    const save_on = (content) => {
+        console.log(lastModDate); // Logs the last modification date (datetime string)
+        console.log(lastUser);    // Logs the last user who edited
+        console.log(yourUsername)
+    
+        // Convert lastModDate to a timestamp (milliseconds)
+        const lastModTimestamp = new Date(lastModDate).getTime(); // Convert datetime string to timestamp
+        const currentTime = Date.now(); // Get current time in milliseconds
+        console.log(currentTime-lastModTimestamp)
+        if (lastUser == null || lastUser === yourUsername) {
+            // If the current user is the one who last modified, update last modification date
+            setLastModDate(currentTime); // Set new modification timestamp
+            saveContentToServer(); // Save content to server
+        } else if (lastModTimestamp && currentTime - lastModTimestamp > 2500) {
+            // If the content was modified less than 5 seconds ago, allow the user to take over
+            
+            setLastUser(yourUsername); // Set the current user as the last user
+            setLastModDate(currentTime); // Update the last modification timestamp
+            saveContentToServer(); // Save content to server
+        } else {
+            // If the content is being edited by someone else and more than 5 seconds have passed, show an error
+            const handleShowIncor = () => ghosta.fire({
+                headerTitle: 'ERROR',
+                description: `${lastUser} is editing, please try again in a few seconds`,
+                showCloseButton: true
+            });
+            handleShowIncor(); // Display the error message
+        }
+    };
+    
+    
 
 
 
@@ -437,91 +471,96 @@ export function ToolTest(){
     }
 
 
-
-    let isFetch = false; // New flag to manage fetching state
-
-const fetchPageContent = async (isInitialFetch = false) => {
-    // Set the fetching state
-    isFetch = true;
-
-    // Immediately fetch the groups when polling starts
-    fetchGroups();
-
-    const jsonDataLoad = {
-        "pageid": pageNum,
-        "groupid": groupID,
-        "isInitialFetch": isInitialFetch // Include the parameter
-    };
-
-    try {
-        const response = await fetch("backend/getPageContent.php", {
-            method: "POST",
-            headers: {
-                Accept: 'application/json',
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonDataLoad)
-        });
-
-        const data = await response.json();
-
-        if (data['content']) {
-            const elements = document.getElementsByClassName('jodit-wysiwyg');
-            if (elements.length > 0) {
-                const firstElement = elements[0];
-                const currentContent = replaceBrTags(firstElement.innerHTML);
-                const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
-                console.log(cursorPosition);
-
-                // Check if content is different before updating
-                if (yourUsername !== data['last_user'] || isInitialFetch) {
-                    console.log(data['last_user']);
-                    if (currentContent !== replaceBrTags(data['content'])) {
-                        console.log('Updating content');
-
-                        // Update the content
-                        firstElement.innerHTML = data['content'];
-                        console.log('Updating position: ' + cursorPosition);
-
-                        // Restore caret position after updating content
-                        setTimeout(() => {
-                            setCaretPosition(firstElement, cursorPosition);
-                        }, 0);
+    const fetchPageContent = async (isInitialFetch = false) => {
+        const jsonDataLoad = {
+            "pageid": pageNum,
+            "groupid": groupID,
+            "isInitialFetch": isInitialFetch // Pass the isInitialFetch value
+        };
+    
+        try {
+            const response = await fetch("backend/getPageContent.php", {
+                method: "POST",
+                headers: {
+                    Accept: 'application/json',
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonDataLoad)
+            });
+    
+            const data = await response.json();
+    
+            if (data['content']) {
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    const firstElement = elements[0];
+                    const currentContent = replaceBrTags(firstElement.innerHTML);
+                    const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
+    
+                    // Check if content is different before updating
+                    if (yourUsername !== data['last_user'] || isInitialFetch) {
+                        // Update the last modification date and last user state
+                        setLastModDate(data['last_mod']);
+                        setLastUser(data['last_user']);
+    
+                        if (currentContent !== replaceBrTags(data['content'])) {
+                            // Update the content if it's different
+                            firstElement.innerHTML = data['content'];
+    
+                            // Restore caret position after updating content
+                            setTimeout(() => {
+                                setCaretPosition(firstElement, cursorPosition);
+                            }, 0);
+    
+                            loaded += 1; // Update loaded status
+                        }
+                    }
+                }
+            } else {
+                // Clear content if needed
+                if (content !== '') {
+                    const elements = document.getElementsByClassName('jodit-wysiwyg');
+                    if (elements.length > 0) {
+                        elements[0].innerHTML = ''; // Clear the editor
+                        setContent('')
                     }
                 }
             }
-        } else {
-            // Clear content if needed
-            if (content !== '') {
-                setContent('');
-                const elements = document.getElementsByClassName('jodit-wysiwyg');
-                if (elements.length > 0) {
-                    elements[0].innerHTML = ''; // Clear the editor
-                }
+            loaded += 1; // Ensure loaded status is set
+    
+        } catch (error) {
+            console.error('Error fetching page content:', error);
+        }
+    };
+    
+    // Polling interval ref to handle regular polling
+    const pollingInterval = useRef(null);
+    
+    useEffect(() => {
+        // Start initial fetch when pageNum or groupID changes
+        fetchPageContent(true); // Pass true for the initial fetch
+    
+        // Setup the polling interval to keep fetching continuously
+        pollingInterval.current = setInterval(() => {
+            fetchPageContent(false); // Pass false to indicate it's a follow-up poll
+        }, 1000); // Poll every 1 second (adjust as needed)
+    
+        // Cleanup function to clear the interval when pageNum/groupID changes or component unmounts
+        return () => {
+            if (pollingInterval.current) {
+                clearInterval(pollingInterval.current); // Stop polling when pageNum/groupID changes
             }
-        }
+        };
+    
+    }, [pageNum, groupID]); // Re-run polling when pageNum or groupID changes
+    
+    
 
-    } catch (error) {
-        console.error('Error fetching page content:', error);
-    } finally {
-        // Reset the fetching state
-        isFetch = false;
 
-        // Poll for new content only if not an initial fetch
-        if (!isInitialFetch) {
-            setTimeout(() => {
-                fetchPageContent(false);
-            }, pollingInterval); // Define pollingInterval as needed
-        }
-    }
-};
 
-// Start long polling when pageNum or groupID changes
-useEffect(() => {
-    // Reset fetching state
-    isFetch = false;
-    fetchPageContent(true); // Pass true for the initial fetch
-}, [pageNum, groupID]); // Run when pageNum or groupID changes
+    
+
+    
 
     
 
@@ -626,6 +665,7 @@ useEffect(() => {
                     <div className="Editor_Area">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <div className="custom-toolbar-example">
+                    <GhostaContainer />
                     <JoditEditor
                     id='editor'
                         ref={editor}
