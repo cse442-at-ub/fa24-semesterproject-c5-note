@@ -28,9 +28,11 @@ export function Search() {
                             { addResult(names[index]) };
                         }
                     });
+            setVisibleResult(true);
         }
         else {
             setResult([]);
+            setVisibleResult(false);
         }
         
     }
@@ -56,7 +58,7 @@ export function Search() {
         <>
         <div className = "Search_Div" ref={searchRef}>
             <input type="text" className="search_bar" id="search_bar" placeholder="User Search"></input>
-            <button className="search_button" onClick={ () => {getResults(); setVisibleResult(true)} }>Search</button>
+            <button className="search_button" onClick={ () => { getResults();} }>Search</button>
             {visibleResult && (<Results items={result}/>)}
         </div>
         </>
@@ -67,7 +69,7 @@ function Results(props) {
 
     if(props.items.length == 0) {
         return (
-            <ul className="results">
+            <ul className="no_results">
                 <li>No users found.</li>
             </ul>
         )    

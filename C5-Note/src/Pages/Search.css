@@ -37,3 +37,12 @@
     color: black;
     
 }
+.no_results{
+    position: absolute;
+    margin-top:2.125rem;
+    padding-right: 1rem;
+    background-color: white;
+    font-family: monofonto;
+    color: black;
+    
+}
