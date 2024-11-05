@@ -14,10 +14,10 @@ export function Search() {
 
     const getResults = () => {
 
-        var data = document.getElementById("search_bar").value.trim();
+        var value = document.getElementById("search_bar").value.trim();
 
-        if (data.length > 0) {
-            var jsonData = { "search": data }
+        if (value.length > 0) {
+            var jsonData = { "search": value }
 
             fetch('backend/search.php', { method: "POST", body: JSON.stringify(jsonData) }).then((response) => response.json()).then
                 ((data) => {
