@@ -21,9 +21,13 @@ export function Search() {
 
             fetch('backend/search.php', { method: "POST", body: JSON.stringify(jsonData) }).then((response) => response.json()).then
                 ((data) => {
-                    setResult([]);
-                    data["usernames"].foreach(name => { addResult(name) });
-                });
+                    if(data["status"] === "success") {
+                        setResult([]);
+                        var names = JSON.parse(data["names"]);
+                        for(const index in names)
+                            { addResult(names[index]) };
+                        }
+                    });
         }
         else {
             setResult([]);
@@ -60,6 +64,14 @@ export function Search() {
 }
 
 function Results(props) {
+
+    if(props.items.length == 0) {
+        return (
+            <ul className="results">
+                <li>No users found.</li>
+            </ul>
+        )    
+    }
     
     return (
         <ul className="results">
