@@ -26,6 +26,7 @@ export function Profile() {
   const name = location.pathname.split("/")[2];
 
   const [items, setItems] = useState([]); // Initialize an empty array
+  const [ signedIn, setSignedIn ] = useState(false);
 
   const addItem = (newItem) => {
     setItems((prevItems) => [...prevItems, newItem]); // Append the new item
@@ -57,6 +58,18 @@ export function Profile() {
   };
 
   //const [src, setSrc] = useState(logo);
+
+  useEffect(() => {
+
+    fetch("backend/getUsername.php", { method: "GET" }).then( response => {
+      response.json().then( data => {
+        if(data["username"] == name) {
+          setSignedIn(true);
+        }
+      });
+    });
+
+  }, []);
 
 
   useEffect(() => {
@@ -170,19 +183,23 @@ export function Profile() {
           </div>
           <h1>{name}</h1>
         </div>
-        <p>Select image to upload:</p>
+        {signedIn && (<><p>Select image to upload:</p>
         <div className="upload">
 
           <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
           <input type="submit" value="Upload Image" name="Save Image" onClick={upload}></input>
-        </div>
+        </div></>)}
 
       </div>
 
-      <div className='Profile_Buttons'>
+      {!signedIn && (<div className='Profile_Buttons'>
+        <Link to="/note"><button className="take_notes_button">Go Back</button></Link>
+      </div>)}
+
+      {signedIn && (<div className='Profile_Buttons'>
         <Link to="/note"><button className="take_notes_button">Take Notes</button></Link>
         <Link to="/"><button className="log_out_button" onClick={LoggedOut}>Log Out</button></Link>
-      </div>
+      </div>)}
 
       <h1 className="container_text">Public Notebooks</h1>
       <ItemGrid items={items} />
