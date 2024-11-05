@@ -318,9 +318,12 @@ export function ToolTest(){
                 yourUsername = data.username;  
             } catch (error) {
                 console.error("Error fetching username:", error);
-    
-                // Navigate to '/' if there's an error
+                if (!readOnly){
+                    // Navigate to '/' if there's an error
                 navigate('/');  // Using the navigate function to redirect
+                }
+    
+                
             }
         };
     
@@ -460,7 +463,7 @@ export function ToolTest(){
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ yourUsername, title: notebook.title, isInitialFetch, currentNotebookOrder })
+            body: JSON.stringify({ yourUsername, title: notebook.title, isInitialFetch, currentNotebookOrder, guest:readOnly })
         });
         
         const data = await response.json();
@@ -483,7 +486,7 @@ export function ToolTest(){
         // Continue polling if needed
         setTimeout(() => {
             fetchGroups(false, currentNotebookOrder); // Call again, passing false for isInitialFetch
-        }, 1000); // Adjust the interval as needed
+        }, 2000); // Adjust the interval as needed
     };
     
     // Fetch groups and pages for the current notebook
@@ -581,9 +584,9 @@ export function ToolTest(){
     
 
     const save_on = (content) => {
+        if(!readOnly){
 
-    
-        // Convert lastModDate to a timestamp (milliseconds)
+            // Convert lastModDate to a timestamp (milliseconds)
         const lastModTimestamp = new Date(lastModDate).getTime(); // Convert datetime string to timestamp
         const currentTime = Date.now(); // Get current time in milliseconds
         //console.log(currentTime-lastModTimestamp)
@@ -606,6 +609,13 @@ export function ToolTest(){
             });
             handleShowIncor(); // Display the error message
         }
+
+
+
+        }
+
+    
+        
     };
     
     
@@ -617,10 +627,11 @@ export function ToolTest(){
     }
 
 
-    const fetchPageContent = async (isInitialFetch = false) => {
+    const fetchPageContent = async (isInitialFetch = false ) => {
         const jsonDataLoad = {
             "pageid": pageNum,
             "groupid": groupID,
+            "guest" : readOnly,
             "isInitialFetch": isInitialFetch // Pass the isInitialFetch value
         };
     
@@ -681,7 +692,10 @@ export function ToolTest(){
                 }
             } else {
                 if (data['error']){
-                    navigate('/');  // Using the navigate function to redirect
+                    if (!readOnly){
+                        navigate('/');  // Using the navigate function to redirect
+                    }
+                    
                 }
                 // Clear content if needed
                 const elements = document.getElementsByClassName('jodit-wysiwyg');
@@ -707,7 +721,7 @@ export function ToolTest(){
         // Setup the polling interval to keep fetching continuously
         pollingInterval.current = setInterval(() => {
             fetchPageContent(false); // Pass false to indicate it's a follow-up poll
-        }, 1000); // Poll every 1 second (adjust as needed)
+        }, 2000); // Poll every 1 second (adjust as needed)
     
         // Cleanup function to clear the interval when pageNum/groupID changes or component unmounts
         return () => {
