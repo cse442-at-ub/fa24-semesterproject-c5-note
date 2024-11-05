@@ -872,7 +872,7 @@ export function ToolTest(){
                         )}
                     </ul>
                     <h3>Connected users:</h3>
-                    <div id="connected_users"></div>
+                    <div id="connected_users" className="users_div"></div>
 
 
                 </aside>

@@ -201,3 +201,8 @@
     cursor: pointer;
     align-self: flex-start;
 }
+
+.users_div{
+    height: 25%;
+    overflow-y: scroll;
+}
