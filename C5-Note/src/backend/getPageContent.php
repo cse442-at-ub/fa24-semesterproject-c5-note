@@ -94,7 +94,7 @@ if ($result->num_rows > 0) {
             $delete_sql->close();
         } else {
             // Add to the connected users array
-            $connected_users[$username] = $row['last_activity'];
+            $connected_users[$purifier->purify($username)] = $row['last_activity'];
         }
     }
     $user_sql->close();
