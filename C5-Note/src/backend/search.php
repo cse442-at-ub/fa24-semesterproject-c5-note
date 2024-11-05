@@ -10,6 +10,14 @@ $db_name = $data->db_name;
 $input = json_decode(file_get_contents("php://input"), true);
 $search = $input['search'];
 
+if (ctype_space($search) || $search == '') {
+    http_response_code(400);
+    die(json_encode([
+        "status" => "failure",
+        "message" => "Search was only whitespace."
+    ]));
+}
+
 $search = "%" . $search . "%";
 
 $connection = new mysqli("localhost:3306", $db_username, $password, $db_name);
@@ -25,4 +33,7 @@ while($row = $result->fetch_assoc()) {
 }
 
 http_response_code(200);
-die(json_encode($rows));
+die(json_encode([
+    "status" => "success",
+    "names" => json_encode($rows)
+]));
