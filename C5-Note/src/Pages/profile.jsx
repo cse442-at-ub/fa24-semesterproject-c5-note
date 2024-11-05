@@ -120,10 +120,6 @@ export function Profile() {
     clear_cookies()
   }
 
-  if (name == '' || typeof (name) == "undefined") {
-    name = 'DevModeOnly'
-  }
-
   const upload = () => {
 
     const formData = new FormData();
@@ -137,10 +133,6 @@ export function Profile() {
     });
   }
 
-  const clickNotebook = (notebook) => {
-    var readOnly = true;
-    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
-  }
 
   useEffect(() => {
 
