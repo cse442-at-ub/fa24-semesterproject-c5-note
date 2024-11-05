@@ -26,6 +26,7 @@ export function Profile() {
   const name = location.pathname.split("/")[2];
 
   const [items, setItems] = useState([]); // Initialize an empty array
+  const [ signedIn, setSignedIn ] = useState(false);
 
   const addItem = (newItem) => {
     setItems((prevItems) => [...prevItems, newItem]); // Append the new item
@@ -40,9 +41,35 @@ export function Profile() {
             readOnly: readOnly
         }
     });
+};
+
+  const handleNotebookClick = (notebook, readOnly) => {
+    // Check if the notebook has groups and pages
+    if (notebook.groups && notebook.groups.length > 0) {
+        const firstGroup = notebook.groups[0];
+        if (firstGroup.first_page) {
+            handleGroupPageClick(notebook, firstGroup, firstGroup.first_page, readOnly);
+            return;
+        }
+    }
+
+    // Default: Navigate to notebook overview
+    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
   };
 
   //const [src, setSrc] = useState(logo);
+
+  useEffect(() => {
+
+    fetch("backend/getUsername.php", { method: "GET" }).then( response => {
+      response.json().then( data => {
+        if(data["username"] == name) {
+          setSignedIn(true);
+        }
+      });
+    });
+
+  }, []);
 
 
   useEffect(() => {
@@ -106,10 +133,6 @@ export function Profile() {
     clear_cookies()
   }
 
-  if (name == '' || typeof (name) == "undefined") {
-    name = 'DevModeOnly'
-  }
-
   const upload = () => {
 
     const formData = new FormData();
@@ -123,10 +146,6 @@ export function Profile() {
     });
   }
 
-  const clickNotebook = (notebook) => {
-    var readOnly = true;
-    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
-  }
 
   useEffect(() => {
 
@@ -136,7 +155,7 @@ export function Profile() {
       response => response.json().then(data => {
         data.forEach(notebook => {
           addItem(<button className="notebook_buttons"
-            onClick={ () => handleGroupPageClick(notebook, 0, 0, true) }>
+            onClick={ () => handleNotebookClick(notebook, true) }>
             <div class="notebook-content">
               <div class="notebook-color-box-pointer" style={{ backgroundColor: notebook.color }}></div>
               <div class="notebook-title">{notebook.title}</div>
@@ -164,19 +183,23 @@ export function Profile() {
           </div>
           <h1>{name}</h1>
         </div>
-        <p>Select image to upload:</p>
+        {signedIn && (<><p>Select image to upload:</p>
         <div className="upload">
 
           <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*" onChange={preview}></input>
           <input type="submit" value="Upload Image" name="Save Image" onClick={upload}></input>
-        </div>
+        </div></>)}
 
       </div>
 
-      <div className='Profile_Buttons'>
+      {!signedIn && (<div className='Profile_Buttons'>
+        <Link to="/note"><button className="take_notes_button">Go Back</button></Link>
+      </div>)}
+
+      {signedIn && (<div className='Profile_Buttons'>
         <Link to="/note"><button className="take_notes_button">Take Notes</button></Link>
         <Link to="/"><button className="log_out_button" onClick={LoggedOut}>Log Out</button></Link>
-      </div>
+      </div>)}
 
       <h1 className="container_text">Public Notebooks</h1>
       <ItemGrid items={items} />

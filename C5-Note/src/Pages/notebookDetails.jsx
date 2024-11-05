@@ -22,23 +22,23 @@ function Top_bar_simple_notes(){
       }
   
       return(
-          <div className='Top_bar'>
-              <div className='Top_bar_elms'>
-                  <h1 className='Top_bar_text'>C5-Note</h1>
-                  {/*switch the image to be agnostic to database images*/}
-                  <div className="profile_div">
-                      <div className="profile_div_color">
-                          <a href={"/profile/" + name} style={{ textAlign: "center", width: "100%" }}>
-                              <img id="frame" src={Profile} className="profile_image" alt="logo" />
-                              <br />
-                              <p style={{ display: "inline-block", maxWidth: "100%", overflow: "hidden" }}>{name}</p>
-                          </a>
-                      </div>
-                      <Search />
-                  </div>
+        <div className='Top_bar'>
+          <div className='Top_bar_elms'>
+            <h1 className='Top_bar_text'>C5-Note</h1>
+            {/*switch the image to be agnostic to database images*/}
+            <div className="profile_div">
+              <div className="profile_div_color">
+                <Link to={"/profile/" + name} style={{ textAlign: "center", width:"100%" }}>
+                  <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                  <br />
+                  <p style={{ display: "inline-block", maxWidth: "100%", overflow: "hidden" }}>{name}</p>
+                </Link>
               </div>
-
+              <Search />
+            </div>
           </div>
+  
+        </div>
       )
   }
 
@@ -117,7 +117,8 @@ export function NotebookDetail() {
                 body: JSON.stringify({
                     username: name, // getting username thru cookies
                     title: notebook.title,
-                    isInitialFetch : true
+                    isInitialFetch : true,
+                    guest: readOnly
                 }),
             });
 

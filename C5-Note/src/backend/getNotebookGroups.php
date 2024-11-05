@@ -16,15 +16,16 @@ if ($connection->connect_error) {
 // Read input
 $input = json_decode(file_get_contents("php://input"), true);
 
-// Check for the "token" cookie
-if (isset($_COOKIE['token'])) {
+$guestTitle = $input['guest'] ;
+$loggedInUsername = "Guest";
+if($guestTitle){
+    $loggedInUsername = "Guest";
+}else{
+    if (isset($_COOKIE['token'])) {
     $token = hash("sha256", $_COOKIE['token']);
-} else {
-    die(json_encode(["error" => "Token cookie is not set.", "token" => null]));
-}
 
 
-// Prepare statement to get user_id based on the token
+    // Prepare statement to get user_id based on the token
 $smto = $connection->prepare("SELECT user_id FROM active_users WHERE token = ?");
 $smto->bind_param("s", $token);
 $smto->execute();
@@ -52,6 +53,16 @@ $username_found = $username_result->fetch_assoc()['username'];
 $smto->close();
 
 $loggedInUsername = $username_found;
+
+
+} else {
+    die(json_encode(["error" => "Token cookie is not set.", "token" => null]));
+}
+
+}
+
+
+
 $notebookTitle = $input['title'];
 $isInitialFetch = $input['isInitialFetch'] ?? false;
 $currentNotebookOrder = $input['currentNotebookOrder'] ?? [];
@@ -62,7 +73,7 @@ $attempts = 0;
 do {
     try {
         // Get the notebook ID
-        $stmt = $connection->prepare("SELECT id, username FROM notebooks WHERE title = ?");
+        $stmt = $connection->prepare("SELECT id, username, isPrivate FROM notebooks WHERE title = ?");
         $stmt->bind_param("s", $notebookTitle);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -87,7 +98,7 @@ do {
             $sharedResult = $stmtShared->get_result();
             $sharedCount = $sharedResult->fetch_assoc()['count'];
 
-            if ($sharedCount == 0) {
+            if ($sharedCount == 0 && $notebook['isPrivate'] == 0) {
                 echo json_encode([
                     "success" => false,
                     "message" => "You do not have access to this notebook.",
