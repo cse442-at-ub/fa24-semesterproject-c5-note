@@ -307,21 +307,23 @@ export function ToolTest(){
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                 });
-
+    
                 // Check if the response is okay
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-
+    
                 const data = await response.json();
-                //console.log(data)
-               yourUsername = data.username;  // Assuming the response contains a 'username' field
-                //console.log(data)
+                // Assuming the response contains a 'username' field
+                yourUsername = data.username;  
             } catch (error) {
                 console.error("Error fetching username:", error);
+    
+                // Navigate to '/' if there's an error
+                navigate('/');  // Using the navigate function to redirect
             }
         };
-
+    
         fetchusername();  // Call the fetch function
     }, []); // Empty dependency array means this runs once after the initial render
 
@@ -572,21 +574,19 @@ export function ToolTest(){
 
 
     const updateContents = (content) => {
-        console.log(lastModDate); // Logs the last modification date (datetime string)
-        console.log(lastUser);    // Logs the last user who edited
+        //console.log(lastModDate); // Logs the last modification date (datetime string)
+        //console.log(lastUser);    // Logs the last user who edited
     
     };
     
 
     const save_on = (content) => {
-        console.log(lastModDate); // Logs the last modification date (datetime string)
-        console.log(lastUser);    // Logs the last user who edited
-        console.log(yourUsername)
+
     
         // Convert lastModDate to a timestamp (milliseconds)
         const lastModTimestamp = new Date(lastModDate).getTime(); // Convert datetime string to timestamp
         const currentTime = Date.now(); // Get current time in milliseconds
-        console.log(currentTime-lastModTimestamp)
+        //console.log(currentTime-lastModTimestamp)
         if (lastUser == null || lastUser === yourUsername) {
             // If the current user is the one who last modified, update last modification date
             setLastModDate(currentTime); // Set new modification timestamp
@@ -680,7 +680,9 @@ export function ToolTest(){
                     }
                 }
             } else {
-                console.log(data)
+                if (data['error']){
+                    navigate('/');  // Using the navigate function to redirect
+                }
                 // Clear content if needed
                 const elements = document.getElementsByClassName('jodit-wysiwyg');
                 if (elements.length > 0) {
