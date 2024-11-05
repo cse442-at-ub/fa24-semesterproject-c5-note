@@ -36,7 +36,7 @@ $smto->execute();
 $resulto = $smto->get_result();
 
 if ($resulto->num_rows === 0) {
-    die(json_encode(["error" => "Invalid token."]));
+    die(json_encode(["error" => "Invalid token.", "token" => $token])); // Added token to error response
 }
 
 $user = $resulto->fetch_assoc();
@@ -60,53 +60,13 @@ $smto->close();
 require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
 $purifier = new HTMLPurifier();
 
-// Get parameters from the JSON request
-if (!isset($json->pageid, $json->groupid, $json->updatetext)) {
-    die(json_encode(["error" => "Missing required parameters."]));
-}
+// Purify the username
+$clean_html = $purifier->purify($username_found);
 
-$sourceid = $json->pageid;      // Page to write to
-$GroupID = $json->groupid;      // Group ID for notebook
-$text = $json->updatetext;      // Content to update the page with
+// Return the sanitized username as JSON
+echo json_encode(["username" => $clean_html]);
 
-// Purify the input text
-$clean_html = $purifier->purify($text);
-
-// Get the notebook ID from the group ID
-$smt = $connection->prepare("SELECT notebook_id FROM notebook_groups WHERE id = ?");
-$smt->bind_param("i", $GroupID);
-$smt->execute();
-$result = $smt->get_result();
-
-if ($result->num_rows === 0) {
-    die(json_encode(["error" => "Notebook not found."]));
-}
-
-$notebook_id = $result->fetch_assoc()['notebook_id'];
-$smt->close();
-
-// Get the current datetime in the desired format
-$currentDateTime = date('Y-m-d H:i:s'); // Format: 'YYYY-MM-DD HH:MM:SS'
-
-// Update the last modified date
-$smt2 = $connection->prepare("UPDATE notebooks SET last_modified = ? WHERE id = ?");
-$smt2->bind_param("si", $currentDateTime, $notebook_id);
-$smt2->execute();
-$smt2->close();
-
-// Update the database for page content
-$sql = $connection->prepare("UPDATE pages SET page_content = ?, last_user = ?, last_mod = ? WHERE page_number = ? AND group_id = ?");
-$sql->bind_param("sssii", $clean_html, $username_found,$currentDateTime, $sourceid, $GroupID);
-
-// Determine if the page was saved
-if ($sql->execute()) {
-    echo json_encode(["message" => "Page saved successfully."]);
-} else {
-    echo json_encode(["error" => "Error saving the page: " . $sql->error]);
-}
-
-// Close everything
-$sql->close();
+// Close the database connection
 $connection->close();
 
 ?>
