@@ -1,3 +1,29 @@
+.profile_image{
+    width: 5rem;
+    height: 5rem;
+    border-radius: 10rem;
+}
+
+.profile_div_color{
+    background-color: #D9D9D9;
+    display: flex;
+    flex-direction: column;
+    padding-right: 2rem;
+    padding-top: 2rem;
+    padding-left: 2rem ;
+    color: black;
+}
+
+.profile_div{
+    font-family: monofonto;
+    font-size: 1rem;
+    width: 11rem;
+    display: flex;
+    flex-direction: column;
+    margin-right: 6%;
+    margin-top: 4%;
+}
+
 .mainBody{
     display: flex;
     flex-wrap: wrap;

@@ -30,20 +30,19 @@ function Top_bar_simple_notes(){
       <div className='Top_bar'>
         <div className='Top_bar_elms'>
           <h1 className='Top_bar_text'>C5-Note</h1>
-            {/*switch the image to be agnostic to database images*/}
-            <div style={{display : "flex", flexDirection : "column"}}>
-              <div className="profile_div">
-                <div className="profile_div_color">
-                <Link to={"/profile/" + name}>
-                  <img id="frame" src={Profile} className="profile_image" alt="logo" />
-                  <p>{ name }</p>
-                  </Link>
-                </div>
-              </div>
-              <Search/>
+          {/*switch the image to be agnostic to database images*/}
+          <div className="profile_div">
+            <div className="profile_div_color">
+              <Link to={"/profile/" + name} style={{ textAlign: "center", width:"100%" }}>
+                <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                <br />
+                <p style={{ display: "inline-block", maxWidth: "100%", overflow: "hidden" }}>{name}</p>
+              </Link>
             </div>
+            <Search />
+          </div>
         </div>
-          
+
       </div>
     )
 }
@@ -57,7 +56,8 @@ export function Simple_notebook(){
 
   
   useEffect(() => {
-    fetch("backend/getProfilePicture.php", { method: "GET" }).then(response => {
+    var jsonData = { username: getCookie("username")};
+    fetch("backend/getProfilePicture.php", { method: "POST" , body: JSON.stringify(jsonData)}).then(response => {
 
       response.json().then(data => {
 
