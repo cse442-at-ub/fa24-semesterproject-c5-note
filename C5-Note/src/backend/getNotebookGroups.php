@@ -23,6 +23,7 @@ if (isset($_COOKIE['token'])) {
     die(json_encode(["error" => "Token cookie is not set.", "token" => null]));
 }
 
+
 // Prepare statement to get user_id based on the token
 $smto = $connection->prepare("SELECT user_id FROM active_users WHERE token = ?");
 $smto->bind_param("s", $token);

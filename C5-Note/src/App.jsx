@@ -17,7 +17,7 @@ import { Reset_Password } from './Pages/reset_password';
 import { TestPageWrite } from './Pages/test/testpagewrite';
 import { ToolTest } from './Pages/toolbar_testing'
 import { Etest } from './Pages/Etest'
-import { PageOverflowTest } from './Pages/test/pageOverflow_test'
+import { Search } from './Pages/Search'
 
 
 function App() {
@@ -33,14 +33,14 @@ function App() {
 
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
-        <Route path="/profile" element = { <Profile/> }/>
+        <Route path="/profile/:username" element = { <Profile/> }/>
         <Route path="/verify" element = { <VerifyEmail/> }/>
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
         <Route path="/reset_password" element = { <Reset_Password/> }/>
         {/* Test Pages */}
         <Route path="/notebooks/:groupID/:pageNum" element = { <ToolTest/> }/>
         <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
-        <Route path="/test/pageOverflow" element = { <PageOverflowTest/> }/>
+        <Route path="/test/search" element = { <Search/> }/>
       </Routes>
     </Router>
   )

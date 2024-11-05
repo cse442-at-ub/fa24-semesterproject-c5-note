@@ -442,7 +442,6 @@ export function ToolTest(){
 
         fetchNotebooks();
     }, []);
-    
 
     const arraysAreEqual = (arr1, arr2) => {
         if (arr1.length !== arr2.length) return false;
@@ -470,6 +469,7 @@ export function ToolTest(){
             const fetchedGroups = data.groups;
     
             // Compare fetchedGroups with current groups
+
             if (data.success) {
                 setGroups(data.groups);
                 setNotebookId(data.notebook_id);
@@ -839,9 +839,12 @@ export function ToolTest(){
                 </article>
 
                 <aside className="aside nbpSidebarNotebooks">
-                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } })}> 
+                    {!readOnly && (<h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } })}> 
                         {notebook.title} 
-                    </h1>
+                    </h1>)}
+                    {readOnly && (<h1 className="currentNotebookTitle" style={{ backgroundColor: notebook.color }}> 
+                        {notebook.title} 
+                    </h1>)}
                     <h3>Other Notebooks</h3>
                     <ul>
                         {notebooks
