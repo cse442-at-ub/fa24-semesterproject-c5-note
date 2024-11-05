@@ -356,58 +356,6 @@ export function ToolTest(){
         });
     };
 
-    const handlePageDragEnd = async (result) => {
-        const { source, destination } = result;
-
-        // Check if the item was dropped outside any droppable area
-        if (!destination) return;
-
-        // Parse group IDs from the source and destination droppable IDs
-        const sourceGroupId = parseInt(source.droppableId.split('-')[1]);
-        const destinationGroupId = parseInt(destination.droppableId.split('-')[1]);
-
-        // Only proceed if the item was dropped within the same group
-        if (sourceGroupId !== destinationGroupId) return;
-
-        // Find the index of the group in the current state
-        const groupIndex = groups.findIndex(group => group.group_id === sourceGroupId);
-        const reorderedPages = Array.from(groups[groupIndex].pages);
-
-        // Reorder pages within the group
-        const [movedPage] = reorderedPages.splice(source.index, 1);
-        reorderedPages.splice(destination.index, 0, movedPage);
-
-        // Update the state with the reordered pages in the specific group
-        const updatedGroups = [...groups];
-        updatedGroups[groupIndex] = {
-            ...groups[groupIndex],
-            pages: reorderedPages
-        };
-        setGroups(updatedGroups);
-
-        // Update page order in the backend
-        try {
-            const response = await fetch("backend/updatePageOrder.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    group_id: sourceGroupId,
-                    reorderedPages: reorderedPages.map((page, index) => ({
-                        page_number: page.page_number,
-                        page_order: index + 1
-                    }))
-                })
-            });
-
-            // Optional: Check for successful response
-            const data = await response.json();
-            if (!data.success) {
-                console.error("Failed to update page order on the backend:", data.message);
-            }
-        } catch (error) {
-            console.error("Error updating page order:", error);
-        }
-    };
 
     const handlePageDragEnd = async (result) => {
         const { source, destination } = result;
@@ -700,7 +648,7 @@ export function ToolTest(){
                         // Update the last modification date and last user state
                         setLastModDate(data['last_mod']);
                         setLastUser(data['last_user']);
-    
+                        console.log(data)
                         if (currentContent !== replaceBrTags(data['content'])) {
                             // Update the content if it's different
                             firstElement.innerHTML = data['content'];
@@ -715,13 +663,12 @@ export function ToolTest(){
                     }
                 }
             } else {
+                console.log(data)
                 // Clear content if needed
-                if (content !== '') {
-                    const elements = document.getElementsByClassName('jodit-wysiwyg');
-                    if (elements.length > 0) {
-                        elements[0].innerHTML = ''; // Clear the editor
-                        setContent('')
-                    }
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    elements[0].innerHTML = ''; // Clear the editor
+                    setContent('')
                 }
             }
             loaded += 1; // Ensure loaded status is set
@@ -859,9 +806,6 @@ export function ToolTest(){
                         <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
                     )}
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
-                    {!readOnly && (
-                        <button className="tpwButton" onClick={ savePage }>Save</button>
-                    )}
                 </div>
 
                 <article className="nbpMain">
