@@ -67,17 +67,52 @@ $sql->bind_param("ii", $loadpageid, $groupid); // Fixed parameter binding
 $sql->execute();
 $result = $sql->get_result();
 
+$connected_users = [];
+
 if ($result->num_rows > 0) {
     $outp = $result->fetch_assoc(); // Fetch the result correctly
     $lastUser = $outp['last_user'];
     $lastmod = $outp['last_mod'];
     $clean_html = $purifier->purify($outp['page_content']);
     
+    // Fetch the current connected users for the specific page and group
+    $user_sql = $connection->prepare("SELECT username, last_activity FROM connected_users WHERE pageid = ? AND groupid = ?");
+    $user_sql->bind_param("ii", $loadpageid, $groupid);
+    $user_sql->execute();
+    $user_result = $user_sql->get_result();
+
+    while ($row = $user_result->fetch_assoc()) {
+        $username = $row['username'];
+        $last_activity = strtotime($row['last_activity']);
+        
+        // Remove users that have been inactive for more than 5 seconds
+        if (time() - $last_activity > 5) {
+            // Remove from the connected_users table
+            $delete_sql = $connection->prepare("DELETE FROM connected_users WHERE username = ? AND pageid = ? AND groupid = ?");
+            $delete_sql->bind_param("sii", $username, $loadpageid, $groupid);
+            $delete_sql->execute();
+            $delete_sql->close();
+        } else {
+            // Add to the connected users array
+            $connected_users[$username] = $row['last_activity'];
+        }
+    }
+    $user_sql->close();
+
+    // Update the user's last activity time to now (this refreshes the user's session)
+    $update_sql = $connection->prepare("INSERT INTO connected_users (username, pageid, groupid, last_activity) 
+                                        VALUES (?, ?, ?, NOW()) 
+                                        ON DUPLICATE KEY UPDATE last_activity = NOW()");
+    $update_sql->bind_param("sii", $current_username, $loadpageid, $groupid);
+    $update_sql->execute();
+    $update_sql->close();
+    
     // Always return content if it's available
     echo json_encode([
         "content" => $clean_html,
         'last_user' => $lastUser,
-        'last_mod' => $lastmod
+        'last_mod' => $lastmod,
+        'connected_users' => $connected_users // Send the list of connected users
     ]);
     exit;
 } else {

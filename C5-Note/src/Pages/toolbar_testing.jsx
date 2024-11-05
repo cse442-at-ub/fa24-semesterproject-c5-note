@@ -635,7 +635,24 @@ export function ToolTest(){
             });
     
             const data = await response.json();
-    
+            if (data['connected_users']) {
+                const loc = document.getElementById("connected_users");
+            
+                // Clear the existing content before adding new users (optional)
+                loc.innerHTML = '';
+            
+                // Loop through each key-value pair in the connected_users object
+                Object.entries(data['connected_users']).forEach(([username, details]) => {
+                    // Create a new element for each user and their details
+                    const userElement = document.createElement('div');
+                    userElement.textContent = `${username}`;  // Customize as needed
+                    
+                    // Append the user element to the 'loc' container
+                    loc.appendChild(userElement);
+                });
+            }
+            
+            
             if (data['content']) {
                 const elements = document.getElementsByClassName('jodit-wysiwyg');
                 if (elements.length > 0) {
@@ -700,13 +717,6 @@ export function ToolTest(){
     }, [pageNum, groupID]); // Re-run polling when pageNum or groupID changes
     
     
-
-
-
-    
-
-    
-
     
 
 
@@ -859,6 +869,9 @@ export function ToolTest(){
                                 ))
                         )}
                     </ul>
+                    <h3>Connected users:</h3>
+                    <div id="connected_users"></div>
+
 
                 </aside>
 
