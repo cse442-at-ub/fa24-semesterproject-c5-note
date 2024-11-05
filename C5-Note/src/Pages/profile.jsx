@@ -40,6 +40,20 @@ export function Profile() {
             readOnly: readOnly
         }
     });
+};
+
+  const handleNotebookClick = (notebook, readOnly) => {
+    // Check if the notebook has groups and pages
+    if (notebook.groups && notebook.groups.length > 0) {
+        const firstGroup = notebook.groups[0];
+        if (firstGroup.first_page) {
+            handleGroupPageClick(notebook, firstGroup, firstGroup.first_page, readOnly);
+            return;
+        }
+    }
+
+    // Default: Navigate to notebook overview
+    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
   };
 
   //const [src, setSrc] = useState(logo);
@@ -136,7 +150,7 @@ export function Profile() {
       response => response.json().then(data => {
         data.forEach(notebook => {
           addItem(<button className="notebook_buttons"
-            onClick={ () => handleGroupPageClick(notebook, 0, 0, true) }>
+            onClick={ () => handleNotebookClick(notebook, true) }>
             <div class="notebook-content">
               <div class="notebook-color-box-pointer" style={{ backgroundColor: notebook.color }}></div>
               <div class="notebook-title">{notebook.title}</div>
