@@ -4,14 +4,23 @@ import './notebooks.css';
 import logo from '../C5.png';
 import './toolbar.css';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import JoditEditor from 'jodit-react';
+import JoditEditor, { Jodit } from 'jodit-react';
+
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { Modal, Button } from 'react-bootstrap';
 
+import { GhostaContainer, ghosta } from 'react-ghosta';
+
 
 let unsavedChanges = 0;
 let testcontent = ""
+let yourUsername = ""
+
+let loaded = 0;
+let abortController = new AbortController();  // Global abort controller
+
+
 
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly, handlePageDragEnd }) {
     return (
@@ -26,7 +35,7 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                         {(provided) => (
                             <ul ref={provided.innerRef} {...provided.droppableProps}>
                                 {group.pages.map((page, index) => (
-                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index}>
+                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index} isDragDisabled={readOnly}>
                                         {(provided) => (
                                             <li
                                                 ref={provided.innerRef}
@@ -53,7 +62,90 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
     );
 }
 
+
+function setCaretPosition(elem, caretPos) {
+    elem.focus(); // Ensure the element is focused
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    // Clear current selection
+    selection.removeAllRanges();
+
+    // Use TreeWalker to find the correct text node
+    const walker = document.createTreeWalker(elem, NodeFilter.SHOW_TEXT, null, false);
+    let charCount = 0;
+    let found = false;
+
+    while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const nextCharCount = charCount + node.length;
+
+        if (nextCharCount >= caretPos) {
+            range.setStart(node, caretPos - charCount);
+            range.setEnd(node, caretPos - charCount);
+            found = true;
+            break;
+        }
+
+        charCount = nextCharCount;
+    }
+
+    if (found) {
+        selection.addRange(range);
+    }
+}
+
+
+
+// node_walk: walk the element tree, stop when func(node) returns false
+function node_walk(node, func) {
+    var result = func(node);
+    for(node = node.firstChild; result !== false && node; node = node.nextSibling)
+      result = node_walk(node, func);
+    return result;
+  };
+  
+  // getCaretPosition: return [start, end] as offsets to elem.textContent that
+  //   correspond to the selected portion of text
+  //   (if start == end, caret is at given position and no text is selected)
+  
+
+
+
+
+
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var range = win.getSelection().getRangeAt(0);
+            var preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(element);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            caretOffset = preCaretRange.toString().length;
+        }
+    } else if ( (sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+
 export function ToolTest(){
+    const [lastModDate, setLastModDate] = useState(null);
+    const [lastUser, setLastUser] = useState(null);
+
+
+    const [groups, setGroups] = useState([]); // Store the groups of the current notebook
+
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
     const { notebook, readOnly } = location.state;  // Access state passed during navigation
@@ -61,11 +153,10 @@ export function ToolTest(){
     const [notebooks, setNotebooks] = useState([]); // Store other user's notebooks
     const [sharedNotebooks, setSharedNotebooks] = useState([]); // Store shared notebooks
 
-    const [groups, setGroups] = useState([]); // Store the groups of the current notebook
     const [notebookId, setNotebookId] = useState(null); // To store notebook ID
     const [expanded, setExpanded] = useState(Array(groups.length).fill(false));
     
-    const [placeholder, setPlace] = useState('Start typing...');
+    const [placeholder, setPlace] = useState('');
     const editor = useRef(null);
     const navigate = useNavigate();
     const [content, setContent] = useState('');
@@ -75,9 +166,7 @@ export function ToolTest(){
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
-
-
-
+    var test = useRef(null);
     const handleClose = () => {
         setShowAccessModal(false);
         setNewUsername('');
@@ -170,7 +259,13 @@ export function ToolTest(){
               script: true,
               button: true,
             }
-          },
+          },"enter": "BR",
+          events: 
+          { 
+           afterInit: (instance) => { test = instance; } 
+
+            },
+          
         
             readonly: readOnly, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder,
@@ -204,7 +299,36 @@ export function ToolTest(){
         return cookie[name];
     }
 
-    const currentUsername = getCookie('username');
+
+    useEffect(() => {
+        const fetchusername = async () => {
+            try {
+                const response = await fetch("backend/getUsername.php", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+    
+                // Check if the response is okay
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const data = await response.json();
+                // Assuming the response contains a 'username' field
+                yourUsername = data.username;  
+            } catch (error) {
+                console.error("Error fetching username:", error);
+    
+                // Navigate to '/' if there's an error
+                navigate('/');  // Using the navigate function to redirect
+            }
+        };
+    
+        fetchusername();  // Call the fetch function
+    }, []); // Empty dependency array means this runs once after the initial render
+
+
+    const currentUsername = yourUsername;
 
     // Handle drag end for reordering
     const handleDragEnd = async (result) => {
@@ -223,7 +347,7 @@ export function ToolTest(){
         console.log(reorderedGroups.map(group => group.group_id));
 
         // Send new order to backend to persist it
-        const username = getCookie('username');
+        const username = yourUsername
         await fetch("backend/updateGroupOrder.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -234,6 +358,7 @@ export function ToolTest(){
             })
         });
     };
+
 
     const handlePageDragEnd = async (result) => {
         const { source, destination } = result;
@@ -299,13 +424,15 @@ export function ToolTest(){
     // Fetch the user's notebooks
     useEffect(() => {
         const fetchNotebooks = async () => {
-            const username = getCookie('username');
+            const username = yourUsername
+            console.log('fetch notebook')
             const response = await fetch("backend/notebookFinder.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username })
+                body: JSON.stringify({ yourUsername })
             });
             const data = await response.json();
+            console.log(data)
             if (Array.isArray(data)) {
                 setNotebooks(data);  // Assuming the response is an array of notebooks
             } else {
@@ -315,44 +442,72 @@ export function ToolTest(){
 
         fetchNotebooks();
     }, []);
+
+    const arraysAreEqual = (arr1, arr2) => {
+        if (arr1.length !== arr2.length) return false;
     
-    // Fetch groups and pages for the current notebook
-    useEffect(() => {
-        const fetchGroups = async () => {
-            const username = getCookie('username');
-            const response = await fetch("backend/getNotebookGroups.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, title: notebook.title, readOnly: readOnly })
-            });
-            const data = await response.json();
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i].group_id !== arr2[i].group_id) {
+                return false;
+            }
+        }
+        return true;
+    };
+    
+    const fetchGroups = async (isInitialFetch = false, currentNotebookOrder = []) => {
+        const username = yourUsername;
+    
+        const response = await fetch("backend/getNotebookGroups.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ yourUsername, title: notebook.title, isInitialFetch, currentNotebookOrder })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const fetchedGroups = data.groups;
+    
+            // Compare fetchedGroups with current groups
+
             if (data.success) {
                 setGroups(data.groups);
                 setNotebookId(data.notebook_id);
             } else {
                 console.error("Failed to fetch groups and pages");
             }
-        };
-
-        fetchGroups();
+        } else {
+            console.error("Failed to fetch groups and pages");
+        }
+    
+        // Continue polling if needed
+        setTimeout(() => {
+            fetchGroups(false, currentNotebookOrder); // Call again, passing false for isInitialFetch
+        }, 1000); // Adjust the interval as needed
+    };
+    
+    // Fetch groups and pages for the current notebook
+    useEffect(() => {
+        fetchGroups(true, []); // Initial fetch with isInitialFetch set to true
     }, [notebook.title]);
+    
+
+    const fetchSharedNotebooks = async () => {
+        const response = await fetch("backend/getSharedNotebooks.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: currentUsername })
+        });
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            setSharedNotebooks(data);
+        } else {
+            console.error("Failed to fetch shared notebooks");
+        }
+    };
     
     // Fetch shared notebooks
     useEffect(() => {
-        const fetchSharedNotebooks = async () => {
-            const response = await fetch("backend/getSharedNotebooks.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: currentUsername })
-            });
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                setSharedNotebooks(data);
-            } else {
-                console.error("Failed to fetch shared notebooks");
-            }
-        };
-
         fetchSharedNotebooks();
     }, [currentUsername]);
 
@@ -393,21 +548,21 @@ export function ToolTest(){
 
     const [title, setTitle] = useState('Loading. . .');
 
-    const savePage = () => {
-        console.log(editor.current.value)
-
-        // What to send in the PHP query
-        //  > Test page is hardcoded to load page with page_id = 1
-        var jsonData = {
-            "pageid":  pageNum,
-            "groupid": groupID,
-            "updatetext" : editor.current.value,
-        };
-        fetch("backend/saveNotebook.php", {method: "POST", body:JSON.stringify(jsonData)});
-
-        testcontent = editor.current.value; 
-        unsavedChanges = 0;
-        
+    
+    const saveContentToServer = async () => {
+        if (editor.current) {
+            const jsonData = {
+                "pageid": pageNum,
+                "groupid": groupID,
+                "updatetext": editor.current.value,
+            };
+    
+            await fetch("backend/saveNotebook.php", {
+                method: "POST",
+                body: JSON.stringify(jsonData),
+            });
+            //console.log('content saved!')
+        }
     };
 
     const updateTitle = () => {
@@ -416,66 +571,165 @@ export function ToolTest(){
         unsavedChanges = 1;
     };
 
+
+
     const updateContents = (content) => {
-        console.log(content)
-        setContent(content);
-        unsavedChanges = 1;
+        //console.log(lastModDate); // Logs the last modification date (datetime string)
+        //console.log(lastUser);    // Logs the last user who edited
+    
     };
+    
 
+    const save_on = (content) => {
 
-    const fetchPageContent = async () => {
-        var jsonDataLoad = {
-            "pageid": pageNum,
-            "groupid": groupID
-        };
-        
-        const response = await fetch("backend/getPageContent.php", {
-            method: "POST",
-            headers: {
-                Accept: 'application/json',
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jsonDataLoad)
-        });
-        
-        const data = await response.json();
-        console.log(data)
-        if (data['content']) {
-            setContent(data['content']);
-            testcontent = data['content'];
+    
+        // Convert lastModDate to a timestamp (milliseconds)
+        const lastModTimestamp = new Date(lastModDate).getTime(); // Convert datetime string to timestamp
+        const currentTime = Date.now(); // Get current time in milliseconds
+        //console.log(currentTime-lastModTimestamp)
+        if (lastUser == null || lastUser === yourUsername) {
+            // If the current user is the one who last modified, update last modification date
+            setLastModDate(currentTime); // Set new modification timestamp
+            saveContentToServer(); // Save content to server
+        } else if (lastModTimestamp && currentTime - lastModTimestamp > 2500) {
+            // If the content was modified less than 5 seconds ago, allow the user to take over
+            
+            setLastUser(yourUsername); // Set the current user as the last user
+            setLastModDate(currentTime); // Update the last modification timestamp
+            saveContentToServer(); // Save content to server
         } else {
-            setContent('');
-            testcontent = '';
+            // If the content is being edited by someone else and more than 5 seconds have passed, show an error
+            const handleShowIncor = () => ghosta.fire({
+                headerTitle: 'ERROR',
+                description: `${lastUser} is editing, please try again in a few seconds`,
+                showCloseButton: true
+            });
+            handleShowIncor(); // Display the error message
         }
     };
+    
+    
 
-    // Fetch page content whenever pageNum or groupID changes
+
+
+    function replaceBrTags(htmlString) {
+        return htmlString.replace(/<br\s*\/?>/gi, '<br/>');
+    }
+
+
+    const fetchPageContent = async (isInitialFetch = false) => {
+        const jsonDataLoad = {
+            "pageid": pageNum,
+            "groupid": groupID,
+            "isInitialFetch": isInitialFetch // Pass the isInitialFetch value
+        };
+    
+        try {
+            const response = await fetch("backend/getPageContent.php", {
+                method: "POST",
+                headers: {
+                    Accept: 'application/json',
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonDataLoad)
+            });
+    
+            const data = await response.json();
+            if (data['connected_users']) {
+                const loc = document.getElementById("connected_users");
+            
+                // Clear the existing content before adding new users (optional)
+                loc.innerHTML = '';
+            
+                // Loop through each key-value pair in the connected_users object
+                Object.entries(data['connected_users']).forEach(([username, details]) => {
+                    // Create a new element for each user and their details
+                    const userElement = document.createElement('div');
+                    userElement.textContent = `${username}`;  // Customize as needed
+                    
+                    // Append the user element to the 'loc' container
+                    loc.appendChild(userElement);
+                });
+            }
+            
+            
+            if (data['content']) {
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    const firstElement = elements[0];
+                    const currentContent = replaceBrTags(firstElement.innerHTML);
+                    const cursorPosition = getCaretCharacterOffsetWithin(firstElement);
+    
+                    // Check if content is different before updating
+                    if (yourUsername !== data['last_user'] || isInitialFetch) {
+                        // Update the last modification date and last user state
+                        setLastModDate(data['last_mod']);
+                        setLastUser(data['last_user']);
+                        console.log(data)
+                        if (currentContent !== replaceBrTags(data['content'])) {
+                            // Update the content if it's different
+                            firstElement.innerHTML = data['content'];
+    
+                            // Restore caret position after updating content
+                            setTimeout(() => {
+                                setCaretPosition(firstElement, cursorPosition);
+                            }, 0);
+    
+                            loaded += 1; // Update loaded status
+                        }
+                    }
+                }
+            } else {
+                if (data['error']){
+                    navigate('/');  // Using the navigate function to redirect
+                }
+                // Clear content if needed
+                const elements = document.getElementsByClassName('jodit-wysiwyg');
+                if (elements.length > 0) {
+                    elements[0].innerHTML = ''; // Clear the editor
+                    setContent('')
+                }
+            }
+            loaded += 1; // Ensure loaded status is set
+    
+        } catch (error) {
+            console.error('Error fetching page content:', error);
+        }
+    };
+    
+    // Polling interval ref to handle regular polling
+    const pollingInterval = useRef(null);
+    
     useEffect(() => {
-        fetchPageContent();
-    }, [pageNum, groupID]); // Run when pageNum or groupID changes
+        // Start initial fetch when pageNum or groupID changes
+        fetchPageContent(true); // Pass true for the initial fetch
+    
+        // Setup the polling interval to keep fetching continuously
+        pollingInterval.current = setInterval(() => {
+            fetchPageContent(false); // Pass false to indicate it's a follow-up poll
+        }, 1000); // Poll every 1 second (adjust as needed)
+    
+        // Cleanup function to clear the interval when pageNum/groupID changes or component unmounts
+        return () => {
+            if (pollingInterval.current) {
+                clearInterval(pollingInterval.current); // Stop polling when pageNum/groupID changes
+            }
+        };
+    
+    }, [pageNum, groupID]); // Re-run polling when pageNum or groupID changes
+    
+    
+    
+
 
     const stripTags = (stuff) => {
         const plainText = stuff.replace(/<[^>]+>/g, ''); // Regular expression to strip tags
         return plainText
     };
 
-    // Generic "are you sure" dialog prompt
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            // Perform actions before the component unloads
-            console.log(testcontent)
-            console.log(editor.current.value)
-            if((unsavedChanges == 1 && stripTags(testcontent) != stripTags(editor.current.value)) || (stripTags(testcontent) != stripTags(editor.current.value))){
-                event.preventDefault();
-            }
-            event.returnValue = '';
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
-    
+
+
+
     // Fetch existing users who have access to this notebook
     const fetchSharedUsers = async () => {
         try {
@@ -530,6 +784,11 @@ export function ToolTest(){
         }
     };
 
+
+
+
+
+
     return(
         <>
             {/* Formatting the Note-Taking App via Flexbox
@@ -559,22 +818,21 @@ export function ToolTest(){
                         <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
                     )}
                     <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
-                    {!readOnly && (
-                        <button className="tpwButton" onClick={ savePage }>Save</button>
-                    )}
                 </div>
 
                 <article className="nbpMain">
                     <div className="Editor_Area">
                     {/* Lorem Ipsum for filler until note pages implemented */}
                     <div className="custom-toolbar-example">
+                    <GhostaContainer />
                     <JoditEditor
+                    id='editor'
                         ref={editor}
                         value={content}
                         config={config}
                         tabIndex={1} // tabIndex of textarea
                         onBlur={newContent => updateContents(newContent)} // preferred to use only this option to update the content for performance reasons
-                        onChange={newContent => {}}
+                        onChange={newContent => save_on(newContent)}
                     />
                 </div>
                     </div>
@@ -616,6 +874,9 @@ export function ToolTest(){
                                 ))
                         )}
                     </ul>
+                    <h3>Connected users:</h3>
+                    <div id="connected_users" className="users_div"></div>
+
 
                 </aside>
 
@@ -629,7 +890,7 @@ export function ToolTest(){
                                             key={group.group_id} 
                                             draggableId={`group-${group.group_id}`} 
                                             index={index} 
-                                            isDragDisabled={expanded[index]} // Disable dragging if the group is expanded
+                                            isDragDisabled={expanded[index] || readOnly} // Disable dragging if the group is expanded
                                         >
                                             {(provided) => (
                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
