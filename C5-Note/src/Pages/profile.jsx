@@ -120,7 +120,7 @@ export function Profile() {
   useEffect(() => {
 
     
-    var jsonData = { "username": getCookie("username") };
+    var jsonData = { "username": name };
     fetch("backend/getPublicNotebooks.php", { method: "POST", body: JSON.stringify(jsonData) }).then(
       response => response.json().then(data => {
         data.forEach(notebook => {
