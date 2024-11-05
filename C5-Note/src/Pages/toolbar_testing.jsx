@@ -18,7 +18,6 @@ let testcontent = ""
 let yourUsername = ""
 
 let loaded = 0;
-let groups = []
 let abortController = new AbortController();  // Global abort controller
 
 
@@ -144,6 +143,8 @@ export function ToolTest(){
     const [lastModDate, setLastModDate] = useState(null);
     const [lastUser, setLastUser] = useState(null);
 
+
+    const [groups, setGroups] = useState([]); // Store the groups of the current notebook
 
     const { groupID, pageNum } = useParams();  // Access current groupID and current pageNum from the URL
     const location = useLocation();
@@ -338,7 +339,7 @@ export function ToolTest(){
         reorderedGroups.splice(destination.index, 0, movedGroup);
 
         // Update state and persist the new order
-        groups=reorderedGroups;
+        setGroups(reorderedGroups);
 
         console.log(reorderedGroups);
         console.log(reorderedGroups.map(group => group.group_id));
@@ -410,7 +411,7 @@ export function ToolTest(){
         }
     };
 
-    const toggleGroup = (index) => {
+    const toggleGroup = (groupIndex) => {
         setExpanded((prevExpanded) => {
             const newExpanded = [...prevExpanded];
             newExpanded[groupIndex] = !newExpanded[groupIndex]; // Toggle visibility for the specific group
@@ -467,12 +468,11 @@ export function ToolTest(){
             const fetchedGroups = data.groups;
     
             // Compare fetchedGroups with current groups
-            if (!arraysAreEqual(groups, fetchedGroups)) {
-                groups = fetchedGroups;
+            if (data.success) {
+                setGroups(data.groups);
                 setNotebookId(data.notebook_id);
-    
-                // Reset expanded state based on new groups length
-                setExpanded(fetchedGroups.reduce((acc, _, index) => ({ ...acc, [index]: false }), {}));
+            } else {
+                console.error("Failed to fetch groups and pages");
             }
         } else {
             console.error("Failed to fetch groups and pages");
