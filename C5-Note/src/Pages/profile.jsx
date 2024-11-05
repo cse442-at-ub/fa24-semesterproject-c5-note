@@ -31,6 +31,17 @@ export function Profile() {
     setItems((prevItems) => [...prevItems, newItem]); // Append the new item
   };
 
+  const handleGroupPageClick = (notebook, group, page, readOnly) => {
+    navigate(`/notebooks/${group.group_id}/${page.page_number}`, {
+        state: { 
+            notebook: notebook,  // Pass current notebook info
+            group: group,               // Pass the clicked group info
+            page: page,                  // Pass the clicked page info
+            readOnly: readOnly
+        }
+    });
+  };
+
   //const [src, setSrc] = useState(logo);
 
 
@@ -125,7 +136,7 @@ export function Profile() {
       response => response.json().then(data => {
         data.forEach(notebook => {
           addItem(<button className="notebook_buttons"
-            onClick={ () => clickNotebook(notebook) }>
+            onClick={ () => handleGroupPageClick(notebook, 0, 0, true) }>
             <div class="notebook-content">
               <div class="notebook-color-box-pointer" style={{ backgroundColor: notebook.color }}></div>
               <div class="notebook-title">{notebook.title}</div>

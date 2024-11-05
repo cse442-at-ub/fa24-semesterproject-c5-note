@@ -18,6 +18,7 @@ $input = json_decode(file_get_contents("php://input"), true);
 
 $loggedInUsername = $input['username'];
 $notebookTitle = $input['title'];
+$readOnly = $input['readOnly'];
 
 try {
     // Get the notebook ID, first check if the user is the owner
@@ -39,7 +40,7 @@ try {
     $notebookOwner = $notebook['username'];
 
     // Check if the logged-in user is the owner or a shared user
-    if ($notebookOwner !== $loggedInUsername) {
+    if (!$readOnly && $notebookOwner !== $loggedInUsername) {
         // Check if the user has access in shared_users
         $stmtShared = $connection->prepare("SELECT COUNT(*) as count FROM shared_users WHERE notebook_id = ? AND username = ?");
         $stmtShared->bind_param("is", $notebookId, $loggedInUsername);

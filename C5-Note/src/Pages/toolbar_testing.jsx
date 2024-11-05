@@ -323,7 +323,7 @@ export function ToolTest(){
             const response = await fetch("backend/getNotebookGroups.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, title: notebook.title })
+                body: JSON.stringify({ username, title: notebook.title, readOnly: readOnly })
             });
             const data = await response.json();
             if (data.success) {
@@ -581,9 +581,12 @@ export function ToolTest(){
                 </article>
 
                 <aside className="aside nbpSidebarNotebooks">
-                    <h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } })}> 
+                    {!readOnly && (<h1 className="clickableNotebookTitle currentNotebookTitle" style={{ backgroundColor: notebook.color }} onClick={() => navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } })}> 
                         {notebook.title} 
-                    </h1>
+                    </h1>)}
+                    {readOnly && (<h1 className="currentNotebookTitle" style={{ backgroundColor: notebook.color }}> 
+                        {notebook.title} 
+                    </h1>)}
                     <h3>Other Notebooks</h3>
                     <ul>
                         {notebooks
