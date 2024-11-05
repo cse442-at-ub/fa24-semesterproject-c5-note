@@ -14,13 +14,20 @@ export function Search() {
 
     const getResults = () => {
 
-        var jsonData = { "search": document.getElementById("search_bar").value }
+        var data = document.getElementById("search_bar").value.trim();
 
-        fetch('backend/search.php', {method: "POST", body:JSON.stringify(jsonData)}).then((response) => response.json()).then
-        ((data) => {
+        if (data.length > 0) {
+            var jsonData = { "search": data }
+
+            fetch('backend/search.php', { method: "POST", body: JSON.stringify(jsonData) }).then((response) => response.json()).then
+                ((data) => {
+                    setResult([]);
+                    data["usernames"].foreach(name => { addResult(name) });
+                });
+        }
+        else {
             setResult([]);
-            data["usernames"].foreach(name => {addResult(name)});
-        });
+        }
         
     }
 
