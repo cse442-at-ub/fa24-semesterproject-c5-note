@@ -9,6 +9,7 @@ import { NotebookDetail } from "./Pages/notebookDetails";
 
 import { PageNotebooks } from './Pages/notebooks';
 import { SignUpPage } from './Pages/signUpPage';
+import { Profile } from './Pages/profile';
 import { VerifyEmail } from './Pages/verify_email';
 import { Forgot_login } from './Pages/forgot_login';
 import { Reset_Password } from './Pages/reset_password';
@@ -16,6 +17,7 @@ import { Reset_Password } from './Pages/reset_password';
 import { TestPageWrite } from './Pages/test/testpagewrite';
 import { ToolTest } from './Pages/toolbar_testing'
 import { Etest } from './Pages/Etest'
+import { Search } from './Pages/Search'
 
 
 function App() {
@@ -31,12 +33,14 @@ function App() {
 
         <Route path="/notebooks" element = { <PageNotebooks/> }/>
         <Route path="/signUpPage" element = { <SignUpPage/> }/>
+        <Route path="/profile/:username" element = { <Profile/> }/>
         <Route path="/verify" element = { <VerifyEmail/> }/>
         <Route path="/forgot_login" element = { <Forgot_login/> }/>
         <Route path="/reset_password" element = { <Reset_Password/> }/>
         {/* Test Pages */}
         <Route path="/notebooks/:groupID/:pageNum" element = { <ToolTest/> }/>
         <Route path="/test/pagewrite" element = { <TestPageWrite/> }/>
+        <Route path="/test/search" element = { <Search/> }/>
       </Routes>
     </Router>
   )

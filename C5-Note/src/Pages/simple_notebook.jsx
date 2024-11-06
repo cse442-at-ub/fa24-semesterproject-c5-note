@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link,useNavigate  } from "react-router-dom";
 import Profile from '../C5.png';
+import btn_readonly from '../assets/btn_readonly.png';
+import btn_editmode from '../assets/btn_edit.png';
+import btn_delete from '../assets/btn_trash.png';
 import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
+import { Search } from './Search.jsx'
 
 
 
@@ -26,24 +30,45 @@ function Top_bar_simple_notes(){
       <div className='Top_bar'>
         <div className='Top_bar_elms'>
           <h1 className='Top_bar_text'>C5-Note</h1>
-            {/*switch the image to be agnostic to database images*/}
-            <div className="profile_div">
-              <div className="profile_div_color">
-                <img src={Profile} className="profile_image" alt="logo" />
-                <p>{ name }</p>
-                </div>
+          {/*switch the image to be agnostic to database images*/}
+          <div className="profile_div">
+            <div className="profile_div_color">
+              <Link to={"/profile/" + name} style={{ textAlign: "center", width:"100%" }}>
+                <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                <br />
+                <p style={{ display: "inline-block", maxWidth: "100%", overflow: "hidden" }}>{name}</p>
+              </Link>
             </div>
+            <Search />
+          </div>
         </div>
-          
+
       </div>
     )
 }
 
+//need to adjust sharednotebooks not opening straigh to availbble pages
 export function Simple_notebook(){
   const navigate = useNavigate();
   const [notebooks, setNotebooks] = useState([]);
+  const [sort_typing, setSortTyping] = useState(0)  
+  const [sharedNotebooks, setSharedNotebooks] = useState([]); // For shared notebooks
 
-  const [color, setColor] = useState('#000000');
+  
+  useEffect(() => {
+    var jsonData = { username: getCookie("username")};
+    fetch("backend/getProfilePicture.php", { method: "POST" , body: JSON.stringify(jsonData)}).then(response => {
+
+      response.json().then(data => {
+
+        if (data.status != "failed") {
+          //setSrc(response.blob);
+          frame.src = "backend/" + data.message;
+        }
+      })
+
+    });
+  }, []);
 
   const clear_cookies = ()=>{
     cookieStore.getAll().then(cookies => cookies.forEach(cookie => {
@@ -88,6 +113,23 @@ export function Simple_notebook(){
   //useEffect will run when page first loads and in this case will fetch all notebooks for specific user
   useEffect(() => {
     const username = getCookie('username');
+
+    fetch('backend/getSortType.php', { //should be 'backend/notebookCreation.php'
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        username: username
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        setSortTyping(data['sort_type'])
+        console.log(data)
+      }) //data = response.json(), also sets what this users availble notebooks are
+      .catch(error => console.error('Error fetching notebooks:', error));
+
     fetch('backend/notebookFinder.php', { //should be 'backend/notebookCreation.php'
       method: "POST",
       headers: {
@@ -98,8 +140,25 @@ export function Simple_notebook(){
       })
     })
       .then(response => response.json())
-      .then(data => setNotebooks(data)) //data = response.json(), also sets what this users availble notebooks are
+      .then(data => {
+        setNotebooks(data)
+        console.log(data)
+      }) //data = response.json(), also sets what this users availble notebooks are
       .catch(error => console.error('Error fetching notebooks:', error));
+
+
+      //fetches shared notebooks
+      fetch('backend/getSharedNotebooks.php', {
+        method: "POST",
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify({ 
+          username // ?
+        })
+      })
+      .then(response => response.json())
+      .then(data => setSharedNotebooks(data))
+      .catch(error => console.error('Error fetching shared notebooks:', error));
+
   }, []);
 
   //---
@@ -292,8 +351,179 @@ export function Simple_notebook(){
     }, 100);  // Small delay to ensure the button is rendered
   };
 
-  const handleNotebookClick = (notebook) => {
-    navigate(`/notebooks/${notebook.title}`, { state: { notebook } });
+  const handleGroupPageClick = (notebook, group, page, readOnly) => {
+    navigate(`/notebooks/${group.group_id}/${page.page_number}`, {
+        state: { 
+            notebook: notebook,  // Pass current notebook info
+            group: group,               // Pass the clicked group info
+            page: page,                  // Pass the clicked page info
+            readOnly: readOnly
+        }
+    });
+};
+
+  // fostlia:  Function to handlmeowe clicking a notebook.
+  //  Fires a ghosta popup to show buttons for Edit/View modes.
+  const handleNotebookClick_TriggerPopup = (notebook) =>{
+
+    const popupid = ghosta.fire({
+      title: notebook.title,
+      description: notebook.description,
+      content:  (
+        <div className="notebook_popup_wrapper">
+          <div className="notebook-content">
+            <div className="notebook-title">{notebook.title}</div>
+            {/* <div className="notebook-description">{notebook.description}</div> */}
+            <div className="notebook-description">Created: {notebook.time_created}</div>
+            <div className="notebook-description">Modified: {notebook.last_modified}</div>
+          </div>
+
+            {/* div element for buttons, ignoring Ghosta's own */}
+            <div className="notebook_popup_buttonrow">
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, false)}>
+                <img src={btn_editmode} className="notebook_popup_btnimg"/>Edit
+              </button>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClick(notebook, true)}>
+                <img src={btn_readonly} className="notebook_popup_btnimg"/>View
+              </button>
+              <button className="notebook_popup_buttons" onClick={() => handleNotebookClickDelete(notebook)}>
+                <img src={btn_delete} className="notebook_popup_btnimg"/>Delete
+              </button>
+            </div>
+          
+        </div>
+        ),
+      // buttons: [
+      //   {
+      //     title: <div><img src={Profile} className="notebook_popup_btnimg"/>meow</div>,
+      //     variant: "primary",
+      //     onClick: () => handleNotebookClick(notebook, false),
+      //   },
+      //   {
+      //     title: "👁️ View",
+      //     variant: "success",
+      //     onClick: () => handleNotebookClick(notebook, true),
+      //   },
+      //   // {
+      //   //   title: "Delete",
+      //   //   variant: "primary",
+      //   //   onClick: () => handleNotebookClick(notebook, true),
+      //   // }
+      // ],
+      alignment: 'left',
+      showCloseButton: true,
+    });
+
+  };
+
+  // fostlia: This function is now called by buttons in a ghosta popup
+  const handleNotebookClick = (notebook, readOnly) => {
+    // Check if the notebook has groups and pages
+    if (notebook.groups && notebook.groups.length > 0) {
+        const firstGroup = notebook.groups[0];
+        if (firstGroup.first_page) {
+            handleGroupPageClick(notebook, firstGroup, firstGroup.first_page, readOnly);
+            return;
+        }
+    }
+
+    // Default: Navigate to notebook overview
+    navigate(`/notebooks/${notebook.title}`, { state: { notebook, readOnly } });
+  };
+
+
+   // fostlia: "Are you sure" prompt.
+  const handleNotebookClickDelete = (notebook) => {
+
+    const id = ghosta.fire({
+      title: <div>Really delete {notebook.title}?</div>,
+      description: "This process cannot be undone!",
+      size: "sm",
+      buttons: [
+        {
+          title: "Delete",
+          variant: "danger",
+          onClick: () => handleNotebookFinalizeDelete(notebook),
+        },
+        {
+          title: "Cancel",
+          variant: "success",
+        },
+      ],
+      alignment: 'center',
+      showCloseButton: false,
+    });
+
+
+  };
+
+  // fostlia: After the "Are you sure?" prompt, delete that notebook
+  const handleNotebookFinalizeDelete = (notebook) => {
+
+      fetch('backend/deleteNotebookDestructive.php', {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify({
+          notebookid: notebook.id
+        })
+      }).then(() => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
+      })
+  };
+
+  const handleSortChange = (event) => {
+    const selectedValue = event.target.value;
+    setSortTyping(selectedValue); // Update the state to reflect the new selection
+  
+    const username = getCookie('username');
+    let changed = false;
+    let case_type = parseInt(selectedValue); // Convert selectedValue to an integer
+    let sortedNotebooks;
+  
+    switch (case_type) {
+      case 0: // Newest Edited
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(b.last_modified) - new Date(a.last_modified));
+        break;
+      case 1: // Oldest Edited
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(a.last_modified) - new Date(b.last_modified));
+        break;
+      case 2: // Newest Created
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(b.time_created) - new Date(a.time_created));
+        break;
+      case 3: // Oldest Created
+        sortedNotebooks = [...notebooks].sort((a, b) => new Date(a.time_created) - new Date(b.time_created));
+        break;
+      case 4: // Alphabetical A-Z
+        sortedNotebooks = [...notebooks].sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 5: // Alphabetical Z-A
+        sortedNotebooks = [...notebooks].sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      default:
+        sortedNotebooks = notebooks; // Fallback to the original order
+    }
+  
+    fetch('backend/setSortType.php', {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        username: username,
+        sort_type: case_type
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => console.error('Error fetching notebooks:', error));
+  
+    setNotebooks(sortedNotebooks); // Update notebooks to sorted list
   };
 
   return(
@@ -303,40 +533,82 @@ export function Simple_notebook(){
           <div className="mainBody">
             <div>
             <div className="notebooks_list spacing" >
+              <div id='sort_bar'>
+                <label for="notebook_sort">Sort:</label>
+                <select id='notebook_sort' onChange={handleSortChange} value={sort_typing}>
+                  <option value="0">Newest Edited</option>
+                  <option value="1">Oldest Edited</option>
+                  <option value="2">Newest Created</option>
+                  <option value="3">Oldest Created</option>
+                  <option value="4">Alphabetical A-Z</option>
+                  <option value="5">Alphabetical Z-A</option>
+                </select>
+              </div>
+            
               <ul>
                 <li className="label">Notebooks</li>
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
-                    <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                    <button className="notebook_buttons" onClick={() => handleNotebookClick_TriggerPopup(notebook)}>
+
+
                       <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
-    
+
+
                       <div className="notebook-content">
                         <div className="notebook-title">{notebook.title}</div>
                         <div className="notebook-description">{notebook.description}</div>
+                        <div className="notebook-description">Created: {notebook.time_created}</div>
+                        <div className="notebook-description">Modified: {notebook.last_modified}</div>
                       </div>
                     </button>
                   </li>
                 ))}
 
-              </ul>
+                </ul>
+              </div>
+
+              <br></br>
+
+              <div className="notebooks_list spacing" >
+                <ul>
+                  <li className="label">Shared Notebooks</li>
+
+
+                  {sharedNotebooks.length === 0 ? (
+                    <p>No shared notebooks available.</p>
+                  ) : (
+                    sharedNotebooks.map((notebook, index) => (
+                      <li key={index} className="spacing">
+                        <button className="notebook_buttons" onClick={() => handleNotebookClick(notebook)}>
+                          <div className="notebook-color-box-pointer" style={{ backgroundColor: notebook.color || "#CCCCCC" }}></div>
+
+                          <div className="notebook-content">
+                            <div className="notebook-title">{notebook.title}</div>
+                            <div className="notebook-description">{notebook.description}</div>
+                          </div>
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
+
             </div>
 
-            <br></br>
-
-            </div>
             <div className="spacing">
               <div className="control_buttons">
                 <ul>
                 <li className="label options">Options</li>
-                <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="control_button_single">Open Notebook</button></Link></li> */}
 
                 <li className="spacing"><button className="green control_button_single" onClick={createNotebookForm}>Create Notebook</button></li>
 
-                <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li>
+                {/* <li className="spacing"><Link to="/notebooks"><button className="logout_button control_button_single">Delete Notebook</button></Link></li> */}
                 <li className="spacing"><Link to="/"><button className="control_button_single logout_button" onClick={LoggedOut}>Log Out</button></Link></li>
                 </ul>
-                </div>
+              </div>
             </div>
           </div>
       </>

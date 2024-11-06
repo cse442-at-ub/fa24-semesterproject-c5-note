@@ -1,0 +1,193 @@
+body {
+    margin: 0;
+}
+
+.Top_bar {
+    background-color: #2F2F2F;
+    overflow: hidden;
+}
+
+.Top_bar_text {
+    padding-top: 2vmin;
+    font-size: 8vmin;
+    padding-left: 8vmin;
+}
+
+.logo {
+    height: 20vmin;
+    width: 20vmin;
+}
+
+.Top_bar_elms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.home_page {
+    min-height: 100vh
+}
+
+.circle {
+    display: flex;
+    width: 100px;
+    height: 100px;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.profile_info_button {
+    margin-top: 4vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+
+}
+
+.Profile_Buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+
+}
+
+.take_notes_button {
+    margin-top: 6vmin;
+    background-color: #3DAE56;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+
+}
+
+.log_out_button {
+    margin-top: 6vmin;
+    background-color: #AE3D3F;
+    height: 5rem;
+    width: 10rem;
+    border-radius: 1em;
+    color: white;
+    font-family: monofonto;
+    font-size: 1.5rem;
+    border: 0;
+}
+
+.App_Buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.grid_template {
+    text-align: center;
+    display: grid;
+    grid-template-columns: 10rem;
+    grid-template-rows: 10rem 10rem 10rem;
+    grid-gap: 1rem;
+    height: 8rem;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 10rem;
+    grid-template-rows: 10rem 10rem 10rem;
+    grid-gap: 1rem;
+}
+
+/* Narrow Layout */
+@media all and (min-width: 600px) {
+
+    /* Make the asides share the same row */
+    .aside {
+        flex: 1 0 0;
+    }
+
+}
+
+.Colour {
+    background-color: white;
+    color: black;
+    text-align: center;
+    border-radius: 8%;
+    padding: 2rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+}
+
+.upload {
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+.notebook_buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #848484;
+    width: 30vmax;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-family: monofonto;
+    border: 1px solid white;
+    text-align: left;
+    min-height: 5rem;
+}
+
+.notebook-color-box-pointer {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    border-radius: 0.3rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: 1px solid gray;
+}
+
+.notebook-color-box {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    display: inline-block;
+    border-radius: 0.3rem;
+    flex-shrink: 0;
+}
+
+.notebook-content {
+    display: inline-block;
+    max-width: calc(100% - 2rem);
+    vertical-align: middle;
+}
+
+.notebook-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.notebook-description {
+    font-size: 1rem;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}

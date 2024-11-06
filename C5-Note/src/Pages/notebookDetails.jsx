@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import Profile from '../C5.png';
 import './notebookDetails.css';
 import './home.css';
+import { Search } from "./Search";
 
 function Top_bar_simple_notes(){
     const getCookie= (name) =>{
@@ -24,36 +25,53 @@ function Top_bar_simple_notes(){
         <div className='Top_bar'>
           <div className='Top_bar_elms'>
             <h1 className='Top_bar_text'>C5-Note</h1>
-              {/*switch the image to be agnostic to database images*/}
-              <div className="profile_div">
-                <div className="profile_div_color">
-                  <img src={Profile} className="profile_image" alt="logo" />
-                  <p>{ name }</p>
-                  </div>
+            {/*switch the image to be agnostic to database images*/}
+            <div className="profile_div">
+              <div className="profile_div_color">
+                <Link to={"/profile/" + name} style={{ textAlign: "center", width:"100%" }}>
+                  <img id="frame" src={Profile} className="profile_image" alt="logo" />
+                  <br />
+                  <p style={{ display: "inline-block", maxWidth: "100%", overflow: "hidden" }}>{name}</p>
+                </Link>
               </div>
+              <Search />
+            </div>
           </div>
-            
+  
         </div>
       )
   }
 
-//might need some security checks that current logged in user has access to current notebook
 export function NotebookDetail() {
-
     const location = useLocation();
     const navigate = useNavigate();
-    const { notebook } = location.state; // Access the notebook data from state
-
-
-    const [groups, setGroups] = useState(null); // Store the groups JSON
+    const { notebook, readOnly } = location.state; // Access the notebook data from state
+    const [groups, setGroups] = useState(null);
     const [groupsEmpty, setGroupsEmpty] = useState(false);
-
-    const [editingGroupId, setEditingGroupId] = useState(null);  // Track which group is being edited
-    const [newGroupName, setNewGroupName] = useState("");  // Store the new group name
-
-
+    const [editingGroupId, setEditingGroupId] = useState(null);
+    const [newGroupName, setNewGroupName] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [groupToDelete, setGroupToDelete] = useState(null);
+
+    const [noPages, setNoPages] = useState(false);
+
+    
+    useEffect(() => {
+        var jsonData = { username: getCookie("username") };
+        fetch("backend/getProfilePicture.php", { method: "POST", body: JSON.stringify(jsonData) }).then(response => {
+
+            response.json().then(data => {
+
+                if (data.status != "failed") {
+                    //setSrc(response.blob);
+                    frame.src = "backend/" + data.message;
+                }
+            })
+
+        });
+    }, []);
+
+
 
     /* Example of what groups would like life after useEffect()
     [
@@ -86,8 +104,6 @@ export function NotebookDetail() {
         return cookie[name];
     }
 
-    const username = getCookie('username');
-
     // Fetch groups JSON for the notebook
     useEffect(() => {
         const fetchGroups = async () => {
@@ -101,6 +117,8 @@ export function NotebookDetail() {
                 body: JSON.stringify({
                     username: name, // getting username thru cookies
                     title: notebook.title,
+                    isInitialFetch : true,
+                    guest: readOnly
                 }),
             });
 
@@ -113,6 +131,10 @@ export function NotebookDetail() {
                 setGroups(groupsData);
 
                 setGroupsEmpty(groupsData.length === 0);
+
+                // Check if there are no pages in any group
+                const hasPages = data.groups.some(group => group.pages && group.pages.length > 0);
+                setNoPages(!hasPages);
             }
         };
 
@@ -229,8 +251,9 @@ export function NotebookDetail() {
         if (data.success) {
             // After successfully adding the page, reload the groups/pages
             const newPage = {
-                page_number: group.pages.length + 1,  // New page number based on existing pages
-                page_content: ""  // Empty content
+                page_number: data.page_number,  // New page number based on existing pages || old -> page_number: group.pages.length + 1
+                page_content: "Untitled Page",  // Empty content
+                page_order: data.page_order
             };
             
             // Update the state with the newly added page
@@ -244,15 +267,25 @@ export function NotebookDetail() {
             console.error("Failed to add page");
         }
     };
-
+    
     const handleGroupPageClick = (group, page) => {
         navigate(`/notebooks/${group.group_id}/${page.page_number}`, { //thinking after the group id there should be the page
             state: { 
                 notebook: notebook,  // Pass current notebook info
                 group: group,         // Pass the clicked group info (group_id, group_name, and pages)
-                page: page           // Pass the clicked page info (page_number, page_content)
+                page: page,           // Pass the clicked page info (page_number, page_content)
+                readOnly: readOnly      //  
             }
         });
+    };
+
+    const handleGoBack = () => {
+        // If there are no groups or groups exist but have no pages
+        if (groups.length === 0 || noPages) {
+            navigate('/note');  // Redirect to /note if no groups or no pages
+        } else {
+            navigate(-1);  // Go back to the previous page if groups and pages exist
+        }
     };
 
     return (
@@ -282,8 +315,8 @@ export function NotebookDetail() {
                     <div className="notebook-color-indicator" style={{ backgroundColor: notebook.color }}></div>
                 </div>
 
-                {/* If no groups exist, show "Add Group" button */}
-                {groupsEmpty && (
+                {/* If no groups exist, and we are NOT in readOnly mode, show "Add Group" button */}
+                {groupsEmpty && !readOnly && (
                     <div>
                         <button onClick={handleAddGroup}>Add Group</button>
                     </div>
@@ -313,8 +346,14 @@ export function NotebookDetail() {
                                     ) : (
                                         <>
                                             <span>{group.group_name}</span>
-                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
-                                            <button onClick={() => handleAddPages(group)}>Add Page</button>
+
+                                            {/* Render Edit button and Add Page button if NOT readOnly */}
+                                            {!readOnly && (
+                                                <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
+                                            )}
+                                            {!readOnly && (
+                                                <button onClick={() => handleAddPages(group)}>Add Page</button>
+                                            )}
                                         </>
                                     )}
 
@@ -322,7 +361,7 @@ export function NotebookDetail() {
                                         {group.pages.map((page, pageIndex) => (
                                             <li key={pageIndex}>
                                                 <button onClick={() => handleGroupPageClick(group, page)}>
-                                                    Page {page.page_number}: {page.page_content}
+                                                    Page {page.page_number}: {page.page_name || "Untitle Page"}
                                                 </button>
                                             </li>
                                         ))}
@@ -331,7 +370,10 @@ export function NotebookDetail() {
                             ))}
                         </ul>
 
-                        <button onClick={handleAddGroup}>Add Group</button>
+                        {/* Create an "Add Group" button if NOT readOnly */}
+                        {!readOnly && (
+                            <button onClick={handleAddGroup}>Add Group</button>
+                        )}
 
                     </div>
                 )}
@@ -339,7 +381,7 @@ export function NotebookDetail() {
             </div>
         </div>
 
-        <button onClick={() => navigate(-1)}>Go Back</button> {/* fix css */}
+        <button onClick={handleGoBack}>Go Back</button> {/* fix css */}
 
     </>    
     );
