@@ -60,7 +60,7 @@ export function NotebookSearch() {
     return (
         <>
         <div className = "Search_Div" ref={searchRef}>
-            <input type="text" className="notebook_search_bar" id="notebook_search_bar" placeholder="Notebook Search"></input>
+            <input type="text" className="notebook_search_bar" id="notebook_search_bar" placeholder="Search all Public Notebooks"></input>
             <button className="notebook_search_button" onClick={ () => { getResults();} }>Search</button>
             {visibleResult && (<Results items={result}/>)}
         </div>

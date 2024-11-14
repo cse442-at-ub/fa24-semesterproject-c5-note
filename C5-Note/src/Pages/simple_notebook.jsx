@@ -533,6 +533,10 @@ export function Simple_notebook(){
           <GhostaContainer />
           <div className="mainBody">
             <div>
+
+            <NotebookSearch/>
+
+            <br></br>
             <div className="notebooks_list spacing" >
               <div id='sort_bar'>
                 <label for="notebook_sort">Sort:</label>
@@ -547,7 +551,7 @@ export function Simple_notebook(){
               </div>
             
               <ul>
-                <li className="label">Notebooks</li>
+                <li className="label">My Notebooks</li>
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
@@ -569,10 +573,6 @@ export function Simple_notebook(){
 
                 </ul>
               </div>
-
-              <br></br>
-
-              <NotebookSearch/>
 
               <br></br>
 

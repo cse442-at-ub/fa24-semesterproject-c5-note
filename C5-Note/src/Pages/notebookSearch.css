@@ -6,7 +6,7 @@
 
 .notebook_search_bar{
     height: 2rem;
-    width: 70%;
+    width: calc(100% - 4rem);
     background-color: #9D9D9D;
     columns: #FFFFFF;
     font-family: monofonto;
@@ -19,7 +19,7 @@
 .notebook_search_button{
     
     height: 2.125rem;
-    width: 30%;
+    width: 4rem;
     font-family: monofonto;
     background-color: #4882ff;
     font-size: .85rem;
