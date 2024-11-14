@@ -7,6 +7,31 @@ export function NotebookSearch() {
     const [visibleResult, setVisibleResult] = useState(false);
     const [result, setResult] = useState([]);
     const searchRef = useRef(null);
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+
+        fetch("backend/getUsername.php", { method: "GET" }).then( response => {
+          response.json().then( data => {
+            if(data["error"] == null) {
+    
+                setUsername(data["username"]);
+
+                console.log(data["username"]);
+
+            }
+            else {
+                
+                setUsername("Guest");
+
+                console.log("Guest");
+
+            }
+
+            });
+        });
+    
+      }, []);
 
     const addResult = (newItem) => {
         setResult((prevItems) => [...prevItems, newItem]); // Append the new item
@@ -14,18 +39,18 @@ export function NotebookSearch() {
 
     const getResults = () => {
 
-        var value = document.getElementById("search_bar").value.trim();
+        var value = document.getElementById("notebook_search_bar").value.trim();
 
         if (value.length > 0) {
             var jsonData = { "search": value }
 
-            fetch('backend/search.php', { method: "POST", body: JSON.stringify(jsonData) }).then((response) => response.json()).then
+            fetch('backend/notebookSearch.php', { method: "POST", body: JSON.stringify(jsonData) }).then((response) => response.json()).then
                 ((data) => {
                     if(data["status"] === "success") {
                         setResult([]);
-                        var names = JSON.parse(data["names"]);
-                        for(const index in names)
-                            { addResult(names[index]) };
+                        var books = JSON.parse(data["notebooks"]);
+                        for(const index in books)
+                            { addResult(books[index]) };
                         }
                     });
             setVisibleResult(true);
@@ -57,7 +82,7 @@ export function NotebookSearch() {
     return (
         <>
         <div className = "Search_Div" ref={searchRef}>
-            <input type="text" className="search_bar" id="search_bar" placeholder="Notebook Search"></input>
+            <input type="text" className="search_bar" id="notebook_search_bar" placeholder="Notebook Search"></input>
             <button className="search_button" onClick={ () => { getResults();} }>Search</button>
             {visibleResult && (<Results items={result}/>)}
         </div>
