@@ -46,3 +46,28 @@
     color: black;
     
 }
+
+.notebook-content {
+    display: inline-block;
+    max-width: calc(100% - 2rem); 
+    vertical-align: middle;
+    }
+    
+.notebook-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    }
+    
+.notebook-description {
+    font-size: 1rem;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    }

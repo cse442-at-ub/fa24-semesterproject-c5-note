@@ -21,7 +21,7 @@ export function NotebookSearch() {
 
             }
             else {
-                
+
                 setUsername("Guest");
 
                 console.log("Guest");
@@ -105,7 +105,12 @@ function Results(props) {
         <ul className="results">
             {props.items.map( (item,index) => {return <li key={index}>
                 <Link to={'/profile/' + item} >
-                {item}
+                <div className="notebook-content">
+                        <div className="notebook-title">{notebook.title}</div>
+                        <div className="notebook-description">{notebook.description}</div>
+                        <div className="notebook-description">Created: {notebook.time_created}</div>
+                        <div className="notebook-description">Modified: {notebook.last_modified}</div>
+                </div>
                 </Link></li>})}
         </ul>
     )
