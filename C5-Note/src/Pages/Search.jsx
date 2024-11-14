@@ -5,7 +5,7 @@ import React from 'react';
 
 export function Search() {
     const [visibleResult, setVisibleResult] = useState(false);
-    const [result, setResult] = useState(["mdrum2"]);
+    const [result, setResult] = useState([]);
     const searchRef = useRef(null);
 
     const addResult = (newItem) => {
