@@ -57,7 +57,7 @@ export function NotebookSearch() {
     return (
         <>
         <div className = "Search_Div" ref={searchRef}>
-            <input type="text" className="search_bar" id="search_bar" placeholder="User Search"></input>
+            <input type="text" className="search_bar" id="search_bar" placeholder="Notebook Search"></input>
             <button className="search_button" onClick={ () => { getResults();} }>Search</button>
             {visibleResult && (<Results items={result}/>)}
         </div>
@@ -70,12 +70,13 @@ function Results(props) {
     if(props.items.length == 0) {
         return (
             <ul className="no_results">
-                <li>No users found.</li>
+                <li>No notebooks found.</li>
             </ul>
         )    
     }
     
     return (
+        //Needs to be changed to reflect notebook info
         <ul className="results">
             {props.items.map( (item,index) => {return <li key={index}>
                 <Link to={'/profile/' + item} >
