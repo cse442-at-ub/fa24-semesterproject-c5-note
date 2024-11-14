@@ -108,14 +108,10 @@ function Results(props) {
     
                 setUsername(data["username"]);
 
-                console.log(data["username"]);
-
             }
             else {
 
                 setUsername("Guest");
-
-                console.log("Guest");
 
             }
 
