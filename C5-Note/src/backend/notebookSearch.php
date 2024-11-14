@@ -64,6 +64,19 @@ if ($result->num_rows > 0) {
             $groups[] = $group;
         }
 
+        $sharedUsersStmt = $connection->prepare("SELECT username FROM shared_users WHERE notebook_id = ?");
+        $sharedUsersStmt->bind_param("i", $notebookId);
+        $sharedUsersStmt->execute();
+        $resultUsers = $sharedUsersStmt->get_result();
+
+        $sharedUsers = [];
+
+        $sharedUsers[] = $row['username'];
+
+        while($sharedUser = $resultUsers->fetch_assoc()) {
+            $sharedUsers[] = $sharedUser['username'];
+        }
+
         $row['groups'] = $groups;
         $notebooks[] = [
             'groups' => $row['groups'],
@@ -72,30 +85,12 @@ if ($result->num_rows > 0) {
             'color' => $row['color'],
             'time_created' => $timeCreated->format('Y-m-d H:i:s'), // Format as needed
             'last_modified' => $lastModified->format('Y-m-d H:i:s'), // Format as needed
-            'id' => $row['id']
+            'id' => $row['id'],
+            'access' => $sharedUsers
         ];
     }
 
-    /* SAMPLE RESPONSE JSON; example below has 3 rows
-    [
-        {
-            "title": "Chemistry",
-            "description": "Chemistry notes for class",
-            "color": "#cccccc"
-        },
-        {
-            "title": "Geography",
-            "description": "Geography notes on Europe",
-            "color": "#cccccc"
-        },
-        {
-            "title": "CSE 442",
-            "description": "Notes on CSE 442 programming",
-            "color": "#cccccc"
-        }
-    ]
-    */
-
+    
     die(json_encode(["status" => "success","notebooks" => json_encode($notebooks)]));
 
 }
