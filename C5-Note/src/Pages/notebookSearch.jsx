@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react"; //to enable state 
 import { Link, useNavigate } from "react-router-dom";
-import "./Search.css";
+import "./notebookSearch.css";
 import React from 'react';
 
-export function Search() {
+export function NotebookSearch() {
     const [visibleResult, setVisibleResult] = useState(false);
     const [result, setResult] = useState([]);
     const searchRef = useRef(null);
