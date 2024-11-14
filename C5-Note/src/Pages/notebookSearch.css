@@ -56,7 +56,7 @@
 .notebook-title {
     font-weight: bold;
     font-size: 1.5rem;
-    color: white;
+    color: black;
     margin-bottom: 0.5rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -65,7 +65,7 @@
     
 .notebook-description {
     font-size: 1rem;
-    color: #ccc;
+    color: grey;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
