@@ -60,8 +60,8 @@ export function NotebookSearch() {
     return (
         <>
         <div className = "Search_Div" ref={searchRef}>
-            <input type="text" className="search_bar" id="notebook_search_bar" placeholder="Notebook Search"></input>
-            <button className="search_button" onClick={ () => { getResults();} }>Search</button>
+            <input type="text" className="notebook_search_bar" id="notebook_search_bar" placeholder="Notebook Search"></input>
+            <button className="notebook_search_button" onClick={ () => { getResults();} }>Search</button>
             {visibleResult && (<Results items={result}/>)}
         </div>
         </>
@@ -126,39 +126,39 @@ function Results(props) {
 
     if(props.items.length == 0) {
         return (
-            <ul className="no_results">
+            <ul className="notebook_no_results">
                 <li>No notebooks found.</li>
             </ul>
         )    
     }
-    //item.access.includes(username)
+    
     return (
-        //Needs to be changed to reflect notebook info
-        <ul className="results">
+        
+        <ul className="notebook_results">
             {props.items.map( (item,index) => { const access = item.access.includes(username);
             
                 if(access) {
-                    return (<li key={index}>
-                    <div onClick={() => handleNotebookClick(item, false)}>
-                        
-                        <div className="notebook-content">
-                                <div className="notebook-title">{item.title}</div>
-                                <div className="notebook-description">{item.description}</div>
-                                <div className="notebook-description">Created: {item.time_created}</div>
-                                <div className="notebook-description">Modified: {item.last_modified}</div>
-                        </div>
-                        </div></li>)}
-                else {
-                    return (<li key={index}>
-                        <div onClick={() => handleNotebookClick(item, true)}>
+                    return (<div onClick={() => handleNotebookClick(item, false)}><li key={index}><div className="search-notebook-title">{item.title}</div></li>
+                        <div >
                             
-                            <div className="notebook-content">
-                                    <div className="notebook-title">{item.title}</div>
-                                    <div className="notebook-description">{item.description}</div>
-                                    <div className="notebook-description">Created: {item.time_created}</div>
-                                    <div className="notebook-description">Modified: {item.last_modified}</div>
+                            <div className="search-notebook-content">
+                                    
+                                    <div className="search-notebook-description">{item.description}</div>
+                                    <div className="search-notebook-description">Created: {item.time_created}</div>
+                                    <div className="search-notebook-description">Modified: {item.last_modified}</div>
                             </div>
-                            </div></li>)
+                            </div></div>)}
+                else {
+                    return (<div onClick={() => handleNotebookClick(item, true)}><li key={index}><div className="search-notebook-title">{item.title}</div></li>
+                        <div >
+                            
+                            <div className="search-notebook-content">
+                                    
+                                    <div className="search-notebook-description">{item.description}</div>
+                                    <div className="search-notebook-description">Created: {item.time_created}</div>
+                                    <div className="search-notebook-description">Modified: {item.last_modified}</div>
+                            </div>
+                            </div></div>)
                 }
             })}
         </ul>
