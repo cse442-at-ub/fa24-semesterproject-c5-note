@@ -8,6 +8,7 @@ import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
 import { Search } from './Search.jsx'
+import { NotebookSearch } from './NotebookSearch.jsx';
 
 
 
@@ -532,6 +533,10 @@ export function Simple_notebook(){
           <GhostaContainer />
           <div className="mainBody">
             <div>
+
+            <NotebookSearch/>
+
+            <br></br>
             <div className="notebooks_list spacing" >
               <div id='sort_bar'>
                 <label for="notebook_sort">Sort:</label>
@@ -546,7 +551,7 @@ export function Simple_notebook(){
               </div>
             
               <ul>
-                <li className="label">Notebooks</li>
+                <li className="label">My Notebooks</li>
 
                 {notebooks.map( (notebook, index) => (
                   <li key = {index} className="spacing">
