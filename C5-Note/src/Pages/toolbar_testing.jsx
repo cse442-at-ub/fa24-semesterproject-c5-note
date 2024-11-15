@@ -413,7 +413,7 @@ export function ToolTest(){
             const addPageData = await addPageResponse.json();
             if (addPageData.success) {
                 // Step 3: Refresh the page after successfully adding the group and the page
-                window.location.reload();
+                console.log('Good')
             } else {
                 console.error("Failed to add a page to the new group");
             }
@@ -448,7 +448,7 @@ export function ToolTest(){
         const data = await response.json();
         if (data.success) {
             // Refresh the page to reflect the new page
-            window.location.reload();
+            console.log('Good')
         } else {
             console.error("Failed to add a page to the current group");
         }
