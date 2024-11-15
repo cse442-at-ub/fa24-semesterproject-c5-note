@@ -254,6 +254,7 @@ export function ToolTest(){
         return data.content || ""; // Return the fetched content or empty if not found
     };
 
+
     const handleAddGroup = async () => {
         const username = getCookie('username');
     
@@ -299,6 +300,39 @@ export function ToolTest(){
             console.error("Failed to add group");
         }
     };
+
+    const handleAddPages = async () => {
+        const username = getCookie('username');
+    
+        // Find the current group based on the groupID from the URL
+        const currentGroup = groups.find(group => group.group_id === parseInt(groupID));
+        if (!currentGroup) {
+            console.error("No current group found");
+            return;
+        }
+    
+        const response = await fetch("backend/addPages.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                title: notebook.title,
+                group_id: currentGroup.group_id,
+                page_content: "", // Default empty page content
+            }),
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            // Refresh the page to reflect the new page
+            window.location.reload();
+        } else {
+            console.error("Failed to add a page to the current group");
+        }
+    };
+
 
     const config = useMemo(() => ({
         cleanHTML: {
@@ -943,9 +977,14 @@ export function ToolTest(){
 
                 <aside className="aside nbpSidebarPages">
 
-                    <button onClick={handleAddGroup} disabled={readOnly} className="add-group-button">
-                        Add Group
-                    </button>
+                    <div className="sidebar-actions">
+                        <button onClick={handleAddGroup} disabled={readOnly} className="add-group-button">
+                            Add Group
+                        </button>
+                        <button onClick={handleAddPages} disabled={readOnly} className="add-page-button">
+                            Add Page
+                        </button>
+                    </div>
 
                     <DragDropContext onDragEnd={handleDragEnd}> {/* Drag context for groups */}
                         <Droppable droppableId="groups" type="group">
