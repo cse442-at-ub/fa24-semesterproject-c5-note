@@ -32,13 +32,59 @@ function GroupDropdown({
   isSelectedGroup,
   selectedPage,
   readOnly,
-  handlePageDragEnd
+  handlePageDragEnd,
+  Groups
 }) {
   // State for editing group and page names
   const [editingGroupId, setEditingGroupId] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
   const [editingPageNumber, setEditingPageNumber] = useState(null);
   const [newPageName, setNewPageName] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState(null);
+  const navigate = useNavigate();
+
+
+  const handleConfirmDeleteGroup = async () => {
+    if (groupToDelete) {
+        const response = await fetch("backend/deleteGroup.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                group_id: groupToDelete.group_id,  // Send the group_id to delete
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            console.log(Groups)
+            let update = false;
+            for (let i = 0; i < Groups.length; i++) {
+                if (update != true){
+                  if (Groups[i].group_id != groupToDelete.group_id){
+                    update = true;
+                    navigate('/notebooks/' + Groups[i].group_id + '/1', { state: { notebook, group:Groups[i].group_id, page:1, readOnly } });
+
+                }  
+                }
+                
+            }
+            
+        } else {
+            console.error("Failed to delete group");
+        }
+        setShowDeleteModal(false); // Close the modal
+    }
+};
+
+// Function to open the delete confirmation modal
+const handleDeleteGroup = (group) => {
+    setGroupToDelete(group);
+    setShowDeleteModal(true);  // Show the modal
+};
+
 
   // Handle editing group name
   const handleEditGroupName = async () => {
@@ -84,7 +130,24 @@ function GroupDropdown({
   };
 
   return (
+
+    
+
     <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
+
+<Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+            <Modal.Header>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the group "{groupToDelete?.group_name}"? This action cannot be undone.
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+                <Button variant="danger" onClick={handleConfirmDeleteGroup} style={{ backgroundColor: 'red', borderColor: 'red' }} >Delete</Button>
+            </Modal.Footer>
+        </Modal>
+
       <h1 className="clickableGroupName" onClick={toggleGroup}>
         {editingGroupId === group.group_id ? (
           <div>
@@ -103,6 +166,7 @@ function GroupDropdown({
 
             {/* Render Edit button if NOT readOnly */}
             {!readOnly && isSelectedGroup && (
+                <>
               <button
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent toggleGroup from being triggered
@@ -112,6 +176,8 @@ function GroupDropdown({
               >
                 <img src={edit_icon} className="logos" alt="logo" />
               </button>
+              <button style={{color: "red"}} onClick={() => handleDeleteGroup(group)}>Delete X</button>
+              </>
             )}
           </>
         )}
@@ -1140,6 +1206,7 @@ export function ToolTest(){
                                                         selectedPage={parseInt(pageNum)}
                                                         readOnly={readOnly}
                                                         handlePageDragEnd={handlePageDragEnd} // Pass handlePageDragEnd as a prop
+                                                        Groups={groups}
                                                     />
                                                 </div>
                                             )}
