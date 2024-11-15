@@ -166,6 +166,7 @@ export function ToolTest(){
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
+
     var test = useRef(null);
     const handleClose = () => {
         setShowAccessModal(false);
@@ -251,6 +252,30 @@ export function ToolTest(){
         });
         const data = await response.json();
         return data.content || ""; // Return the fetched content or empty if not found
+    };
+
+    const handleAddGroup = async () => {
+        const username = getCookie('username');
+    
+        const response = await fetch("backend/addGroup.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                title: notebook.title,
+                group_name: "Untitled Group",
+            }),
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            // Refresh the page after successfully adding a group
+            window.location.reload();
+        } else {
+            console.error("Failed to add group");
+        }
     };
 
     const config = useMemo(() => ({
@@ -895,6 +920,11 @@ export function ToolTest(){
                 </aside>
 
                 <aside className="aside nbpSidebarPages">
+
+                    <button onClick={handleAddGroup} disabled={readOnly} className="add-group-button">
+                        Add Group
+                    </button>
+
                     <DragDropContext onDragEnd={handleDragEnd}> {/* Drag context for groups */}
                         <Droppable droppableId="groups" type="group">
                             {(provided) => (
