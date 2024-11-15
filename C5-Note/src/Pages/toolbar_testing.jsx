@@ -41,8 +41,54 @@ function GroupDropdown({
   const [editingPageNumber, setEditingPageNumber] = useState(null);
   const [newPageName, setNewPageName] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeletePageModal, setshowDeletePageModal] = useState(false);
+  
   const [groupToDelete, setGroupToDelete] = useState(null);
+  const [pageToDelete, setPageToDelete] = useState(null);
+  const [pageGroupToDelete, setPageGroupToDelete] = useState(null);
   const navigate = useNavigate();
+
+  const handleConfirmDeletePage = async () => {
+    if (groupToDelete) {
+        const response = await fetch("backend/deletePage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                group_id: group.group_id,  // Send the group_id to delete
+                page_num: pageToDelete
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            console.log(Groups)
+            let update = false;
+            for (let i = 0; i < group.pages.length; i++) {
+                if (update != true){
+                  if (groups.page.page_number != group.group_id){
+                    update = true;
+                    navigate('/notebooks/' + group.group_id + '/'+group.pages[i].pageNumber, { state: { notebook, group:group.group_id, page:group.pages[i].pageNumber, readOnly } });
+
+                }  
+                }
+                
+            }
+            
+        } else {
+            console.error("Failed to delete group");
+        }
+        setshowDeletePageModal(false); // Close the modal
+    }
+};
+
+// Function to open the delete confirmation modal
+const handleDeletePage = (group,page) => {
+    setPageToDelete(page);
+    setPageGroupToDelete(group);
+    setshowDeletePageModal(true);  // Show the modal
+};
 
 
   const handleConfirmDeleteGroup = async () => {
@@ -59,7 +105,7 @@ function GroupDropdown({
 
         const data = await response.json();
         if (data.success) {
-            console.log(Groups)
+            console.log(group)
             let update = false;
             for (let i = 0; i < Groups.length; i++) {
                 if (update != true){
@@ -134,6 +180,19 @@ const handleDeleteGroup = (group) => {
     
 
     <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
+
+        <Modal show={showDeletePageModal} onHide={() => setShowDeleteModal(false)} centered>
+            <Modal.Header>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the page ? This action cannot be undone.
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => showDeletePageModal(false)}>Cancel</Button>
+                <Button variant="danger" onClick={handleConfirmDeletePage} style={{ backgroundColor: 'red', borderColor: 'red' }} >Delete</Button>
+            </Modal.Footer>
+        </Modal>
 
 <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
             <Modal.Header>
@@ -216,6 +275,8 @@ const handleDeleteGroup = (group) => {
 
                           {/* Render Edit button if NOT readOnly */}
                           {!readOnly && (isSelectedGroup && page.page_number === selectedPage) && editingPageNumber !== page.page_number && (
+                            
+                            <>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation(); // Prevent parent toggle from being triggered
@@ -225,6 +286,10 @@ const handleDeleteGroup = (group) => {
                             >
                               <img src={edit_icon} className="logos" alt="logo" />
                             </button>
+                            {group.pages.length != 1 &&(
+                                <button onClick={() => handleDeletePage(group,selectedPage)}><img src={delete_icon} className="logos" alt="logo" /></button> 
+                               )}
+                               </>
                           )}
                         </Link>
                       </li>
