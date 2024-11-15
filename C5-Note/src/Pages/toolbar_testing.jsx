@@ -72,7 +72,7 @@ function GroupDropdown({
                 if (update != true){
                   if (group.pages[i].page_number != pageToDelete){
                     update = true;
-                    navigate('/notebooks/' + group.group_id + '/'+group.pages[i].pageNumber, { state: { notebook, group:group.group_id, page:group.pages[i].pageNumber, readOnly } });
+                    navigate('/notebooks/' + group.group_id + '/'+group.pages[i].page_number, { state: { notebook, group:group.group_id, page:group.pages[i].page_number, readOnly } });
 
                 }
 
