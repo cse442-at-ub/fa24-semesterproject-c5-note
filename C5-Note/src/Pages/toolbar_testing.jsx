@@ -24,110 +24,153 @@ let loaded = 0;
 let abortController = new AbortController();  // Global abort controller
 
 
+function GroupDropdown({
+  group,
+  notebook,
+  isExpanded,
+  toggleGroup,
+  isSelectedGroup,
+  selectedPage,
+  readOnly,
+  handlePageDragEnd
+}) {
+  // State for editing group and page names
+  const [editingGroupId, setEditingGroupId] = useState(null);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [editingPageNumber, setEditingPageNumber] = useState(null);
+  const [newPageName, setNewPageName] = useState("");
 
-function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly, handlePageDragEnd }) {
-    // Function to edit group name using group_id
-    const [editingGroupId, setEditingGroupId] = useState(null);
-    const [newGroupName, setNewGroupName] = useState("");
-    const handleEditGroupName = async () => {
-        const response = await fetch("backend/editGroupName.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                group_id: group.group_id,
-                new_group_name: newGroupName,
-            }),
-        });
+  // Handle editing group name
+  const handleEditGroupName = async () => {
+    const response = await fetch("backend/editGroupName.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        group_id: group.group_id,
+        new_group_name: newGroupName,
+      }),
+    });
 
-        const data = await response.json();
-        if (data.success) {
-            // Optionally update state in the parent to reflect the change in the UI
-            setEditingGroupId(null);  // Exit edit mode
-        } else {
-            console.error("Failed to update group name");
-        }
-    };
-    
-    return (
-        <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
-            <h1 className="clickableGroupName" onClick={toggleGroup}>
-                {editingGroupId === group.group_id ? (
-                    <div>
-                        <input
-                            type="text"
-                            value={newGroupName}
-                            onChange={(e) => setNewGroupName(e.target.value)}
-                            placeholder="New Group Name"
-                        />
-                        <button onClick={handleEditGroupName}>Save</button>
-                        <button onClick={() => setEditingGroupId(null)}>Cancel</button>
-                    </div>
-                ) : (
-                    <>
-                        <span>{group.group_name}</span>
+    const data = await response.json();
+    if (data.success) {
+      setEditingGroupId(null); // Exit edit mode
+    } else {
+      console.error("Failed to update group name");
+    }
+  };
 
-                        {/* Render Edit and Add Page buttons if NOT readOnly */}
-                        {!readOnly && (
-                            <>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation(); // Prevent toggleGroup from being triggered
-                                        setEditingGroupId(group.group_id);
-                                    }}
-                                >
-                                    Edit
-                                </button>
-                                
-                            </>
-                        )}
-                    </>
-                )}
-            </h1>
+  // Handle editing page name
+  const handleEditPageName = async (pageNumber) => {
+    const response = await fetch("backend/editPageName.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        group_id: group.group_id,
+        new_page_name: newPageName,
+        page_num: pageNumber,
+      }),
+    });
 
-            {isExpanded && (
-                <DragDropContext onDragEnd={handlePageDragEnd}> {/* Drag context for pages */}
-                    <Droppable droppableId={`group-${group.group_id}`} type="page">
-                        {(provided) => (
-                            <ul ref={provided.innerRef} {...provided.droppableProps}>
-                                {group.pages.map((page, index) => (
-                                    <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index} isDragDisabled={readOnly}>
-                                        {(provided) => (
-                                            <li
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                            >
-                                                
-                                                <Link to={`/notebooks/${group.group_id}/${page.page_number}`} 
-                                                      state={{ notebook, group, page, readOnly }}
-                                                      className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
-                                                >
-                                                    {page.page_name || "Untitled Page"} 
-                                                    {isSelectedGroup && page.page_number === selectedPage && (
-                                                    <>
-                                                        <button onClick={""} aria-label="Delete Group">
-                                                            <img src={delete_icon} className="logos" alt="Delete Group" />
-                                                        </button>
-                                                        {!readOnly && (
-                                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
-                                                        )}
-                                                    </>
-                                                )}
-                                                </Link>
-                                            </li>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </ul>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+    const data = await response.json();
+    if (data.success) {
+      setEditingPageNumber(null); // Exit edit mode for page
+    } else {
+      console.error("Failed to update page name");
+    }
+  };
+
+  return (
+    <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
+      <h1 className="clickableGroupName" onClick={toggleGroup}>
+        {editingGroupId === group.group_id ? (
+          <div>
+            <input
+              type="text"
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              placeholder="New Group Name"
+            />
+            <button onClick={handleEditGroupName}>Save</button>
+            <button onClick={() => setEditingGroupId(null)}>Cancel</button>
+          </div>
+        ) : (
+          <>
+            <span>{group.group_name}</span>
+
+            {/* Render Edit button if NOT readOnly */}
+            {!readOnly && isSelectedGroup && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent toggleGroup from being triggered
+                  setEditingGroupId(group.group_id);
+                  setNewGroupName(group.group_name); // Populate input with current group name
+                }}
+              >
+                <img src={edit_icon} className="logos" alt="logo" />
+              </button>
             )}
-        </div>
-    );
+          </>
+        )}
+      </h1>
+
+      {isExpanded && (
+        <DragDropContext onDragEnd={handlePageDragEnd}>
+          <Droppable droppableId={`group-${group.group_id}`} type="page">
+            {(provided) => (
+              <ul ref={provided.innerRef} {...provided.droppableProps}>
+                {group.pages.map((page, index) => (
+                  <Draggable key={page.page_number} draggableId={`page-${page.page_number}`} index={index} isDragDisabled={readOnly}>
+                    {(provided) => (
+                      <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        <Link
+                          to={`/notebooks/${group.group_id}/${page.page_number}`}
+                          state={{ notebook, group, page, readOnly }}
+                          className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
+                        >
+                          {editingPageNumber === page.page_number ? (
+                            <div>
+                              <input
+                                type="text"
+                                value={newPageName}
+                                onChange={(e) => setNewPageName(e.target.value)}
+                                placeholder="New Page Name"
+                              />
+                              <button onClick={() => handleEditPageName(page.page_number)}>Save</button>
+                              <button onClick={() => setEditingPageNumber(null)}>Cancel</button>
+                            </div>
+                          ) : (
+                            <span>{page.page_name || "Untitled Page"}</span>
+                          )}
+
+                          {/* Render Edit button if NOT readOnly */}
+                          {!readOnly && (isSelectedGroup && page.page_number === selectedPage) && editingPageNumber !== page.page_number && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent parent toggle from being triggered
+                                setEditingPageNumber(page.page_number);
+                                setNewPageName(page.page_name); // Populate input with current page name
+                              }}
+                            >
+                              <img src={edit_icon} className="logos" alt="logo" />
+                            </button>
+                          )}
+                        </Link>
+                      </li>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
+    </div>
+  );
 }
 
 
