@@ -361,7 +361,7 @@ export function NotebookDetail() {
                                         {group.pages.map((page, pageIndex) => (
                                             <li key={pageIndex}>
                                                 <button onClick={() => handleGroupPageClick(group, page)}>
-                                                    Page {page.page_number}: {page.page_name || "Untitle Page"}
+                                                    {page.page_name || "Untitled Page"}
                                                 </button>
                                             </li>
                                         ))}
