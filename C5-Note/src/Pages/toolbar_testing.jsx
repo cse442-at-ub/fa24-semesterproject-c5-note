@@ -277,6 +277,17 @@ export function ToolTest(){
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
+
+    const timeoutRef = useRef(null); // Reference to store the current timeout ID
+
+    const cancelPolling = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null; // Reset the timeout reference
+        }
+    };
+
+
     var test = useRef(null);
     const handleClose = () => {
         setShowAccessModal(false);
