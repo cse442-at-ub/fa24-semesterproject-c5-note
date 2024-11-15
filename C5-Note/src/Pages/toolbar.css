@@ -206,3 +206,8 @@
     height: 25%;
     overflow-y: scroll;
 }
+
+.logos{
+    width:2rem; 
+    height:2rem;
+}

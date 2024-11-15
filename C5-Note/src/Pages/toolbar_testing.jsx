@@ -12,6 +12,9 @@ import { Modal, Button } from 'react-bootstrap';
 
 import { GhostaContainer, ghosta } from 'react-ghosta';
 
+import delete_icon from './images/delete.png';
+import edit_icon from './images/edit_icon.png';
+
 
 let unsavedChanges = 0;
 let testcontent = ""
@@ -23,10 +26,64 @@ let abortController = new AbortController();  // Global abort controller
 
 
 function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGroup, selectedPage, readOnly, handlePageDragEnd }) {
+    // Function to edit group name using group_id
+    const [editingGroupId, setEditingGroupId] = useState(null);
+    const [newGroupName, setNewGroupName] = useState("");
+    const handleEditGroupName = async () => {
+        const response = await fetch("backend/editGroupName.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                group_id: group.group_id,
+                new_group_name: newGroupName,
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // Optionally update state in the parent to reflect the change in the UI
+            setEditingGroupId(null);  // Exit edit mode
+        } else {
+            console.error("Failed to update group name");
+        }
+    };
+    
     return (
         <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
             <h1 className="clickableGroupName" onClick={toggleGroup}>
-                {group.group_name}
+                {editingGroupId === group.group_id ? (
+                    <div>
+                        <input
+                            type="text"
+                            value={newGroupName}
+                            onChange={(e) => setNewGroupName(e.target.value)}
+                            placeholder="New Group Name"
+                        />
+                        <button onClick={handleEditGroupName}>Save</button>
+                        <button onClick={() => setEditingGroupId(null)}>Cancel</button>
+                    </div>
+                ) : (
+                    <>
+                        <span>{group.group_name}</span>
+
+                        {/* Render Edit and Add Page buttons if NOT readOnly */}
+                        {!readOnly && (
+                            <>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent toggleGroup from being triggered
+                                        setEditingGroupId(group.group_id);
+                                    }}
+                                >
+                                    Edit
+                                </button>
+                                
+                            </>
+                        )}
+                    </>
+                )}
             </h1>
 
             {isExpanded && (
@@ -42,11 +99,22 @@ function GroupDropdown({ group, notebook, isExpanded, toggleGroup, isSelectedGro
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
+                                                
                                                 <Link to={`/notebooks/${group.group_id}/${page.page_number}`} 
                                                       state={{ notebook, group, page, readOnly }}
                                                       className={isSelectedGroup && page.page_number === selectedPage ? "selected-page" : ""}
                                                 >
-                                                    Page {page.page_number}: {page.page_name || "Untitled Page"}
+                                                    {page.page_name || "Untitled Page"} 
+                                                    {isSelectedGroup && page.page_number === selectedPage && (
+                                                    <>
+                                                        <button onClick={""} aria-label="Delete Group">
+                                                            <img src={delete_icon} className="logos" alt="Delete Group" />
+                                                        </button>
+                                                        {!readOnly && (
+                                                            <button onClick={() => setEditingGroupId(group.group_id)}>Edit</button>
+                                                        )}
+                                                    </>
+                                                )}
                                                 </Link>
                                             </li>
                                         )}
@@ -166,6 +234,17 @@ export function ToolTest(){
     const [sharedUsers, setSharedUsers] = useState([]); // To store users who already have access
     const [newUsername, setNewUsername] = useState(''); // Input field for new username
     const [errorMessage, setErrorMessage] = useState(''); // Error message for validation
+
+    const timeoutRef = useRef(null); // Reference to store the current timeout ID
+
+    const cancelPolling = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null; // Reset the timeout reference
+        }
+    };
+
+
     var test = useRef(null);
     const handleClose = () => {
         setShowAccessModal(false);
@@ -457,23 +536,22 @@ export function ToolTest(){
         return true;
     };
     
-    const fetchGroups = async (isInitialFetch = false, currentNotebookOrder = []) => {
-        const username = yourUsername;
-    
+    const fetchGroups = async (isInitialFetch = false, currentNotebookOrder = [], username, notebook, readOnly) => {
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ yourUsername, title: notebook.title, isInitialFetch, currentNotebookOrder, guest:readOnly })
+            body: JSON.stringify({ yourUsername: username, title: notebook.title, isInitialFetch, currentNotebookOrder, guest: readOnly })
         });
-        
+    
         const data = await response.json();
-        
+    
         if (data.success) {
             const fetchedGroups = data.groups;
     
-            // Compare fetchedGroups with current groups
-
+            // Compare fetchedGroups with current groups (optional, depending on your use case)
+    
             if (data.success) {
+                // Update state here
                 setGroups(data.groups);
                 setNotebookId(data.notebook_id);
             } else {
@@ -482,18 +560,30 @@ export function ToolTest(){
         } else {
             console.error("Failed to fetch groups and pages");
         }
+    };
     
-        // Continue polling if needed
-        setTimeout(() => {
-            fetchGroups(false, currentNotebookOrder); // Call again, passing false for isInitialFetch
+    const startPolling = (isInitialFetch, currentNotebookOrder) => {
+        // Fetch groups initially or on updates
+        fetchGroups(isInitialFetch, currentNotebookOrder, yourUsername, notebook, readOnly);
+
+        // Set up the polling
+        timeoutRef.current = setTimeout(() => {
+            startPolling(false, currentNotebookOrder); // Recurse for polling
         }, 2000); // Adjust the interval as needed
     };
     
-    // Fetch groups and pages for the current notebook
     useEffect(() => {
-        fetchGroups(true, []); // Initial fetch with isInitialFetch set to true
-    }, [notebook.title]);
-    
+        cancelPolling(); // Cancel any ongoing polling when groupID or pageNum changes
+        startPolling(true, []); // Start the polling with the new groupID or pageNum
+    }, [groupID, pageNum, notebook.title]); // Re-run when groupID, pageNum, or notebook.title changes
+
+    // Cleanup on component unmount or when polling stops
+    useEffect(() => {
+        return () => {
+            cancelPolling(); // Clean up polling when component unmounts
+        };
+    }, []);
+
 
     const fetchSharedNotebooks = async () => {
         const response = await fetch("backend/getSharedNotebooks.php", {
