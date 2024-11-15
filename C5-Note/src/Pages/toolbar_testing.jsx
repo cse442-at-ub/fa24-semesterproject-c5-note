@@ -49,7 +49,10 @@ function GroupDropdown({
   const navigate = useNavigate();
 
   const handleConfirmDeletePage = async () => {
-    if (groupToDelete) {
+    console.log('test')
+    if (pageToDelete) {
+        console.log(pageToDelete)
+        console.log(group.group_id)
         const response = await fetch("backend/deletePage.php", {
             method: "POST",
             headers: {
@@ -67,11 +70,12 @@ function GroupDropdown({
             let update = false;
             for (let i = 0; i < group.pages.length; i++) {
                 if (update != true){
-                  if (groups.page.page_number != group.group_id){
+                  if (group.pages[i].page_number != pageToDelete){
                     update = true;
                     navigate('/notebooks/' + group.group_id + '/'+group.pages[i].pageNumber, { state: { notebook, group:group.group_id, page:group.pages[i].pageNumber, readOnly } });
 
-                }  
+                }
+
                 }
                 
             }
@@ -181,7 +185,7 @@ const handleDeleteGroup = (group) => {
 
     <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
 
-        <Modal show={showDeletePageModal} onHide={() => setShowDeleteModal(false)} centered>
+        <Modal show={showDeletePageModal} onHide={() => setshowDeletePageModal(false)} centered>
             <Modal.Header>
                 <Modal.Title>Confirm Deletion</Modal.Title>
             </Modal.Header>
@@ -189,7 +193,7 @@ const handleDeleteGroup = (group) => {
                 Are you sure you want to delete the page ? This action cannot be undone.
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => showDeletePageModal(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setshowDeletePageModal(false)}>Cancel</Button>
                 <Button variant="danger" onClick={handleConfirmDeletePage} style={{ backgroundColor: 'red', borderColor: 'red' }} >Delete</Button>
             </Modal.Footer>
         </Modal>
