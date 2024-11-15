@@ -375,6 +375,86 @@ export function ToolTest(){
         return data.content || ""; // Return the fetched content or empty if not found
     };
 
+
+    const handleAddGroup = async () => {
+        const username = getCookie('username');
+    
+        // Step 1: Add the group
+        const response = await fetch("backend/addGroup.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                title: notebook.title,
+                group_name: "Untitled Group",
+            }),
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            const newGroupId = data.group_id;
+    
+            // Step 2: Add a page to the newly created group
+            const addPageResponse = await fetch("backend/addPages.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username,
+                    title: notebook.title,
+                    group_id: newGroupId,
+                    page_content: "", // Default empty page content
+                }),
+            });
+    
+            const addPageData = await addPageResponse.json();
+            if (addPageData.success) {
+                // Step 3: Refresh the page after successfully adding the group and the page
+                window.location.reload();
+            } else {
+                console.error("Failed to add a page to the new group");
+            }
+        } else {
+            console.error("Failed to add group");
+        }
+    };
+
+    const handleAddPages = async () => {
+        const username = getCookie('username');
+    
+        // Find the current group based on the groupID from the URL
+        const currentGroup = groups.find(group => group.group_id === parseInt(groupID));
+        if (!currentGroup) {
+            console.error("No current group found");
+            return;
+        }
+    
+        const response = await fetch("backend/addPages.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                title: notebook.title,
+                group_id: currentGroup.group_id,
+                page_content: "", // Default empty page content
+            }),
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            // Refresh the page to reflect the new page
+            window.location.reload();
+        } else {
+            console.error("Failed to add a page to the current group");
+        }
+    };
+
+
     const config = useMemo(() => ({
         cleanHTML: {
             denyTags: {
@@ -1028,6 +1108,16 @@ export function ToolTest(){
                 </aside>
 
                 <aside className="aside nbpSidebarPages">
+
+                    <div className="sidebar-actions">
+                        <button onClick={handleAddGroup} disabled={readOnly} className="add-group-button">
+                            Add Group
+                        </button>
+                        <button onClick={handleAddPages} disabled={readOnly} className="add-page-button">
+                            Add Page
+                        </button>
+                    </div>
+
                     <DragDropContext onDragEnd={handleDragEnd}> {/* Drag context for groups */}
                         <Droppable droppableId="groups" type="group">
                             {(provided) => (
