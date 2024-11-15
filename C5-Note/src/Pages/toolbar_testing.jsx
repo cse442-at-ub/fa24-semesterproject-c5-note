@@ -32,13 +32,117 @@ function GroupDropdown({
   isSelectedGroup,
   selectedPage,
   readOnly,
-  handlePageDragEnd
+  handlePageDragEnd,
+  Groups
 }) {
   // State for editing group and page names
   const [editingGroupId, setEditingGroupId] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
   const [editingPageNumber, setEditingPageNumber] = useState(null);
   const [newPageName, setNewPageName] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeletePageModal, setshowDeletePageModal] = useState(false);
+  
+  const [groupToDelete, setGroupToDelete] = useState(null);
+  const [pageToDelete, setPageToDelete] = useState(null);
+  const [pageGroupToDelete, setPageGroupToDelete] = useState(null);
+  const [pageName,setPageName] = useState(null);
+  const [pageInd,setPageInd] = useState(null);
+  const navigate = useNavigate();
+
+  const handleConfirmDeletePage = async () => {
+    console.log('test')
+    if (pageToDelete) {
+        console.log(pageToDelete)
+        console.log(group.group_id)
+        const response = await fetch("backend/deletePage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                group_id: group.group_id,  // Send the group_id to delete
+                page_num: pageToDelete
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            console.log(Groups)
+            let update = false;
+            for (let i = 0; i < group.pages.length; i++) {
+                if (update != true){
+                  if (group.pages[i].page_number != pageToDelete){
+                    update = true;
+                    navigate('/notebooks/' + group.group_id + '/'+group.pages[i].page_number, { state: { notebook, group:group.group_id, page:group.pages[i].page_number, readOnly } });
+
+                }
+
+                }
+                
+            }
+            
+        } else {
+            console.error("Failed to delete group");
+        }
+        setshowDeletePageModal(false); // Close the modal
+    }
+};
+
+// Function to open the delete confirmation modal
+const handleDeletePage = (group,page) => {
+    for (let i = 0; i < group.pages.length; i++){
+        if(group.pages[i].page_number == page){
+            setPageName(group.pages[i].page_name)
+            setPageInd(i)
+        }
+    }
+    setPageToDelete(page);
+    setPageGroupToDelete(group);
+    setshowDeletePageModal(true);  // Show the modal
+};
+
+
+  const handleConfirmDeleteGroup = async () => {
+    if (groupToDelete) {
+        const response = await fetch("backend/deleteGroup.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                group_id: groupToDelete.group_id,  // Send the group_id to delete
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            console.log(group)
+            let update = false;
+            for (let i = 0; i < Groups.length; i++) {
+                if (update != true){
+                  if (Groups[i].group_id != groupToDelete.group_id){
+                    update = true;
+                    navigate('/notebooks/' + Groups[i].group_id + '/'+Groups[i].pages[0].page_number, { state: { notebook, group:Groups[i].group_id, page:Groups[i].pages[0].page_number, readOnly } });
+
+                }  
+                }
+                
+            }
+            
+        } else {
+            console.error("Failed to delete group");
+        }
+        setShowDeleteModal(false); // Close the modal
+    }
+};
+
+// Function to open the delete confirmation modal
+const handleDeleteGroup = (group) => {
+    setGroupToDelete(group);
+    setShowDeleteModal(true);  // Show the modal
+};
+
 
   // Handle editing group name
   const handleEditGroupName = async () => {
@@ -84,7 +188,53 @@ function GroupDropdown({
   };
 
   return (
+
+    
+
     <div className={`group ${isSelectedGroup ? "selected-group" : ""}`}>
+
+        <Modal show={showDeletePageModal} onHide={() => setshowDeletePageModal(false)} centered>
+            <Modal.Header>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete this page? This action cannot be undone.
+                <br />
+                <strong>Page Name:</strong> {pageName}
+                <br />
+                <strong>Page location:</strong> {pageInd} from top
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setshowDeletePageModal(false)}>Cancel</Button>
+                <Button variant="danger" onClick={handleConfirmDeletePage} style={{ backgroundColor: 'red', borderColor: 'red' }} >Delete</Button>
+            </Modal.Footer>
+        </Modal>
+
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+    <Modal.Header>
+        <Modal.Title>Confirm Deletion</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+        {/* Display the group name and the list of page names */}
+        Are you sure you want to delete this group?  This action cannot be undone. 
+        <br />
+        <strong>Group Name:</strong> "{groupToDelete?.group_name}"
+        <br />
+        <strong>Pages in this group:</strong> 
+        <ul>
+            {/* Map through the pages and display each page name */}
+            {groupToDelete?.pages?.map((page, index) => (
+                <li key={index}>{page.page_name}</li>
+            ))}
+        </ul>
+    </Modal.Body>
+    <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+        <Button variant="danger" onClick={handleConfirmDeleteGroup} style={{ backgroundColor: 'red', borderColor: 'red' }}>Delete</Button>
+    </Modal.Footer>
+</Modal>
+
+
       <h1 className="clickableGroupName" onClick={toggleGroup}>
         {editingGroupId === group.group_id ? (
           <div>
@@ -102,7 +252,8 @@ function GroupDropdown({
             <span>{group.group_name}</span>
 
             {/* Render Edit button if NOT readOnly */}
-            {!readOnly && isSelectedGroup && (
+            {!readOnly && isSelectedGroup &&(
+                <>
               <button
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent toggleGroup from being triggered
@@ -112,6 +263,10 @@ function GroupDropdown({
               >
                 <img src={edit_icon} className="logos" alt="logo" />
               </button>
+              {Groups.length != 1 &&(
+               <button onClick={() => handleDeleteGroup(group)}><img src={delete_icon} className="logos" alt="logo" /></button> 
+              )}
+              </>
             )}
           </>
         )}
@@ -148,6 +303,8 @@ function GroupDropdown({
 
                           {/* Render Edit button if NOT readOnly */}
                           {!readOnly && (isSelectedGroup && page.page_number === selectedPage) && editingPageNumber !== page.page_number && (
+                            
+                            <>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation(); // Prevent parent toggle from being triggered
@@ -157,6 +314,10 @@ function GroupDropdown({
                             >
                               <img src={edit_icon} className="logos" alt="logo" />
                             </button>
+                            {group.pages.length != 1 &&(
+                                <button onClick={() => handleDeletePage(group,selectedPage)}><img src={delete_icon} className="logos" alt="logo" /></button> 
+                               )}
+                               </>
                           )}
                         </Link>
                       </li>
@@ -1011,9 +1172,9 @@ export function ToolTest(){
         }
     };
 
+    const { pathname } = useLocation();  
 
-
-
+    useEffect(() => {     window.scrollTo(0, 0);   }, [pathname]);    
 
 
     return(
@@ -1140,6 +1301,7 @@ export function ToolTest(){
                                                         selectedPage={parseInt(pageNum)}
                                                         readOnly={readOnly}
                                                         handlePageDragEnd={handlePageDragEnd} // Pass handlePageDragEnd as a prop
+                                                        Groups={groups}
                                                     />
                                                 </div>
                                             )}
