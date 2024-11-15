@@ -65,7 +65,7 @@ function GroupDropdown({
                 if (update != true){
                   if (Groups[i].group_id != groupToDelete.group_id){
                     update = true;
-                    navigate('/notebooks/' + Groups[i].group_id + '/1', { state: { notebook, group:Groups[i].group_id, page:1, readOnly } });
+                    navigate('/notebooks/' + Groups[i].group_id + '/'+Groups[i].pages[0].page_number, { state: { notebook, group:Groups[i].group_id, page:Groups[i].pages[0].page_number, readOnly } });
 
                 }  
                 }
@@ -165,7 +165,7 @@ const handleDeleteGroup = (group) => {
             <span>{group.group_name}</span>
 
             {/* Render Edit button if NOT readOnly */}
-            {!readOnly && isSelectedGroup && (
+            {!readOnly && isSelectedGroup &&(
                 <>
               <button
                 onClick={(e) => {
@@ -176,7 +176,9 @@ const handleDeleteGroup = (group) => {
               >
                 <img src={edit_icon} className="logos" alt="logo" />
               </button>
-              <button style={{color: "red"}} onClick={() => handleDeleteGroup(group)}>Delete X</button>
+              {Groups.length != 1 &&(
+               <button onClick={() => handleDeleteGroup(group)}><img src={delete_icon} className="logos" alt="logo" /></button> 
+              )}
               </>
             )}
           </>
@@ -1077,9 +1079,9 @@ export function ToolTest(){
         }
     };
 
+    const { pathname } = useLocation();  
 
-
-
+    useEffect(() => {     window.scrollTo(0, 0);   }, [pathname]);    
 
 
     return(
