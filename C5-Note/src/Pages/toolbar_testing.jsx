@@ -257,6 +257,7 @@ export function ToolTest(){
     const handleAddGroup = async () => {
         const username = getCookie('username');
     
+        // Step 1: Add the group
         const response = await fetch("backend/addGroup.php", {
             method: "POST",
             headers: {
@@ -271,8 +272,29 @@ export function ToolTest(){
     
         const data = await response.json();
         if (data.success) {
-            // Refresh the page after successfully adding a group
-            window.location.reload();
+            const newGroupId = data.group_id;
+    
+            // Step 2: Add a page to the newly created group
+            const addPageResponse = await fetch("backend/addPages.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username,
+                    title: notebook.title,
+                    group_id: newGroupId,
+                    page_content: "", // Default empty page content
+                }),
+            });
+    
+            const addPageData = await addPageResponse.json();
+            if (addPageData.success) {
+                // Step 3: Refresh the page after successfully adding the group and the page
+                window.location.reload();
+            } else {
+                console.error("Failed to add a page to the new group");
+            }
         } else {
             console.error("Failed to add group");
         }
