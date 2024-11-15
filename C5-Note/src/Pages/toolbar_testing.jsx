@@ -46,6 +46,8 @@ function GroupDropdown({
   const [groupToDelete, setGroupToDelete] = useState(null);
   const [pageToDelete, setPageToDelete] = useState(null);
   const [pageGroupToDelete, setPageGroupToDelete] = useState(null);
+  const [pageName,setPageName] = useState(null);
+  const [pageInd,setPageInd] = useState(null);
   const navigate = useNavigate();
 
   const handleConfirmDeletePage = async () => {
@@ -89,6 +91,12 @@ function GroupDropdown({
 
 // Function to open the delete confirmation modal
 const handleDeletePage = (group,page) => {
+    for (let i = 0; i < group.pages.length; i++){
+        if(group.pages[i].page_number == page){
+            setPageName(group.pages[i].page_name)
+            setPageInd(i)
+        }
+    }
     setPageToDelete(page);
     setPageGroupToDelete(group);
     setshowDeletePageModal(true);  // Show the modal
@@ -190,7 +198,11 @@ const handleDeleteGroup = (group) => {
                 <Modal.Title>Confirm Deletion</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                Are you sure you want to delete the page ? This action cannot be undone.
+                Are you sure you want to delete this page? This action cannot be undone.
+                <br />
+                <strong>Page Name:</strong> {pageName}
+                <br />
+                <strong>Page location:</strong> {pageInd} from top
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => setshowDeletePageModal(false)}>Cancel</Button>
@@ -198,18 +210,30 @@ const handleDeleteGroup = (group) => {
             </Modal.Footer>
         </Modal>
 
-<Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-            <Modal.Header>
-                <Modal.Title>Confirm Deletion</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                Are you sure you want to delete the group "{groupToDelete?.group_name}"? This action cannot be undone.
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
-                <Button variant="danger" onClick={handleConfirmDeleteGroup} style={{ backgroundColor: 'red', borderColor: 'red' }} >Delete</Button>
-            </Modal.Footer>
-        </Modal>
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+    <Modal.Header>
+        <Modal.Title>Confirm Deletion</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+        {/* Display the group name and the list of page names */}
+        Are you sure you want to delete this group?  This action cannot be undone. 
+        <br />
+        <strong>Group Name:</strong> "{groupToDelete?.group_name}"
+        <br />
+        <strong>Pages in this group:</strong> 
+        <ul>
+            {/* Map through the pages and display each page name */}
+            {groupToDelete?.pages?.map((page, index) => (
+                <li key={index}>{page.page_name}</li>
+            ))}
+        </ul>
+    </Modal.Body>
+    <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+        <Button variant="danger" onClick={handleConfirmDeleteGroup} style={{ backgroundColor: 'red', borderColor: 'red' }}>Delete</Button>
+    </Modal.Footer>
+</Modal>
+
 
       <h1 className="clickableGroupName" onClick={toggleGroup}>
         {editingGroupId === group.group_id ? (
