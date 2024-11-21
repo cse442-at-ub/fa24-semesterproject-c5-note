@@ -37,14 +37,16 @@
     color: black;
     
 }
+
 .notebook_no_results{
     position: absolute;
     margin-top:2.125rem;
-    padding-right: 1rem;
     background-color: white;
     font-family: monofonto;
     color: black;
-    
+    padding: 0px;
+    width: 11rem;
+    text-align: center;
 }
 
 .search-notebook-content {
