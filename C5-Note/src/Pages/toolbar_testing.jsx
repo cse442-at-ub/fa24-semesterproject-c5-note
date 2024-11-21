@@ -1234,12 +1234,14 @@ export function ToolTest(){
                         {notebook.title} 
                     </h1>)}
                     <h3>My Other Notebooks</h3>
-                    <ul>
+                    <ul style={{padding: 0}}>
                         {notebooks
                             .filter((otherNotebook) => otherNotebook.title !== notebook.title) // Exclude current notebook
                             .map((otherNotebook, index) => (
                                 <li key={index}>
-                                    <button onClick={() => handleNotebookClick(otherNotebook)}>
+                                    <button className="clickableNotebookTitle otherNotebookTitle" 
+                                        style={{ backgroundColor: otherNotebook.color }}
+                                        onClick={() => handleNotebookClick(otherNotebook)}>
                                         {otherNotebook.title}
                                     </button>
                                 </li>

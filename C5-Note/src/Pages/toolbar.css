@@ -158,6 +158,18 @@
     margin-bottom: 10px;
 }
 
+.otherNotebookTitle {
+    padding: 10px;
+    width: 60%;
+    height: 2rem;
+    color: white;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .selected-group {
     border: 2px solid black;
     padding: 5px;
