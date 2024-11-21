@@ -91,6 +91,8 @@ if ($result->num_rows > 0) {
     }
 
     
-    die(json_encode(["status" => "success","notebooks" => json_encode($notebooks)]));
+    
 
 }
+
+die(json_encode(["status" => "success","notebooks" => json_encode($notebooks)]));

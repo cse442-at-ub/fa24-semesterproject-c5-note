@@ -32,24 +32,27 @@
     position: absolute;
     margin-top:2.125rem;
     padding-right: 1rem;
-    background-color: white;
-    font-family: monofonto;
-    color: black;
-    
-}
-.notebook_no_results{
-    position: absolute;
-    margin-top:2.125rem;
-    padding-right: 1rem;
+    max-width: 15rem;
     background-color: white;
     font-family: monofonto;
     color: black;
     
 }
 
+.notebook_no_results{
+    position: absolute;
+    margin-top:2.125rem;
+    background-color: white;
+    font-family: monofonto;
+    color: black;
+    padding: 0px;
+    width: 11rem;
+    text-align: center;
+}
+
 .search-notebook-content {
     display: inline-block;
-    max-width: 30rem; 
+    max-width: 100%; 
     vertical-align: middle;
     margin-bottom: 0.5rem;
     }
@@ -62,6 +65,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    white-space: nowrap;
     }
     
 .search-notebook-description {
@@ -71,4 +75,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    }
+
+    .clickable_result {
+
+        cursor: pointer;
+        margin-bottom: 4px;
     }

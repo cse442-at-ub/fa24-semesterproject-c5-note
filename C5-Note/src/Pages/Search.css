@@ -31,18 +31,31 @@
     list-style: disc;
     position: absolute;
     margin-top:2.125rem;
-    padding-right: 1rem;
+    width: 9rem;
     background-color: white;
     font-family: monofonto;
     color: black;
     
+    
 }
+
+.result_name{
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+
 .no_results{
     position: absolute;
     margin-top:2.125rem;
-    padding-right: 1rem;
     background-color: white;
     font-family: monofonto;
     color: black;
+    padding: 0px;
+    width: 11rem;
+    text-align: center;
     
 }
