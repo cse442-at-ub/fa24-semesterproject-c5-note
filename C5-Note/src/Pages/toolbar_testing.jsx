@@ -1233,7 +1233,7 @@ export function ToolTest(){
                     {readOnly && (<h1 className="currentNotebookTitle" style={{ backgroundColor: notebook.color }}> 
                         {notebook.title} 
                     </h1>)}
-                    <h3>Other Notebooks</h3>
+                    <h3>My Other Notebooks</h3>
                     <ul>
                         {notebooks
                             .filter((otherNotebook) => otherNotebook.title !== notebook.title) // Exclude current notebook
