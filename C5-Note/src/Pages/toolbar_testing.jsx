@@ -1241,7 +1241,7 @@ export function ToolTest(){
                                 <li key={index}>
                                     <button className="clickableNotebookTitle otherNotebookTitle" 
                                         style={{ backgroundColor: otherNotebook.color }}
-                                        onClick={() => handleNotebookClick(otherNotebook)}>
+                                        onClick={() => {console.log("Clicked " + otherNotebook);handleNotebookClick(otherNotebook)}}>
                                         {otherNotebook.title}
                                     </button>
                                 </li>
@@ -1249,16 +1249,18 @@ export function ToolTest(){
                     </ul>
 
                     <h3>Shared Notebooks</h3>
-                    <ul>
+                    <ul style={{padding: 0}}>
                         {sharedNotebooks.length === 0 ? (
                             <p>No shared notebooks available.</p>
                         ) : (
                             sharedNotebooks
                                 .filter((sharedNotebook) => sharedNotebook.title !== notebook.title)
-                                .map((sharedNotebook, index) => (
+                                .map((otherNotebook, index) => (
                                     <li key={index}>
-                                        <button onClick={() => handleNotebookClick(sharedNotebook)}>
-                                            {sharedNotebook.title}
+                                        <button className="clickableNotebookTitle otherNotebookTitle" 
+                                            style={{ backgroundColor: otherNotebook.color }}
+                                            onClick={() => handleNotebookClick(otherNotebook)}>
+                                            {otherNotebook.title}
                                         </button>
                                     </li>
                                 ))
