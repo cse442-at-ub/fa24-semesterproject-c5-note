@@ -67,8 +67,6 @@ export function Search() {
 
 function Results(props) {
 
-    const navigate = useNavigate();
-
     if(props.items.length == 0) {
         return (
             <ul className="no_results">
@@ -80,9 +78,9 @@ function Results(props) {
     return (
         <ul className="results">
             {props.items.map( (item,index) => {return <li key={index}>
-                <div className="result_name" onClick={() => navigate("/profile/" + item)}>
-                    {item}
-                </div></li>})}
+                <Link to={'/profile/' + item} >
+                {item}
+                </Link></li>})}
         </ul>
     )
 }

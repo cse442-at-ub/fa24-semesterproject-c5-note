@@ -76,3 +76,9 @@
     text-overflow: ellipsis;
     max-width: 100%;
     }
+
+    .clickable_result {
+
+        cursor: pointer;
+        margin-bottom: 4px;
+    }

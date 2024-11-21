@@ -134,7 +134,7 @@ function Results(props) {
             {props.items.map( (item,index) => { const access = item.access.includes(username);
             
                 if(access) {
-                    return (<div onClick={() => handleNotebookClick(item, false)}><li key={index}><div className="search-notebook-title">{item.title}</div></li>
+                    return (<div className="clickable_result" onClick={() => handleNotebookClick(item, false)}><li key={index}><div className="search-notebook-title">{item.title}</div></li>
                         <div >
                             
                             <div className="search-notebook-content">
@@ -145,7 +145,7 @@ function Results(props) {
                             </div>
                             </div></div>)}
                 else {
-                    return (<div onClick={() => handleNotebookClick(item, true)}><li key={index}><div className="search-notebook-title">{item.title}</div></li>
+                    return (<div className="clickable_result" onClick={() => handleNotebookClick(item, true)}><li key={index}><div className="search-notebook-title">{item.title}</div></li>
                         <div >
                             
                             <div className="search-notebook-content">
