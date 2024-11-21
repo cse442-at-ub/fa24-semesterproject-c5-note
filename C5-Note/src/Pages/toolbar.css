@@ -156,6 +156,7 @@
     color: white;
     border-radius: 5px;
     margin-bottom: 10px;
+    font-family: monofonto;
 }
 
 .otherNotebookTitle {
@@ -168,6 +169,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-family: monofonto;
 }
 
 .selected-group {
