@@ -79,7 +79,7 @@ function Results(props) {
     return (
         <ul className="results">
             {props.items.map( (item,index) => {return <li key={index}>
-                <div onClick={() => navigate('/profile/' + item)} >
+                <div className="result_name" onClick={() => navigate('/profile/' + item)} >
                 {item}
                 </div></li>})}
         </ul>
