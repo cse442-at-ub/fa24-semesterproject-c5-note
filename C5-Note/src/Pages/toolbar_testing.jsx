@@ -1233,30 +1233,38 @@ export function ToolTest(){
                     {readOnly && (<h1 className="currentNotebookTitle" style={{ backgroundColor: notebook.color }}> 
                         {notebook.title} 
                     </h1>)}
-                    <h3>Other Notebooks</h3>
-                    <ul>
-                        {notebooks
-                            .filter((otherNotebook) => otherNotebook.title !== notebook.title) // Exclude current notebook
-                            .map((otherNotebook, index) => (
-                                <li key={index}>
-                                    <button onClick={() => handleNotebookClick(otherNotebook)}>
-                                        {otherNotebook.title}
-                                    </button>
-                                </li>
-                            ))}
+                    <h3>My Other Notebooks</h3>
+                    <ul style={{padding: 0}}>
+                        {notebooks.filter((otherNotebook) => otherNotebook.title !== notebook.title).length === 0 ? (
+                                <p>You don't have any other notebooks.</p>
+                            ) : (
+                                notebooks
+                                    .filter((otherNotebook) => otherNotebook.title !== notebook.title) // Exclude current notebook
+                                    .map((otherNotebook, index) => (
+                                        <li key={index}>
+                                            <button className="clickableNotebookTitle otherNotebookTitle" 
+                                                style={{ backgroundColor: otherNotebook.color }}
+                                                onClick={() => handleNotebookClick(otherNotebook)}>
+                                                {otherNotebook.title}
+                                            </button>
+                                        </li>
+                                    ))
+                            )}
                     </ul>
 
                     <h3>Shared Notebooks</h3>
-                    <ul>
-                        {sharedNotebooks.length === 0 ? (
+                    <ul style={{padding: 0}}>
+                        {sharedNotebooks.filter((sharedNotebook) => sharedNotebook.title !== notebook.title).length === 0 ? (
                             <p>No shared notebooks available.</p>
                         ) : (
                             sharedNotebooks
                                 .filter((sharedNotebook) => sharedNotebook.title !== notebook.title)
-                                .map((sharedNotebook, index) => (
+                                .map((otherNotebook, index) => (
                                     <li key={index}>
-                                        <button onClick={() => handleNotebookClick(sharedNotebook)}>
-                                            {sharedNotebook.title}
+                                        <button className="clickableNotebookTitle otherNotebookTitle" 
+                                            style={{ backgroundColor: otherNotebook.color }}
+                                            onClick={() => handleNotebookClick(otherNotebook)}>
+                                            {otherNotebook.title}
                                         </button>
                                     </li>
                                 ))
