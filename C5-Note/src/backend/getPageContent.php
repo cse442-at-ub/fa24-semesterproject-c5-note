@@ -62,7 +62,10 @@ if($json->guest){
 }
 
 require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
-$purifier = new HTMLPurifier();
+$config = HTMLPurifier_Config::createDefault();
+$config->set('HTML.SafeIframe', true);
+$config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%'); //allow YouTube and Vimeo
+$purifier = new HTMLPurifier($config);
 
 
 $loadpageid = $json->pageid;
