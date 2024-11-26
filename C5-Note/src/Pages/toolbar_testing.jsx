@@ -1210,19 +1210,19 @@ export function ToolTest(){
                     {!readOnly && (
                             
                             <>
-                            <h1>View Type: Edit Mode</h1>
+                            <h2>Edit Mode</h2>
                             </>
                           )}
                     {readOnly && (
                             
                             <>
-                            <h1>View Type: View Mode</h1>
+                            <h2>View Mode</h2>
                             </>
                           )}
                         
                     </div>
                     <div id="Page Title">
-                        <h1>Untitled Page</h1>
+                        <h2>{pageName}</h2>
                     </div>
                     <div id="above_buttons">
                      <button className="nbpButtonHome" onClick={handleDownloadShow}>Download</button>
