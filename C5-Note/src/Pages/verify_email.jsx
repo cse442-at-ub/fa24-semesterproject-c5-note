@@ -70,11 +70,15 @@ export function VerifyEmail(){
               body: JSON.stringify(requestData),
           }).then((response) => response.json())
           .then((json) =>{if (json.status === '200') {
-              ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+              ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: false, preventClose: true,
                 "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
             });
-              //alert("User registered successfully!");
-          } else {
+            // Make it auto-redirect after popup
+            setTimeout(() => {
+              navigate("/");
+            }, 3000); // 3 seconds seems better?
+            //alert("User registered successfully!");
+          } else {successfully
             const handleRsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
             handleRsp();
           }
