@@ -60,7 +60,7 @@ export function SignUpPage() {
             }).then((response) => response.json())
             .then((json) =>{if (json.status === '200') {
                 console.log(json)
-                ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+                ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: false,
                     "buttons": [{title:"Go to verify account page", onClick:() => {navigate("/verify");}}]
                 });
                 //alert("User registered successfully!");
