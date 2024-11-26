@@ -8,7 +8,7 @@ import './simple_note.css';
 import './home.css';
 import { GhostaContainer, ghosta } from 'react-ghosta';
 import { Search } from './Search.jsx'
-import { NotebookSearch } from './NotebookSearch.jsx';
+import { NotebookSearch } from './notebookSearch.jsx';
 
 
 
