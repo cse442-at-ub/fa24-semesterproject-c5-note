@@ -1202,10 +1202,7 @@ export function ToolTest(){
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
 
-                    {!readOnly && (
-                        <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
-                    )}
-                    <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
+                    
                 </div>
 
                 <article className="nbpMain">
