@@ -78,7 +78,7 @@ export function VerifyEmail(){
               navigate("/");
             }, 3000); // 3 seconds seems better?
             //alert("User registered successfully!");
-          } else {successfully
+          } else {
             const handleRsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
             handleRsp();
           }
