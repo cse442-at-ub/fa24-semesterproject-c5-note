@@ -202,7 +202,12 @@ export function Profile() {
       </div>)}
 
       <h1 className="container_text">Public Notebooks</h1>
-      <ItemGrid items={items} />
+      
+      {items.length != 0 && <ItemGrid items={items} />}
+      {items.length == 0 && 
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+      <p style={{fontFamily: 'monofonto', display: 'inline'}}>This account has no public notebooks.</p>
+      </div>}
     </>
   )
 }
