@@ -1197,11 +1197,30 @@ export function ToolTest(){
                 </div>
 
                 {/* Toolbar */}
-                <div className="nbpToolbar">
+                <div className="Above_toolbar">
+                    <div id="above_Mode">
+                    {!readOnly && (
+                            
+                            <>
+                            <h1>View Type: Edit Mode</h1>
+                            </>
+                          )}
+                    {readOnly && (
+                            
+                            <>
+                            <h1>View Type: View Mode</h1>
+                            </>
+                          )}
+                        
+                    </div>
+                    <div id="Page Title">
+                        <h1>Untitled Page</h1>
+                    </div>
+                    <div id="above_buttons">
                      <button className="nbpButtonHome" onClick={handleDownloadShow}>Download</button>
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
-
+                    </div>
                     
                 </div>
 

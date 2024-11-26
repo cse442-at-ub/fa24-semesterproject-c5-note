@@ -225,3 +225,8 @@
     width:1.5rem; 
     height:1.5rem;
 }
+
+.Above_toolbar{
+    display: flex;
+    justify-content: space-between;
+}
