@@ -55,3 +55,7 @@
   color: #61dafb;
 }
 
+a:link, a:visited {
+  text-decoration: none;
+  color: white;
+}
