@@ -202,7 +202,9 @@ export function Profile() {
       </div>)}
 
       <h1 className="container_text">Public Notebooks</h1>
-      <ItemGrid items={items} />
+      
+      {items.length != 0 && <ItemGrid items={items} />}
+      {items.length == 0 && <p>None!!!!!</p>}
     </>
   )
 }
