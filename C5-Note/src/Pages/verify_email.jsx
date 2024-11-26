@@ -78,7 +78,19 @@ export function VerifyEmail(){
               navigate("/");
             }, 3000); // 3 seconds seems better?
             //alert("User registered successfully!");
-          } else {
+          } 
+          // Handle expired code specifically.  This is when the php file returns status 400.
+          else if (json.status === '400'){
+            const handle_rsp = () => ghosta.fire({
+                headerTitle: 'ERROR',
+                description:json.message,
+                preventClose: true,
+                showCloseButton:false,
+                "buttons": [{title:"Return to Sign Up page", onClick:() => {navigate("/signUpPage");}}]
+             });
+            handle_rsp()
+          }
+          else {
             const handleRsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
             handleRsp();
           }
