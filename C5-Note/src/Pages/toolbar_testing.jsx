@@ -619,7 +619,7 @@ export function ToolTest(){
 
 
     const config = useMemo(() => ({
-        "buttons": "bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,image,video,spellcheck,speechRecognize,cut,copy",
+        "buttons": "bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,image,video,spellcheck,speechRecognize,cut,copy,paste,selectall,copyformat,hr,table,link,symbols,indent,outdent,left,brush,undo,redo,find,fullsize,preview,print,about",
         
         cleanHTML: {
             denyTags: {
