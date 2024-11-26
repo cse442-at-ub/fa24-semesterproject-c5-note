@@ -441,6 +441,8 @@ export function ToolTest(){
 
     const timeoutRef = useRef(null); // Reference to store the current timeout ID
 
+    const [pageName,setPageName] = useState(null);
+
     const cancelPolling = () => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -617,6 +619,8 @@ export function ToolTest(){
 
 
     const config = useMemo(() => ({
+        "buttons": "bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,image,video,spellcheck,speechRecognize,cut,copy,paste,selectall,copyformat,hr,table,link,symbols,indent,outdent,left,brush,undo,redo,find,fullsize,preview,print,about",
+        
         cleanHTML: {
             denyTags: {
               script: true,
@@ -1020,6 +1024,7 @@ export function ToolTest(){
             });
     
             const data = await response.json();
+            console.log(data)
             if (data['connected_users']) {
                 const loc = document.getElementById("connected_users");
             
@@ -1037,6 +1042,11 @@ export function ToolTest(){
                 });
             }
             
+            if (data['page_name']){
+                setPageName(data['page_name'])
+            }else{
+                setPageName('Untitled Page')
+            }
             
             if (data['content']) {
                 const elements = document.getElementsByClassName('jodit-wysiwyg');
@@ -1197,15 +1207,31 @@ export function ToolTest(){
                 </div>
 
                 {/* Toolbar */}
-                <div className="nbpToolbar">
+                <div className="Above_toolbar">
+                    <div id="above_Mode">
+                    {!readOnly && (
+                            
+                            <>
+                            <h2>Edit Mode</h2>
+                            </>
+                          )}
+                    {readOnly && (
+                            
+                            <>
+                            <h2>View Mode</h2>
+                            </>
+                          )}
+                        
+                    </div>
+                    <div id="Page Title">
+                        <h2>{pageName}</h2>
+                    </div>
+                    <div id="above_buttons">
                      <button className="nbpButtonHome" onClick={handleDownloadShow}>Download</button>
 
                     <button className="nbpButtonHome" onClick={handleShow}>Access</button> {/* shows Modal */}
-
-                    {!readOnly && (
-                        <Link to="/"><button className="nbpButtonHome">Rename</button></Link>
-                    )}
-                    <Link to="/"><button className="nbpButtonHome">Copy URL</button></Link>
+                    </div>
+                    
                 </div>
 
                 <article className="nbpMain">
