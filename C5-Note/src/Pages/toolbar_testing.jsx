@@ -441,6 +441,8 @@ export function ToolTest(){
 
     const timeoutRef = useRef(null); // Reference to store the current timeout ID
 
+    const [pageName,setPageName] = useState(null);
+
     const cancelPolling = () => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -1020,6 +1022,7 @@ export function ToolTest(){
             });
     
             const data = await response.json();
+            console.log(data)
             if (data['connected_users']) {
                 const loc = document.getElementById("connected_users");
             
@@ -1037,6 +1040,11 @@ export function ToolTest(){
                 });
             }
             
+            if (data['page_name']){
+                setPageName(data['page_name'])
+            }else{
+                setPageName('Untitled Page')
+            }
             
             if (data['content']) {
                 const elements = document.getElementsByClassName('jodit-wysiwyg');
