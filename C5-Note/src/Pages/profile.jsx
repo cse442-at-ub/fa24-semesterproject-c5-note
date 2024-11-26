@@ -204,7 +204,7 @@ export function Profile() {
       <h1 className="container_text">Public Notebooks</h1>
       
       {items.length != 0 && <ItemGrid items={items} />}
-      {items.length == 0 && <p>None!!!!!</p>}
+      {items.length == 0 && <p>This account has no public notebooks.</p>}
     </>
   )
 }
