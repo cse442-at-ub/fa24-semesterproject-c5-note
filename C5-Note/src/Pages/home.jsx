@@ -6,10 +6,38 @@ import { GhostaContainer, ghosta } from 'react-ghosta';
 import 'react-ghosta/dist/ghosta.css';
 
 export function Top_bar(){
+
+  // Define function to get cookie
+  const getCookie= (name) =>{
+    let cookie = {};
+    document.cookie.split(';').forEach(function(el) {
+    let split = el.split('=');
+    cookie[split[0].trim()] = split.slice(1).join("=");
+    })
+    return cookie[name];
+  }
+
+  // Get the cookie
+  var name = getCookie('username')
+  var isLoggedIn
+  if (name == '' || typeof(name) == "undefined" ){
+    isLoggedIn = false;
+  }else{
+    isLoggedIn = true;
+  }
+
+
   return(
     <div className='Top_bar'>
       <div className='Top_bar_elms'>
+      {/* Redirect to home if logged out */}
+      {!isLoggedIn &&(
         <Link to="/"><h1 className='Top_bar_text'>C5-Note</h1></Link>
+      )}
+      {/* Get back to /note if you ended up at home somehow */}
+      {isLoggedIn &&(
+        <Link to="/note"><h1 className='Top_bar_text'>C5-Note</h1></Link>
+      )}
         <img src={logo} className="logo" alt="logo" /></div>
     </div>
   )
