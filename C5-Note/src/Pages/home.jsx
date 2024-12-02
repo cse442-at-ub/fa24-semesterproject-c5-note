@@ -26,7 +26,7 @@ export function Top_bar(){
     isLoggedIn = true;
   }
 
-
+  // Render top bar according to logged in/out status
   return(
     <div className='Top_bar'>
       <div className='Top_bar_elms'>
