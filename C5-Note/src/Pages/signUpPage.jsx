@@ -11,7 +11,7 @@ export function Top_bar(){
   return (
     <div className='Top_bar'>
       <div className='Top_bar_elms'>
-        <h1 className='Top_bar_text'>C5-Note</h1>
+        <Link to="/"><h1 className='Top_bar_text'>C5-Note</h1></Link>
         <img src={logo} className="logo" alt="logo" />
       </div>
     </div>
