@@ -62,7 +62,10 @@ if($json->guest){
 }
 
 require_once './htmlpurifier/htmlpurifier/library/HTMLPurifier.auto.php';
-$purifier = new HTMLPurifier();
+$config = HTMLPurifier_Config::createDefault();
+$config->set('HTML.SafeIframe', true);
+$config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%'); //allow YouTube and Vimeo
+$purifier = new HTMLPurifier($config);
 
 
 $loadpageid = $json->pageid;
@@ -72,7 +75,7 @@ $isInitialFetch = $json->isInitialFetch ?? false; // Default to false if not set
 header("Content-Type: application/json; charset=UTF-8");
 
 // Prepare the SQL statement to get the page content and last user
-$sql = $connection->prepare("SELECT page_content, last_user, last_mod FROM pages WHERE page_number = ? AND group_id = ?");
+$sql = $connection->prepare("SELECT page_content, last_user, last_mod, page_name FROM pages WHERE page_number = ? AND group_id = ?");
 $sql->bind_param("ii", $loadpageid, $groupid); // Fixed parameter binding
 $sql->execute();
 $result = $sql->get_result();
@@ -83,6 +86,7 @@ if ($result->num_rows > 0) {
     $outp = $result->fetch_assoc(); // Fetch the result correctly
     $lastUser = $outp['last_user'];
     $lastmod = $outp['last_mod'];
+    $pageName = $outp['page_name'];
     $clean_html = $purifier->purify($outp['page_content']);
     
     // Fetch the current connected users for the specific page and group
@@ -122,6 +126,7 @@ if ($result->num_rows > 0) {
         "content" => $clean_html,
         'last_user' => $lastUser,
         'last_mod' => $lastmod,
+        'page_name' => $pageName,
         'connected_users' => $connected_users // Send the list of connected users
     ]);
     exit;

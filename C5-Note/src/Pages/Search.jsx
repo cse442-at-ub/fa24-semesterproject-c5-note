@@ -5,7 +5,7 @@ import React from 'react';
 
 export function Search() {
     const [visibleResult, setVisibleResult] = useState(false);
-    const [result, setResult] = useState(["mdrum2"]);
+    const [result, setResult] = useState([]);
     const searchRef = useRef(null);
 
     const addResult = (newItem) => {
@@ -66,6 +66,7 @@ export function Search() {
 }
 
 function Results(props) {
+    const navigate = useNavigate();
 
     if(props.items.length == 0) {
         return (
@@ -78,9 +79,9 @@ function Results(props) {
     return (
         <ul className="results">
             {props.items.map( (item,index) => {return <li key={index}>
-                <Link to={'/profile/' + item} >
+                <div className="result_name" onClick={() => navigate('/profile/' + item)} >
                 {item}
-                </Link></li>})}
+                </div></li>})}
         </ul>
     )
 }

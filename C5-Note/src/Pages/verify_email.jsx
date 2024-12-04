@@ -10,7 +10,7 @@ export function Top_bar(){
     return(
       <div className='Top_bar'>
         <div className='Top_bar_elms'>
-          <h1 className='Top_bar_text'>C5-Note</h1>
+          <Link to="/"><h1 className='Top_bar_text'>C5-Note</h1></Link>
           <img src={logo} className="logo" alt="logo" /></div>
       </div>
     )
@@ -70,11 +70,27 @@ export function VerifyEmail(){
               body: JSON.stringify(requestData),
           }).then((response) => response.json())
           .then((json) =>{if (json.status === '200') {
-              ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+              ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: false, preventClose: true,
                 "buttons": [{title:"Go to login page", onClick:() => {navigate("/");}}]
             });
-              //alert("User registered successfully!");
-          } else {
+            // Make it auto-redirect after popup
+            setTimeout(() => {
+              navigate("/");
+            }, 3000); // 3 seconds seems better?
+            //alert("User registered successfully!");
+          } 
+          // Handle expired code specifically.  This is when the php file returns status 400.
+          else if (json.status === '400'){
+            const handle_rsp = () => ghosta.fire({
+                headerTitle: 'ERROR',
+                description:json.message,
+                preventClose: true,
+                showCloseButton:false,
+                "buttons": [{title:"Return to Sign Up page", onClick:() => {navigate("/signUpPage");}}]
+             });
+            handle_rsp()
+          }
+          else {
             const handleRsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });
             handleRsp();
           }

@@ -11,7 +11,7 @@ export function Top_bar(){
   return (
     <div className='Top_bar'>
       <div className='Top_bar_elms'>
-        <h1 className='Top_bar_text'>C5-Note</h1>
+        <Link to="/"><h1 className='Top_bar_text'>C5-Note</h1></Link>
         <img src={logo} className="logo" alt="logo" />
       </div>
     </div>
@@ -60,9 +60,16 @@ export function SignUpPage() {
             }).then((response) => response.json())
             .then((json) =>{if (json.status === '200') {
                 console.log(json)
-                ghosta.fire({ headerTitle: json.message, description:"", showCloseButton: "false",
+                ghosta.fire({
+                    headerTitle: json.message, description:"",
+                    preventClose: true,
+                    showCloseButton: false,
                     "buttons": [{title:"Go to verify account page", onClick:() => {navigate("/verify");}}]
                 });
+                // Make it auto-redirect after popup
+                setTimeout(() => {
+                    navigate("/verify");
+                  }, 3000); // 3 seconds seems better?
                 //alert("User registered successfully!");
             } else {
                 const handle_rsp = () => ghosta.fire({ headerTitle: 'ERROR',description:json.message, showCloseButton:true });

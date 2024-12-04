@@ -24,7 +24,12 @@ function Top_bar_simple_notes(){
       return(
         <div className='Top_bar'>
           <div className='Top_bar_elms'>
-            <h1 className='Top_bar_text'>C5-Note</h1>
+            {name != 'DevModeOnly' &&(
+                <Link to="/note"><h1 className='Top_bar_text'>C5-Note</h1></Link>
+            )}
+            {name == 'DevModeOnly' &&(
+                <Link to="/"><h1 className='Top_bar_text'>C5-Note</h1></Link>
+            )}
             {/*switch the image to be agnostic to database images*/}
             <div className="profile_div">
               <div className="profile_div_color">
@@ -361,7 +366,7 @@ export function NotebookDetail() {
                                         {group.pages.map((page, pageIndex) => (
                                             <li key={pageIndex}>
                                                 <button onClick={() => handleGroupPageClick(group, page)}>
-                                                    Page {page.page_number}: {page.page_name || "Untitle Page"}
+                                                    {page.page_name || "Untitled Page"}
                                                 </button>
                                             </li>
                                         ))}

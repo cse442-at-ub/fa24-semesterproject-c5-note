@@ -28,6 +28,9 @@ export function Profile() {
   const [items, setItems] = useState([]); // Initialize an empty array
   const [ signedIn, setSignedIn ] = useState(false);
 
+  const [email, setEmail] = useState("");
+
+
   const addItem = (newItem) => {
     setItems((prevItems) => [...prevItems, newItem]); // Append the new item
   };
@@ -60,16 +63,31 @@ export function Profile() {
   //const [src, setSrc] = useState(logo);
 
   useEffect(() => {
-
-    fetch("backend/getUsername.php", { method: "GET" }).then( response => {
-      response.json().then( data => {
-        if(data["username"] == name) {
+    // Check if the user is signed in and fetch the email
+    fetch("backend/getUsername.php", { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.username === name) {
           setSignedIn(true);
-        }
-      });
-    });
 
-  }, []);
+          // Fetch the email address for the signed-in user
+          fetch("backend/getEmail.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: name }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.email) {
+                setEmail(data.email);
+              } else if (data.error) {
+                console.error(data.error);
+              }
+            });
+        }
+      })
+      .catch((error) => console.error("Failed to fetch username:", error));
+  }, [name]);
 
 
   useEffect(() => {
@@ -182,6 +200,7 @@ export function Profile() {
             </article>
           </div>
           <h1>{name}</h1>
+          {signedIn && email && <h3>{email}</h3>} 
         </div>
         {signedIn && (<><p>Select image to upload:</p>
         <div className="upload">
@@ -202,7 +221,12 @@ export function Profile() {
       </div>)}
 
       <h1 className="container_text">Public Notebooks</h1>
-      <ItemGrid items={items} />
+      
+      {items.length != 0 && <ItemGrid items={items} />}
+      {items.length == 0 && 
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+      <p style={{fontFamily: 'monofonto', display: 'inline'}}>This account has no public notebooks.</p>
+      </div>}
     </>
   )
 }
