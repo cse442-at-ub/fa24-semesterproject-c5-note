@@ -17,6 +17,7 @@ if ($connection->connect_error) {
 $input = json_decode(file_get_contents("php://input"), true);
 
 $guestTitle = $input['guest'] ;
+$bookId = $input['id'];
 $loggedInUsername = "Guest";
 if($guestTitle){
     $loggedInUsername = "Guest";
@@ -73,8 +74,8 @@ $attempts = 0;
 do {
     try {
         // Get the notebook ID
-        $stmt = $connection->prepare("SELECT id, username, isPrivate FROM notebooks WHERE title = ?");
-        $stmt->bind_param("s", $notebookTitle);
+        $stmt = $connection->prepare("SELECT id, username, isPrivate FROM notebooks WHERE id = ?");
+        $stmt->bind_param("i", $bookId);
         $stmt->execute();
         $result = $stmt->get_result();
         $notebook = $result->fetch_assoc();
