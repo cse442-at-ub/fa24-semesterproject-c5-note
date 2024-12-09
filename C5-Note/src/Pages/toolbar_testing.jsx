@@ -550,7 +550,7 @@ export function ToolTest(){
             },
             body: JSON.stringify({
                 username: username,
-                title: notebook.title,
+                id: notebook.id,
                 group_name: "Untitled Group",
             }),
         });
@@ -567,7 +567,7 @@ export function ToolTest(){
                 },
                 body: JSON.stringify({
                     username: username,
-                    title: notebook.title,
+                    id: notebook.id,
                     group_id: newGroupId,
                     page_content: "", // Default empty page content
                 }),
@@ -602,7 +602,7 @@ export function ToolTest(){
             },
             body: JSON.stringify({
                 username: username,
-                title: notebook.title,
+                id: notebook.id,
                 group_id: currentGroup.group_id,
                 page_content: "", // Default empty page content
             }),
@@ -723,7 +723,7 @@ export function ToolTest(){
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 username: username,
-                title: notebook.title,
+                id: notebook.id,
                 reorderedGroups: reorderedGroups.map(group => group.group_id)  // Send only group IDs in the new order
             })
         });
@@ -828,7 +828,7 @@ export function ToolTest(){
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ yourUsername: username, title: notebook.title, isInitialFetch, currentNotebookOrder, guest: readOnly })
+            body: JSON.stringify({ yourUsername: username, id: notebook.id, isInitialFetch, currentNotebookOrder, guest: readOnly })
         });
     
         const data = await response.json();
@@ -896,7 +896,7 @@ export function ToolTest(){
         const response = await fetch("backend/getNotebookGroups.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: currentUsername, title: otherNotebook.title }), // Corrected parameter name
+            body: JSON.stringify({ username: currentUsername, id: otherNotebook.id }), // Corrected parameter name
         });
     
         const data = await response.json();
