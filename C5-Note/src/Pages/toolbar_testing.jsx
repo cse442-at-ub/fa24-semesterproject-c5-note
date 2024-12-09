@@ -1261,11 +1261,11 @@ export function ToolTest(){
                     </h1>)}
                     <h3>My Other Notebooks</h3>
                     <ul style={{padding: 0}}>
-                        {notebooks.filter((otherNotebook) => otherNotebook.title !== notebook.title).length === 0 ? (
+                        {notebooks.filter((otherNotebook) => otherNotebook.id !== notebook.id).length === 0 ? (
                                 <p>You don't have any other notebooks.</p>
                             ) : (
                                 notebooks
-                                    .filter((otherNotebook) => otherNotebook.title !== notebook.title) // Exclude current notebook
+                                    .filter((otherNotebook) => otherNotebook.id !== notebook.id) // Exclude current notebook
                                     .map((otherNotebook, index) => (
                                         <li key={index}>
                                             <button className="clickableNotebookTitle otherNotebookTitle" 
@@ -1280,11 +1280,11 @@ export function ToolTest(){
 
                     <h3>Shared Notebooks</h3>
                     <ul style={{padding: 0}}>
-                        {sharedNotebooks.filter((sharedNotebook) => sharedNotebook.title !== notebook.title).length === 0 ? (
+                        {sharedNotebooks.filter((sharedNotebook) => sharedNotebook.id !== notebook.id).length === 0 ? (
                             <p>No shared notebooks available.</p>
                         ) : (
                             sharedNotebooks
-                                .filter((sharedNotebook) => sharedNotebook.title !== notebook.title)
+                                .filter((sharedNotebook) => sharedNotebook.id !== notebook.id)
                                 .map((otherNotebook, index) => (
                                     <li key={index}>
                                         <button className="clickableNotebookTitle otherNotebookTitle" 
