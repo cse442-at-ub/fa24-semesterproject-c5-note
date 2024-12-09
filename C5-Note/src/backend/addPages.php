@@ -17,14 +17,15 @@ $input = json_decode(file_get_contents("php://input"), true);
 
 $loggedInUsername = $input['username'];
 $notebookTitle = $input['title'];
+$notebook_id = $input['id'];
 $groupId = $input['group_id'];
 $pageContent = $input['page_content'];
 $pageName = "Untitled Page"; // Default page name
 
 try {
     // Get the notebook ID and owner
-    $stmt = $connection->prepare("SELECT id, username AS owner FROM notebooks WHERE title = ?");
-    $stmt->bind_param("s", $notebookTitle);
+    $stmt = $connection->prepare("SELECT id, username AS owner FROM notebooks WHERE id = ?");
+    $stmt->bind_param("i", $notebook_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $notebook = $result->fetch_assoc();

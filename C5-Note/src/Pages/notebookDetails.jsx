@@ -121,7 +121,7 @@ export function NotebookDetail() {
                 },
                 body: JSON.stringify({
                     username: name, // getting username thru cookies
-                    title: notebook.title,
+                    id: notebook.id,
                     isInitialFetch : true,
                     guest: readOnly
                 }),
@@ -213,7 +213,7 @@ export function NotebookDetail() {
             },
             body: JSON.stringify({
                 username: name,
-                title: notebook.title,
+                id: notebook.id,
                 group_name: "Untitled Group",  // Automatically naming it "Untitled Group"
             }),
         });
@@ -246,7 +246,7 @@ export function NotebookDetail() {
             },
             body: JSON.stringify({
                 username: username,  // The logged-in user
-                title: notebook.title,  // The notebook title
+                id: notebook.id,  // The notebook id
                 group_id: group.group_id,  // The ID of the group where the page will be added
                 page_content: ""  // Page content can be an empty string
             }),
