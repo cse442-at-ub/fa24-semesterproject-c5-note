@@ -171,10 +171,10 @@ export function Simple_notebook(){
   const createNotebookForm = () => {
     console.log("createNotebookForm");
 
-    let notebookData = {  //bug here, for some reason no matter the checked box its always true for first click
+    let notebookData = { 
       title: '',
       description: '',
-      isPrivate: true,
+      isPrivate: false,
       color: '#E6E6FA',
     };
 
